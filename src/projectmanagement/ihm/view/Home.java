@@ -20,22 +20,27 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import projectmanagement.application.business.Project;
-import projectmanagement.application.model.DAOProject;
+import projectmanagement.application.dataloader.ProjectDAO;
+import projectmanagement.application.model.ManagerLanguage;
 import projectmanagement.ihm.controller.ClickController;
+import projectmanagement.ihm.controller.MouseController;
 
 /**
  *
  * @author Jérémy
  */
-public class Home extends BorderPane {
+public class Home extends Page{
+    private final Stage mainStage;
 
     public Home(Stage mainStage) {
         super();
-        createView(mainStage);
+        this.mainStage = mainStage;
+        createView();
     }
 
-    private void createView(Stage mainStage) {
-        this.setTop(new MenuPM());
+    @Override
+    public void createView() {
+        this.setTop(new MenuPM(this,mainStage));
         FlowPane flow1 = getChoiceCreateOpen(mainStage);
         FlowPane flow2 = getOpenProject(mainStage);
         Separator sep = createSeparator();
@@ -45,12 +50,9 @@ public class Home extends BorderPane {
         VBox.setMargin(flow1, new Insets(102, 102, 102, 102));
         VBox.setMargin(flow2, new Insets(102, 102, 102, 102));
         vbox.getChildren().addAll(flow1, sep, flow2);
-
-        getStylesheets().add(
-                getClass().getResource(
-                        "/ressources/home.css"
-                ).toExternalForm()
-        );
+        
+        Style.getStyle("/ressources/home.css", this);
+        
         this.setCenter(vbox);
     }
 
@@ -59,17 +61,17 @@ public class Home extends BorderPane {
         FlowPane pane = new FlowPane();
         pane.setAlignment(Pos.CENTER);
 
-        BorderPane border1 = createPanelOpenProject("/ressources/Folder Filled-20.png", "Create Project", null, false,mainStage);
-        BorderPane border2 = createPanelOpenProject("/ressources/Open Folder Filled-20.png", "Open Project", null, true,mainStage);
+        BorderPane border1 = createPanelOpenProject("/ressources/Folder Filled-20.png", ManagerLanguage.getInstance().getLocalizedTexte("NewProject"), null, false,mainStage);
+        BorderPane border2 = createPanelOpenProject("/ressources/Open Folder Filled-20.png", ManagerLanguage.getInstance().getLocalizedTexte("OpenProject"), null, true,mainStage);
 
         pane.getChildren().addAll(border1, border2);
 
         return pane;
     }
-
+    
     private FlowPane getOpenProject(Stage mainStage) {
 
-        List<Project> projects = DAOProject.getInstance().getAllProjects();
+        List<Project> projects = new ProjectDAO().getAllProject();
         FlowPane pane = new FlowPane();
         pane.setAlignment(Pos.CENTER);
         for (Project p : projects) {
@@ -80,43 +82,18 @@ public class Home extends BorderPane {
         return pane;
     }
 
-    private void focusGained(BorderPane pane) {
-        pane.setStyle("-fx-background-color: gray;"
-                + "-fx-background-radius: 5.0; "
-                + "-fx-padding: 8;"
-                + "-fx-background-insets: 0.0 5.0 0.0 5.0");
-    }
-
-    private void focusLost(BorderPane pane) {
-        pane.setStyle("-fx-background-color: darkgray;"
-                + "-fx-background-radius: 5.0; "
-                + "-fx-padding: 8;"
-                + "-fx-background-insets: 0.0 5.0 0.0 5.0");
-    }
+   
 
     private BorderPane addFocus(BorderPane vbox) {
-        vbox.addEventHandler(MouseEvent.MOUSE_ENTERED, new EventHandler<MouseEvent>() {
-
-            @Override
-            public void handle(MouseEvent event) {
-                focusGained(vbox);
-            }
-        });
-
-        vbox.addEventHandler(MouseEvent.MOUSE_EXITED, new EventHandler<MouseEvent>() {
-
-            @Override
-            public void handle(MouseEvent event) {
-                focusLost(vbox);
-            }
-        });
+        vbox.addEventHandler(MouseEvent.MOUSE_ENTERED, new MouseController(vbox,String.valueOf(MouseEvent.MOUSE_ENTERED)));
+        vbox.addEventHandler(MouseEvent.MOUSE_EXITED, new MouseController(vbox,String.valueOf(MouseEvent.MOUSE_EXITED)));
         return vbox;
     }
 
     private Separator createSeparator() {
         Separator separator1 = new Separator();
         separator1.setMaxWidth(400);
-        separator1.getStylesheets().add("separator");
+        separator1.getStyleClass().add("separator");
         return separator1;
     }
 
@@ -133,8 +110,8 @@ public class Home extends BorderPane {
         BorderPane.setAlignment(open, Pos.CENTER);
         BorderPane.setAlignment(t2, Pos.CENTER);
         pane.setTop(open);
-        pane.setBottom(t2);
-        pane.addEventHandler(MouseEvent.MOUSE_CLICKED, new ClickController(isopen,p,mainStage));
+        pane.setCenter(t2);
+        pane.addEventHandler(MouseEvent.MOUSE_CLICKED,new ClickController(isopen,p,mainStage) );
         pane = addFocus(pane);
         pane.getStyleClass().add("borderPane");
         return pane;

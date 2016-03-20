@@ -17,6 +17,8 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+import projectmanagement.application.dataloader.Database;
+import projectmanagement.application.model.ManagerLanguage;
 
 /**
  *
@@ -44,12 +46,11 @@ public class PMApplication extends Application {
         final Task<Integer> task = new Task<Integer>() {
             @Override
             protected Integer call() throws InterruptedException {
-
+                Database.getInstance();
                 for (int i = 0; i < 10; i++) {
-                    Thread.sleep(400);
+                    Thread.sleep(100);
                     updateProgress(i + 1, 10);
                 }
-                Thread.sleep(400);
                 return 0;
             }
         };
@@ -69,7 +70,7 @@ public class PMApplication extends Application {
     private void showMainStage() {
 
         mainStage = new Stage();
-        mainStage.setTitle("Project Management");
+        mainStage.setTitle(ManagerLanguage.getInstance().getLocalizedTexte("AppTitle"));
         mainStage.getIcons().add(new Image(SPLASH_IMAGE));
         Home home = new Home(mainStage);
         Scene mainScene = new Scene(home);

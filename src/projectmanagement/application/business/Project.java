@@ -26,9 +26,8 @@ public class Project {
     
     
     
-    public Project(String path,String pathDiagramme,String title){
+    public Project(String path,String title){
         this.path = path;
-        this.pathDiagrammes = pathDiagrammes;
         this.title = title;
     }
 

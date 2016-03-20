@@ -5,17 +5,21 @@
  */
 package projectmanagement.ihm.view;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
+import projectmanagement.ihm.controller.ChangeLangController;
+import projectmanagement.application.model.ManagerLanguage;
+import projectmanagement.ihm.controller.MenuController;
+import projectmanagement.ihm.controller.Tags;
 
 /**
  *
@@ -30,119 +34,105 @@ public class MenuPM extends BorderPane {
     private Menu menuAbout;
     private MenuBar menubar;
     private ToolBar menuIcon;
-
+    private final ManagerLanguage managerLang;
+    private final Page parent;
     
-    public MenuPM() {
+    public static String lang = "fr";
+    private final Stage mainStage;
+
+    public MenuPM(Page parent,Stage stage) {
         super();
-        createMenu();
+        this.parent = parent;
+        managerLang = ManagerLanguage.getInstance();
+        this.mainStage =stage;
+        
+        if(parent instanceof Home){
+            System.out.println("home");
+            createMenu(true);
+        }else{
+            createMenu(false);
+        }
+        
     }
 
-    private void createMenu() {
+    private void createMenu(boolean disableAllButton) {
 
-        menubar = createMenuFirst();
-        menuIcon = createMenuIcon();
+        menubar = createMenuFirst(disableAllButton);
+        menuIcon = createToolBar(disableAllButton);
         this.setTop(menubar);
         this.setBottom(menuIcon);
-        
-        getStylesheets().add(
-                getClass().getResource(
-                        "/ressources/menu.css"
-                ).toExternalForm()
-        );
+        Style.getStyle("/ressources/menu.css", this);
 
     }
 
-    private void createMenuFile() {
-        menuFile = new Menu("File");
-        MenuItem newp = new MenuItem("New Project", new ImageView(new Image("ressources/Folder Filled-50.png")));
-
-        newp.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-
-            }
-        });
-        MenuItem openp = new MenuItem("Open Project", new ImageView(new Image("ressources/Open Folder Filled-50.png")));
-
-        openp.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-
-            }
-        });
-        MenuItem save = new MenuItem("Save Project", new ImageView(new Image("ressources/Save-52.png")));
-
-        save.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-
-            }
-        });
-
-        MenuItem saveAs = new MenuItem("Save As", new ImageView(new Image("ressources/Save as-52.png")));
-
-        saveAs.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-
-            }
-        });
-        MenuItem setting = new MenuItem("Settings", new ImageView(new Image("ressources/Settings-48.png")));
-
-        setting.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-
-            }
-        });
-
-        MenuItem exit = new MenuItem("Exit", new ImageView(new Image("ressources/Exit-64.png")));
-
-        exit.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent t) {
-
-            }
-        });
-
+    private void createMenuFile(boolean disableAllButton) {
+        menuFile = new Menu(managerLang.getLocalizedTexte("File"));
+        MenuItem newp = createMenuItem(managerLang.getLocalizedTexte("NewProject"),"ressources/Folder Filled-50.png",new MenuController(Tags.PROJECT,Tags.NEW,mainStage),false);
+        MenuItem openp = createMenuItem(managerLang.getLocalizedTexte("OpenProject"),"ressources/Open Folder Filled-50.png",new MenuController(Tags.PROJECT,Tags.OPEN,mainStage),false);
+        MenuItem save = createMenuItem(managerLang.getLocalizedTexte("SaveProject"),"ressources/Save-52.png",new MenuController(Tags.PROJECT,Tags.SAVE,mainStage),disableAllButton);
+        MenuItem saveAs = createMenuItem(managerLang.getLocalizedTexte("SaveAs"),"ressources/Save as-52.png",new MenuController(Tags.PROJECT,Tags.SAVEAS,mainStage),disableAllButton);
+        MenuItem setting = createMenuItem(managerLang.getLocalizedTexte("Settings"),"ressources/Settings-48.png",new MenuController(Tags.APP,Tags.SETTINGS,mainStage),false);
+        MenuItem exit = createMenuItem(managerLang.getLocalizedTexte("Exit"),"ressources/Exit-64.png",new MenuController(Tags.APP,Tags.QUIT,mainStage),false);
+        
         menuFile.getItems().addAll(newp, openp, save, saveAs, setting, exit);
     }
 
-    private void createMenuEdit() {
-        menuEdit = new Menu("Edit");
-        MenuItem undo = new MenuItem("Undo", new ImageView(new Image("ressources/Undo-64 (1).png")));
-        MenuItem redo = new MenuItem("redo", new ImageView(new Image("ressources/Redo-64 (1).png")));
+    private MenuItem createMenuItem(String text,String image,MenuController event,boolean disable) {
+        MenuItem item = new MenuItem(text, new ImageView(new Image(image)));
+        item.setOnAction(event);
+        item.setDisable(disable);
+        return item;
+    }
+
+    private void createMenuEdit(boolean disableAllButton) {
+        menuEdit = new Menu(managerLang.getLocalizedTexte("Edit"));
+        MenuItem undo = createMenuItem(managerLang.getLocalizedTexte("Undo"),"ressources/Undo-64 (1).png",new MenuController(),disableAllButton);
+        MenuItem redo = createMenuItem(managerLang.getLocalizedTexte("Redo"),"ressources/Redo-64 (1).png",new MenuController(),disableAllButton);
         menuEdit.getItems().addAll(undo, redo);
     }
 
-    private void createMenuView() {
-        menuView = new Menu("View");
-        MenuItem zommp = new MenuItem("Zoom +", new ImageView(new Image("ressources/Plus-52.png")));
-        MenuItem zommm = new MenuItem("Zoom -", new ImageView(new Image("ressources/Minus-52.png")));
-       
-         Menu language = new Menu("Language");
-        language.getItems().add(new CheckMenuItem("French", new ImageView(new Image("ressources/France-Flag-Icon.png"))));
-        language.getItems().add(new CheckMenuItem("Germain", new ImageView(new Image("ressources/Germany-Flag-Icon.png"))));
-        language.getItems().add(new CheckMenuItem("Spanish", new ImageView(new Image("ressources/Spain-Flag-Icon.png"))));
-        language.getItems().add(new CheckMenuItem("USA", new ImageView(new Image("ressources/USA-Flag-Icon.png"))));
-        language.getItems().add(new CheckMenuItem("Italian", new ImageView(new Image("ressources/Italy-Flag-Icon.png"))));
+    private void createMenuView(boolean disableAllButton) {
+        menuView = new Menu(managerLang.getLocalizedTexte("View"));
+        MenuItem zommp = createMenuItem(managerLang.getLocalizedTexte("ZoomP"),"ressources/Plus-52.png",new MenuController(),disableAllButton);
+        MenuItem zommm = createMenuItem(managerLang.getLocalizedTexte("ZoomL"),"ressources/Minus-52.png",new MenuController(),disableAllButton);
+        Menu language = createMenuLanguage();
+        menuView.getItems().addAll(zommp, zommm, language);
+    }
+
+    private Menu createMenuLanguage() {
+        ToggleGroup group = new ToggleGroup();
+        Menu language = new Menu(managerLang.getLocalizedTexte("Language"));
+        language = createRadioMenuItem(managerLang.getLocalizedTexte("English"), "ressources/USA-Flag-Icon.png", group, language, "en");
+        language = createRadioMenuItem(managerLang.getLocalizedTexte("French"), "ressources/France-Flag-Icon.png", group, language, "fr");
+        language = createRadioMenuItem(managerLang.getLocalizedTexte("Germany"), "ressources/Germany-Flag-Icon.png", group, language, "de");
+        language = createRadioMenuItem(managerLang.getLocalizedTexte("Spanish"), "ressources/Spain-Flag-Icon.png", group, language, "es");
+        language = createRadioMenuItem(managerLang.getLocalizedTexte("Italian"), "ressources/Italy-Flag-Icon.png", group, language, "it");
         
-         menuView.getItems().addAll(zommp, zommm,language);
+        group.selectedToggleProperty().addListener(new ChangeLangController(group,parent));
+        return language;
     }
 
     private void createMenuHelp() {
-        menuHelp = new Menu("Help");
-        MenuItem questions = new MenuItem("Questions", new ImageView(new Image("ressources/Questions-52.png")));
-        MenuItem comments = new MenuItem("Comments", new ImageView(new Image("ressources/Comments-48.png")));
+        menuHelp = new Menu(managerLang.getLocalizedTexte("Help"));
+        MenuItem questions = createMenuItem(managerLang.getLocalizedTexte("Questions"),"ressources/Questions-52.png",new MenuController(),false);
+        MenuItem comments = createMenuItem(managerLang.getLocalizedTexte("Comments"),"ressources/Comments-48.png",new MenuController(),false);
+        
         menuHelp.getItems().addAll(questions, comments);
     }
 
     private void createMenuAbout() {
-        menuAbout = new Menu("About");
-        MenuItem facebook = new MenuItem("Facebook", new ImageView(new Image("ressources/Facebook-48.png")));
-        MenuItem twitter = new MenuItem("Twitter", new ImageView(new Image("ressources/Twitter-48.png")));
+        menuAbout = new Menu(managerLang.getLocalizedTexte("About"));
+        MenuItem facebook = createMenuItem(managerLang.getLocalizedTexte("Facebook"),"ressources/Facebook-48.png",new MenuController(Tags.REDIRECTION,Tags.FACEBOOK,mainStage),false);
+        MenuItem twitter = createMenuItem(managerLang.getLocalizedTexte("Twitter"),"ressources/Twitter-48.png",new MenuController(Tags.REDIRECTION,Tags.TWITTER,mainStage),false);
+        
         menuAbout.getItems().addAll(facebook, twitter);
     }
 
-    private MenuBar createMenuFirst() {
+    private MenuBar createMenuFirst(boolean disableAllButton) {
         MenuBar bar = new MenuBar();
-        createMenuFile();
-        createMenuEdit();
-        createMenuView();
+        createMenuFile(disableAllButton);
+        createMenuEdit(disableAllButton);
+        createMenuView(disableAllButton);
         createMenuHelp();
         createMenuAbout();
 
@@ -150,25 +140,36 @@ public class MenuPM extends BorderPane {
         return bar;
     }
 
-    private ToolBar createMenuIcon() {
+    private ToolBar createToolBar(boolean disableAllButton) {
         ToolBar toolBar = new ToolBar();
-        Button createProject = new Button();
-        Button OpenProject = new Button();
-        Button SaveProject = new Button();
-        Button undo = new Button();
-        Button redo = new Button();
-        
+        Button createProject =createToolBarButton("/ressources/Folder Filled-20.png" ,new MenuController(),false);
+        Button OpenProject =createToolBarButton("/ressources/Open Folder Filled-20.png" ,new MenuController(),false);
+        Button SaveProject =createToolBarButton("/ressources/Save-20.png" ,new MenuController(),disableAllButton);
+        Button undo =createToolBarButton("/ressources/undo-20.png" ,new MenuController(),disableAllButton);
+        Button redo =createToolBarButton("/ressources/redo-20.png" ,new MenuController(),disableAllButton);
 
-        //Set the icon/graphic for the ToolBar Buttons.
-        createProject.setGraphic(new ImageView("/ressources/Folder Filled-20.png"));
-        OpenProject.setGraphic(new ImageView("/ressources/Open Folder Filled-20.png"));
-        SaveProject.setGraphic(new ImageView("/ressources/Save-20.png"));
-        undo.setGraphic(new ImageView("/ressources/undo-20.png"));
-        redo.setGraphic(new ImageView("/ressources/redo-20.png"));
-
-        //Add the Buttons to the ToolBar.
-        toolBar.getItems().addAll(createProject,OpenProject, SaveProject, undo,redo);
+        toolBar.getItems().addAll(createProject, OpenProject, SaveProject, undo, redo);
         return toolBar;
+    }
+ 
+    private Button createToolBarButton(String image, MenuController event,boolean disable) {
+        Button b = new Button();
+        b.setGraphic(new ImageView(image));
+        b.setOnAction(event);
+        b.setDisable(disable);
+        return b;
+    }
+
+    private Menu createRadioMenuItem(String localizedTexte, String ressources, ToggleGroup group, Menu language, String memoLang) {
+        RadioMenuItem rb2 = new RadioMenuItem(localizedTexte);
+        rb2.setGraphic(new ImageView(new Image(ressources)));
+        rb2.setUserData(memoLang);
+        language.getItems().add(rb2);
+        rb2.setToggleGroup(group);
+        if(lang.equals(memoLang)){
+            rb2.setSelected(true);
+        }
+        return language;
     }
 
 }
