@@ -6,17 +6,19 @@
 package projectmanagement.ihm.controller;
 
 import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
-import javafx.event.ActionEvent;
-import javafx.scene.Node;
+import java.net.URISyntaxException;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import projectmanagement.application.business.Project;
 import projectmanagement.application.model.ManagerLanguage;
+import static projectmanagement.ihm.controller.PMApplication.SPLASH_IMAGE;
 import projectmanagement.ihm.view.DialogProject;
 import projectmanagement.ihm.view.MainWindow;
 
@@ -25,8 +27,8 @@ import projectmanagement.ihm.view.MainWindow;
  * @author Jérémy
  */
 public abstract class Controller {
-    
-     public void OpenProject(Project p,Stage mainstage) {
+
+    public void OpenProject(Project p, Stage mainstage) {
         mainstage.setTitle(p.getTitle());
         mainstage.getIcons().add(new Image(PMApplication.SPLASH_IMAGE));
         MainWindow home = new MainWindow(mainstage);
@@ -35,23 +37,32 @@ public abstract class Controller {
         mainstage.setMaximized(true);
         mainstage.show();
     }
-     
-     public void redirectTo(String url) {
+
+    public void redirectTo(String url) {
         Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
         if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
             try {
                 desktop.browse(new URI(url));
-            } catch (Exception e) {
+            } catch (URISyntaxException | IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
+    public String createFileChooser(String text, Stage mainstage) {
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle(ManagerLanguage.getInstance().getLocalizedTexte("OpenProject"));
+        File selectedDirectory = chooser.showDialog(mainstage);
+        return selectedDirectory.getAbsolutePath();
+    }
+
     public void CreateProject(Stage stageParent) {
-        
-        DialogProject dialog = new DialogProject();
+
+        DialogProject dialog = new DialogProject(stageParent);
         Stage stage = new Stage();
         stage.setScene(new Scene(dialog));
+        stage.setResizable(false);
+        stage.getIcons().add(new Image(SPLASH_IMAGE));
         stage.setTitle(ManagerLanguage.getInstance().getLocalizedTexte("NewProject"));
         stage.initModality(Modality.WINDOW_MODAL);
         stage.initOwner(stageParent);

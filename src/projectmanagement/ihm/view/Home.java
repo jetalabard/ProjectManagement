@@ -111,7 +111,7 @@ public class Home extends Page{
         BorderPane.setAlignment(t2, Pos.CENTER);
         pane.setTop(open);
         pane.setCenter(t2);
-        pane.addEventHandler(MouseEvent.MOUSE_CLICKED,new ClickController(isopen,p,mainStage) );
+        pane.addEventHandler(MouseEvent.MOUSE_CLICKED,new MouseController(pane,String.valueOf(MouseEvent.MOUSE_CLICKED),isopen,p,mainStage));
         pane = addFocus(pane);
         pane.getStyleClass().add("borderPane");
         return pane;

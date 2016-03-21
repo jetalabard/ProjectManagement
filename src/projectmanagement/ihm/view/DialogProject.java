@@ -5,14 +5,46 @@
  */
 package projectmanagement.ihm.view;
 
-import javafx.scene.layout.VBox;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
+import projectmanagement.application.model.Dialog;
+import projectmanagement.application.model.ManagerLanguage;
 
 /**
  *
  * @author Jérémy
  */
-public class DialogProject extends VBox {
+public class DialogProject extends Dialog {
+    
+    private TextField name;
+    private TextField path;
+    private ManagerLanguage managerLang;
+    private final Stage stage;
 
-    public void createDialog() {
+    public DialogProject(Stage mainStage) {
+        super();
+        this.stage = mainStage;
+        Style.getStyle("/ressources/dialog.css", this);
+        managerLang = ManagerLanguage.getInstance();
+        createDialog(mainStage);
+        
     }
+
+    private void createDialog(Stage mainStage) {
+        HBox header = createHeaderDialog("/ressources/Folder Filled-50.png",managerLang.getLocalizedTexte("TextDialogCreateProject"));
+
+        HBox box1 = createLignDialog(managerLang.getLocalizedTexte("ProjectName"),name);
+        HBox box2 = createLignDialogBrowse(managerLang.getLocalizedTexte("ProjectPath"),mainStage,path);
+        HBox box3= createLignDialogButtonValidation(managerLang.getLocalizedTexte("Create"),
+                managerLang.getLocalizedTexte("Close"),this.stage,name,path);
+
+        this.getChildren().addAll(header, box1, box2);
+    }
+
+    
+
+    
+
+    
 }

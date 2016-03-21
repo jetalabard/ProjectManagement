@@ -29,4 +29,9 @@ public class Tags {
     public static final String APP = "APP";
     public static final String SETTINGS = "SETTINGS";
     public static final String QUIT = "QUIT";
+    
+    public static final String CREATE_PROJECT = "CREATE_PROJECT";
+    public static final String CLOSE_DIALOG ="CLOSE_DIALOG";
+    
+    public static final String BROWSE_FILE_TO_CREATE_PROJECT = "BROWSE_FILE_TO_CREATE_PROJECT";
 }
