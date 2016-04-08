@@ -5,69 +5,55 @@
  */
 package projectmanagement.ihm.controller;
 
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
-import javafx.stage.FileChooser;
-import javafx.stage.Modality;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import projectmanagement.application.business.Project;
-import projectmanagement.ihm.view.DialogProject;
-import projectmanagement.ihm.view.Home;
-import projectmanagement.ihm.view.MainWindow;
+import projectmanagement.application.model.Dialog;
+import projectmanagement.application.model.ManagerLanguage;
 
 /**
  *
  * @author Jérémy
  */
-public class ClickController implements EventHandler<MouseEvent> {
+public class ClickController extends Controller implements EventHandler<ActionEvent> {
 
-    private final boolean projectIsCreate;
-    private final Project project;
     private final Stage mainstage;
+    private String what;
+    private final TextField FieldName;
+    private final TextField FieldPath;
+    private Dialog dialog;
 
-    public ClickController(boolean isopen, Project p, Stage mainstage) {
-        this.projectIsCreate = isopen;
-        this.project = p;
+    public ClickController(String what, Stage mainstage,TextField name,TextField path) {
+        this.what = what;
         this.mainstage = mainstage;
+        this.FieldName = name;
+        this.FieldPath = path;
+    }
+    
+    public ClickController(String what, Stage mainstage,TextField path) {
+        this.what = what;
+        this.mainstage = mainstage;
+        this.FieldName = null;
+        this.FieldPath = path;
     }
 
-    private void OpenProject(Project p) {
-        mainstage.setTitle(p.getTitle());
-        mainstage.getIcons().add(new Image(PMApplication.SPLASH_IMAGE));
-        MainWindow home = new MainWindow(mainstage);
-        Scene mainScene = new Scene(home);
-        mainstage.setScene(mainScene);
-        mainstage.setMaximized(true);
-        mainstage.show();
-    }
-
-    private void CreateProject(MouseEvent event) {
-        DialogProject dialog = new DialogProject();
-        Stage stage = new Stage();
-        stage.setScene(new Scene(dialog));
-        stage.setTitle("Create Project");
-        stage.initModality(Modality.WINDOW_MODAL);
-        stage.initOwner(((Node) event.getSource()).getScene().getWindow());
-        stage.show();
-    }
-
-    private void OpenChoiceProject() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open Project");
-        fileChooser.showOpenDialog(mainstage);
+    public ClickController(String what, Stage mainStage) {
+        this.what = what;
+        this.mainstage = mainStage;
+        this.FieldName = null;
+        this.FieldPath = null;
     }
 
     @Override
-    public void handle(MouseEvent event) {
-        if (projectIsCreate == true && project != null) {
-            OpenProject(project);
-        } else if (projectIsCreate == false && project == null) {
-            CreateProject(event);
-        } else {
-            OpenChoiceProject();
+    public void handle(ActionEvent event) {
+        if(what != null && what.equals(Tags.BROWSE_FILE_TO_CREATE_PROJECT)){
+            String path = createFileChooser(ManagerLanguage.getInstance().getLocalizedTexte("ProjectLocation"),mainstage);
+            FieldPath.setText(path);
+        } else if(what != null && what.equals(Tags.CLOSE_DIALOG)){
+            if(dialog != null){
+                mainstage.close();
+            }
         }
     }
 }

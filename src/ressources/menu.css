@@ -1,9 +1,12 @@
 .menu-item .label {
-    -fx-text-fill: white;
+    -fx-text-fill: whitesmoke;
+    -fx-font-size: 18pt;
+    -fx-font-weight: bold;
+    -fx-font-family: "Segoe UI Light";
 }
 
 .menu-item:focused {
-     -fx-background-color: gray;
+     -fx-background-color: darkgray;
 }
 
 .menu-item:focused .label {
@@ -12,25 +15,25 @@
 
 .context-menu {
     -fx-skin: "com.sun.javafx.scene.control.skin.ContextMenuSkin";
-    -fx-background-color: darkgray;
+    -fx-background-color: #d7d7c1;
     -fx-background-insets: 0, 1, 2;
     -fx-background-radius: 0 6 6 6, 0 5 5 5, 0 4 4 4;
 /*    -fx-padding: 0.666667em 0.083333em 0.666667em 0.083333em;  8 1 8 1 */
     -fx-padding: 0.333333em 0.083333em 0.666667em 0.083333em; /* 4 1 8 1 */
 }
 .menu-bar{
-    -fx-background-color: darkgray ;
+    -fx-background-color: #d7d7c1 ;
 }
 .tool-bar{
-    -fx-background-color: darkgray ;
+    -fx-background-color: #d7d7c1 ;
 }
 .tool{
-    -fx-background-color: darkgray ;
+    -fx-background-color: #d7d7c1 ;
 }
 .menu-bar .label {
-    -fx-font-size: 14pt;
+    -fx-font-size: 18pt;
+    -fx-font-weight: bold;
     -fx-font-family: "Segoe UI Light";
-    -fx-text-fill: white;
-    -fx-opacity: 0.9;
+    -fx-text-fill: whitesmoke;
 }
 
