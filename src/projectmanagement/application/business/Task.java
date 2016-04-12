@@ -5,10 +5,133 @@
  */
 package projectmanagement.application.business;
 
+import java.util.ArrayList;
+import java.util.List;
+import projectmanagement.application.model.MyDate;
+
 /**
  *
  * @author Jérémy
  */
-public class Task extends TaskComponent{
+public class Task extends TaskComponent {
+
+    private int id;
     
+    private int idProject;
+
+    private String name;
+
+    private MyDate datebegin;
+
+    private MyDate dateend;
+
+    private int priority;
+
+    private String note;
+
+    private List<Predecessor> predecessor = null;
+    private List<Ressource> ressources = null;
+
+    public Task() {
+        predecessor = new ArrayList<>();
+        ressources = new ArrayList<>();
+    }
+
+    public Task(int id, String name, MyDate datebegin, MyDate dateend, int priority, String note,int idProject) {
+        this.id = id;
+        this.name = name;
+        this.datebegin = datebegin;
+        this.dateend = dateend;
+        this.priority = priority;
+        this.note = note;
+        predecessor = new ArrayList<>();
+        ressources = new ArrayList<>();
+        this.idProject = idProject;
+    }
+    public Task(String name, MyDate datebegin, MyDate dateend, int priority, String note,int idProject) {
+        this.name = name;
+        this.datebegin = datebegin;
+        this.dateend = dateend;
+        this.priority = priority;
+        this.note = note;
+        predecessor = new ArrayList<>();
+        ressources = new ArrayList<>();
+        this.idProject = idProject;
+    }
+
+    public int getIdProject() {
+        return idProject;
+    }
+
+    public void setIdProject(int idProject) {
+        this.idProject = idProject;
+    }
+    
+    
+    
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public MyDate getDatebegin() {
+        return datebegin;
+    }
+
+    public void setDatebegin(MyDate datebegin) {
+        this.datebegin = datebegin;
+    }
+
+    public MyDate getDateend() {
+        return dateend;
+    }
+
+    public void setDateend(MyDate dateend) {
+        this.dateend = dateend;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public List<Predecessor> getPredecessor() {
+        return predecessor;
+    }
+
+    public void setPredecessor(List<Predecessor> predecessor) {
+        this.predecessor = predecessor;
+    }
+
+    public List<Ressource> getRessources() {
+        return ressources;
+    }
+
+    public void setRessources(List<Ressource> ressources) {
+        this.ressources = ressources;
+    }
+
 }

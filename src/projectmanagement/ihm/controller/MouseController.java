@@ -47,11 +47,13 @@ public class MouseController extends Controller implements EventHandler<MouseEve
         else if (type.equals(String.valueOf(MouseEvent.MOUSE_CLICKED))) 
          {
             if (projectIsCreate == true && project != null) {
-                OpenProject(project, mainstage);
-            } else if (projectIsCreate == false && project == null) {
-                CreateProject(mainstage);
-            } else {
-                OpenChoiceProject(mainstage);
+                OpenProject(project, null,mainstage);
+            }
+            else if (projectIsCreate == false && project == null) {
+                CreateDialogProject(mainstage);
+            } 
+            else {
+                CreateDialogOpenProject(mainstage);
             }
         } else {
 

@@ -6,7 +6,6 @@
 package projectmanagement.ihm.view;
 
 import java.util.List;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Separator;
@@ -21,8 +20,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import projectmanagement.application.business.Project;
 import projectmanagement.application.dataloader.ProjectDAO;
+import projectmanagement.application.model.LoaderImage;
 import projectmanagement.application.model.ManagerLanguage;
-import projectmanagement.ihm.controller.ClickController;
 import projectmanagement.ihm.controller.MouseController;
 
 /**
@@ -40,7 +39,7 @@ public class Home extends Page{
 
     @Override
     public void createView() {
-        this.setTop(new MenuPM(this,mainStage));
+        this.setTop(new MenuPM(this,mainStage,null));
         FlowPane flow1 = getChoiceCreateOpen(mainStage);
         FlowPane flow2 = getOpenProject(mainStage);
         Separator sep = createSeparator();
@@ -51,7 +50,7 @@ public class Home extends Page{
         VBox.setMargin(flow2, new Insets(102, 102, 102, 102));
         vbox.getChildren().addAll(flow1, sep, flow2);
         
-        Style.getStyle("/ressources/home.css", this);
+        Style.getStyle("home.css", this);
         
         this.setCenter(vbox);
     }
@@ -61,8 +60,8 @@ public class Home extends Page{
         FlowPane pane = new FlowPane();
         pane.setAlignment(Pos.CENTER);
 
-        BorderPane border1 = createPanelOpenProject("/ressources/Folder Filled-20.png", ManagerLanguage.getInstance().getLocalizedTexte("NewProject"), null, false,mainStage);
-        BorderPane border2 = createPanelOpenProject("/ressources/Open Folder Filled-20.png", ManagerLanguage.getInstance().getLocalizedTexte("OpenProject"), null, true,mainStage);
+        BorderPane border1 = createPanelOpenProject(LoaderImage.getImage("Folder Filled-50.png"), ManagerLanguage.getInstance().getLocalizedTexte("NewProject"), null, false,mainStage);
+        BorderPane border2 = createPanelOpenProject(LoaderImage.getImage("Open Folder Filled-50.png"), ManagerLanguage.getInstance().getLocalizedTexte("OpenProject"), null, true,mainStage);
 
         pane.getChildren().addAll(border1, border2);
 
@@ -71,11 +70,11 @@ public class Home extends Page{
     
     private FlowPane getOpenProject(Stage mainStage) {
 
-        List<Project> projects = new ProjectDAO().getAllProject();
+        List<Project> projects = ProjectDAO.getInstance().getAllProject();
         FlowPane pane = new FlowPane();
         pane.setAlignment(Pos.CENTER);
         for (Project p : projects) {
-            BorderPane border = createPanelOpenProject("/ressources/Folder Filled-20.png", p.getTitle(), p, true,mainStage);
+            BorderPane border = createPanelOpenProject(LoaderImage.getImage("Open Folder Filled-50.png"), p.getTitle(), p, true,mainStage);
             pane.getChildren().add(border);
         }
 
@@ -105,8 +104,8 @@ public class Home extends Page{
         t2.setFont(new Font(20));
         t2.setText(text);
         t2.setFill(Color.WHITE);
-        BorderPane.setMargin(t2, new Insets(20, 20, 20, 20));
-        BorderPane.setMargin(open, new Insets(20, 20, 20, 20));
+        BorderPane.setMargin(t2, new Insets(10, 10, 10, 10));
+        BorderPane.setMargin(open, new Insets(10, 10, 10, 10));
         BorderPane.setAlignment(open, Pos.CENTER);
         BorderPane.setAlignment(t2, Pos.CENTER);
         pane.setTop(open);

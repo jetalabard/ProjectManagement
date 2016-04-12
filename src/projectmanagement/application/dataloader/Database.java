@@ -39,37 +39,69 @@ public class Database {
         }
     }
 
+    public int getLastInsertId() {
+        int value = 0;
+        try {
+            Statement stmt = Database.getInstance().getConnection().createStatement();
+            ResultSet result = stmt.executeQuery("SELECT last_insert_rowid();");
+            while (result.next()) {
+                value = result.getInt(1);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            closeConnection();
+        }
+        return value;
+    }
+
     private void createTable() throws SQLException {
         Statement stmt;
         stmt = c.createStatement();
         String sql = "CREATE TABLE IF NOT EXISTS PROJECT"
-                + "(ID INT PRIMARY KEY NOT NULL,"
+                + "(ID INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + " NAME TEXT NOT NULL, "
-                + " PATH TEXT NOT NULL)";
+                + " LASTUSE TEXT NOT NULL)";
         stmt.executeUpdate(sql);
-        stmt.close();
-        stmt = c.createStatement();
         sql = "CREATE TABLE IF NOT EXISTS TASK"
-                + "(ID INT PRIMARY KEY NOT NULL,"
-                + "NAME TEXT NOT NULL)";
+                + "(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+                + "NAME TEXT NOT NULL,"
+                + "ID_PROJECT INTEGER NOT NULL,"
+                + "DATEB TEXT NOT NULL,"
+                + "DATEE TEXT NOT NULL,"
+                + "PRIORITY INTEGER NOT NULL,"
+                + "NOTE TEXT NOT NULL)";
         stmt.executeUpdate(sql);
-        stmt.close();
-        stmt = c.createStatement();
+        
         sql = "CREATE TABLE IF NOT EXISTS RESSOURCE"
-                + "(ID INT PRIMARY KEY NOT NULL,"
-                + "NAME TEXT NOT NULL)";
+                + "(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+                + "NAME TEXT NOT NULL,"//name person or name equipment
+                + "FIRSTNAME TEXT,"
+                + "ROLE TEXT,"
+                + "REFERENCE TEXT,"
+                + "TYPE INTEGER NOT NULL,"//Human 0 Equipment 1
+                + "IDTASK INTEGER NOT NULL,"
+                + "COST FLOAT NOT NULL)";
         stmt.executeUpdate(sql);
+        
+        sql = "CREATE TABLE IF NOT EXISTS PREDECESSOR"
+                + "(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+                + "TYPE TEXT,"
+                + "IDTASK INTEGER NOT NULL,"
+                + "GAP TEXT,"
+                + "CONSTRAINT TEXT)";
+        stmt.executeUpdate(sql);
+        
         stmt.close();
     }
 
     public Connection getConnection() {
-        if(c != null){
+        if (c != null) {
             return c;
-        }
-        else{
+        } else {
             try {
                 Class.forName("org.sqlite.JDBC");
-                c = DriverManager.getConnection("jdbc:sqlite:projectmanagement.db");
+                c = DriverManager.getConnection("jdbc:sqlite:projectmanagement.sqlite");
                 c.setAutoCommit(false);
             } catch (ClassNotFoundException | SQLException ex) {
                 Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
@@ -77,32 +109,23 @@ public class Database {
             return c;
         }
     }
-    
-    public void insert(String requete){
+
+    public void insert(String requete) {
+        Statement stmt = null;
         try {
-            Statement stmt = getConnection().createStatement();
+            System.out.println(requete);
+            stmt = getConnection().createStatement();
             stmt.executeUpdate(requete);
             stmt.close();
         } catch (SQLException ex) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            closeConnection();
         }
 
     }
-    
-    public ResultSet select(String requete) {
-        ResultSet rs = null;
-        try {
-            Statement stmt = getConnection().createStatement();
-            rs = stmt.executeQuery(requete);
-            stmt.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return rs;
 
-    }
-    
-      public void update(String requete){
+    public void update(String requete) {
         try {
             try (Statement stmt = getConnection().createStatement()) {
                 stmt.executeUpdate(requete);
@@ -110,24 +133,28 @@ public class Database {
             c.commit();
         } catch (SQLException ex) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            closeConnection();
         }
 
     }
-     
-      public void delete(String requete){
+
+    public void delete(String requete) {
         try {
             Statement stmt = getConnection().createStatement();
             stmt.executeUpdate(requete);
             c.commit();
         } catch (SQLException ex) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            closeConnection();
         }
 
     }
-    
+
     public void closeConnection() {
         try {
-            c.commit();
+            getConnection().commit();
             c.setAutoCommit(true);
             c.close();
             c = null;

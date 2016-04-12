@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import projectmanagement.application.dataloader.Database;
+import projectmanagement.application.model.LoaderImage;
 import projectmanagement.application.model.ManagerLanguage;
 
 /**
@@ -28,7 +29,7 @@ public class PMApplication extends Application {
     
     private SplashScreen splash;
     private Stage mainStage;
-    public final static String SPLASH_IMAGE = "/ressources/logo_PM_2.png";
+    public final static String SPLASH_IMAGE = LoaderImage.getImage("logo_PM_2.png");
 
     @Override
     public void init() throws Exception {

@@ -7,7 +7,11 @@ package projectmanagement.ihm.controller;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.TableView;
 import javafx.stage.Stage;
+import projectmanagement.application.business.Task;
+import projectmanagement.application.dataloader.ProjectDAO;
+import projectmanagement.application.model.MyDate;
 
 /**
  *
@@ -17,18 +21,14 @@ public class MenuController extends Controller  implements EventHandler<ActionEv
     private String what;
     private String where;
     private Stage stage;
+    private TableView<Task> table;
 
-    public MenuController() {
-        this.what="";
-        this.where = "";
-    }
 
-    public MenuController(String REDIRECTION, String where,Stage mainStage) {
-        this.what = REDIRECTION;
+    public MenuController(String what, String where,Stage mainStage) {
+        this.what = what;
         this.where = where;
         this.stage = mainStage;
     }
-
     
     
     @Override
@@ -40,6 +40,9 @@ public class MenuController extends Controller  implements EventHandler<ActionEv
             case Tags.PROJECT:
                 project(event);
                 break;
+            case Tags.APP:
+                application(event);
+                break;
             default:
                 break;
         }
@@ -48,13 +51,22 @@ public class MenuController extends Controller  implements EventHandler<ActionEv
     private void project(ActionEvent event) {
         switch (this.where) {
             case Tags.NEW:
-                CreateProject(stage);
+                CreateDialogProject(stage);
                 break;
             case Tags.OPEN:
+                CreateDialogOpenProject(stage);
                 break;
             case Tags.SAVE:
+                SaveProject(ProjectDAO.getInstance().getCurrentProject());
                 break;
             case Tags.SAVEAS:
+                CreateDialogSaveProjectAs(stage);
+                break;
+             case Tags.ADD_TASK:
+                table.getItems().add(new Task("",MyDate.now(),MyDate.now(),0,"",ProjectDAO.getInstance().getCurrentProject().getId()));
+                break;
+            case Tags.OPEN_EXTERIOR:
+                CreateDialogSaveProject(stage);
                 break;
             default:
                 break;
@@ -68,6 +80,28 @@ public class MenuController extends Controller  implements EventHandler<ActionEv
         if(this.where.equals(Tags.TWITTER)){
             redirectTo(Tags.TWITTER_URL);
         }
+        if(this.where.equals(Tags.QUESTIONS)){
+            redirectTo(Tags.TWITTER_URL);
+        }
+        if(this.where.equals(Tags.COMMENTS)){
+            redirectTo(Tags.TWITTER_URL);
+        }
     }
+
+    private void application(ActionEvent event) {
+        switch (this.where) {
+            case Tags.QUIT:
+                CreateDialogConfirmationSave(stage);
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void setTableView(TableView<Task> table) {
+        this.table = table;
+    }
+
+   
     
 }
