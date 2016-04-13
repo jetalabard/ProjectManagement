@@ -5,7 +5,6 @@
  */
 package projectmanagement.application.business;
 
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 import projectmanagement.application.model.MyDate;
@@ -65,6 +64,10 @@ public class Project {
 
     public State getState() {
         return state;
+    }
+    
+    public void setState(State state){
+        this.state = state;
     }
 
     public void changeState() {

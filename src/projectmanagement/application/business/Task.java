@@ -7,17 +7,18 @@ package projectmanagement.application.business;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import projectmanagement.application.model.MyDate;
 
 /**
  *
  * @author Jérémy
  */
-public class Task extends TaskComponent {
+public class Task extends TaskComponent{
 
-    private int id;
+    private Integer id;
     
-    private int idProject;
+    private Integer idProject;
 
     private String name;
 
@@ -70,7 +71,7 @@ public class Task extends TaskComponent {
     
     
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -133,5 +134,30 @@ public class Task extends TaskComponent {
     public void setRessources(List<Ressource> ressources) {
         this.ressources = ressources;
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == null) {
+            return false;
+        } else {
+            Task t = (Task) other;
+            boolean returnValue = false;
+            if (this.idProject.equals(t.getIdProject())) {
+                if (this.id != null && t.getId() != null && this.id.equals(t.getId())) {
+                    returnValue = true;
+                }
+            }
+            return returnValue;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 71 * hash + Objects.hashCode(this.id);
+        hash = 71 * hash + Objects.hashCode(this.idProject);
+        return hash;
+    }
+
 
 }

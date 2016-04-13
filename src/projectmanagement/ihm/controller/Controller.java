@@ -18,6 +18,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import projectmanagement.application.business.Project;
+import projectmanagement.application.business.Task;
 import projectmanagement.application.dataloader.DAOTask;
 import projectmanagement.application.dataloader.ProjectDAO;
 import projectmanagement.application.model.Dialog;
@@ -28,6 +29,7 @@ import static projectmanagement.ihm.controller.PMApplication.SPLASH_IMAGE;
 import projectmanagement.ihm.view.DialogConfirmationSave;
 import projectmanagement.ihm.view.DialogCreateProject;
 import projectmanagement.ihm.view.DialogOpenProject;
+import projectmanagement.ihm.view.DialogUpdateTask;
 import projectmanagement.ihm.view.MainWindow;
 
 /**
@@ -76,7 +78,8 @@ public abstract class Controller {
             stage.show();
         }
         else{
-                Quit();
+            System.out.println("QUIt");
+               Quit();
         }
         
     }
@@ -96,6 +99,18 @@ public abstract class Controller {
         
     }
     
+    public void  CreateDialogUpdateTask(Task task,Stage stageParent) {
+        Stage stage = new Stage();
+            DialogUpdateTask dialog = new DialogUpdateTask(stage, stageParent);
+            dialog.setTask(task);
+            stage.setScene(new Scene(dialog));
+            stage.setResizable(false);
+            stage.getIcons().add(new Image(SPLASH_IMAGE));
+            stage.setTitle(ManagerLanguage.getInstance().getLocalizedTexte("UpdateTask") + " - "+task.getName());
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initOwner(stageParent);
+            stage.show();
+    }
     
 
     public void CreateDialogSaveProjectAs(Stage stageParent) 

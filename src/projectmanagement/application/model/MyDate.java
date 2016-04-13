@@ -15,16 +15,26 @@ import java.util.logging.Logger;
  *
  * @author Jérémy
  */
-public class MyDate extends Date{
+public class MyDate extends Date {
 
-    private static final String DATE_FORMAT = "dd-MM-yyyy";
+    public static final String DATE_FORMAT = "dd-MM-yyyy";
 
-    private MyDate(Date parsed) {
+    public MyDate(Date parsed) {
         super(parsed.getTime());
+    }
+
+    @Override
+    public String toString() {
+        return new SimpleDateFormat(DATE_FORMAT).format(this);
     }
 
     private MyDate() {
         super();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this.getTime() == ((MyDate)obj).getTime();
     }
     
     public static String valueOf(MyDate date) {
@@ -35,7 +45,7 @@ public class MyDate extends Date{
         Date parsed = new Date();
         try {
             SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
-            parsed = format.parse(date);
+                parsed = format.parse(date);
         } catch (ParseException ex) {
             Logger.getLogger(MyDate.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -49,23 +59,11 @@ public class MyDate extends Date{
     public static String toString(MyDate date) {
         return new SimpleDateFormat(DATE_FORMAT).format(date);
     }
-    
-    public MyDate moreLittleDate(MyDate d1, MyDate d2){
-        if(d1.before(d2)){
-            return d1;
-        }
-        else{
-            return d2;
-        }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        return hash;
     }
     
-    
-    public MyDate moreBiggerDate(MyDate d1, MyDate d2){
-        if(d1.after(d2)){
-            return d1;
-        }
-        else{
-            return d2;
-        }
-    }
 }

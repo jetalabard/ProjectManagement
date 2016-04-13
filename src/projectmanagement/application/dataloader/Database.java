@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import projectmanagement.ihm.controller.Tags;
 
 /**
  *
@@ -59,37 +60,38 @@ public class Database {
         Statement stmt;
         stmt = c.createStatement();
         String sql = "CREATE TABLE IF NOT EXISTS PROJECT"
-                + "(ID INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + " NAME TEXT NOT NULL, "
-                + " LASTUSE TEXT NOT NULL)";
+                + "("+Tags.ID+" INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + " "+Tags.NAME+" TEXT NOT NULL, "
+                + " "+Tags.LASTUSE+" TEXT NOT NULL)";
         stmt.executeUpdate(sql);
         sql = "CREATE TABLE IF NOT EXISTS TASK"
-                + "(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-                + "NAME TEXT NOT NULL,"
-                + "ID_PROJECT INTEGER NOT NULL,"
-                + "DATEB TEXT NOT NULL,"
-                + "DATEE TEXT NOT NULL,"
-                + "PRIORITY INTEGER NOT NULL,"
-                + "NOTE TEXT NOT NULL)";
+                + "("+Tags.ID+" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+                + ""+Tags.NAME+" TEXT NOT NULL,"
+                + ""+Tags.ID_PROJECT+" INTEGER NOT NULL,"
+                + ""+Tags.DATE_BEGIN+" TEXT NOT NULL,"
+                + ""+Tags.DATE_END+" TEXT NOT NULL,"
+                + ""+Tags.PRIORITY+" INTEGER NOT NULL,"
+                + ""+Tags.NOTE+" TEXT)";
         stmt.executeUpdate(sql);
         
         sql = "CREATE TABLE IF NOT EXISTS RESSOURCE"
-                + "(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-                + "NAME TEXT NOT NULL,"//name person or name equipment
-                + "FIRSTNAME TEXT,"
-                + "ROLE TEXT,"
-                + "REFERENCE TEXT,"
-                + "TYPE INTEGER NOT NULL,"//Human 0 Equipment 1
-                + "IDTASK INTEGER NOT NULL,"
-                + "COST FLOAT NOT NULL)";
+                + "("+Tags.ID+" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+                + ""+Tags.NAME+" TEXT NOT NULL,"//name person or name equipment
+                + ""+Tags.FIRSTNAME+" TEXT,"
+                + ""+Tags.ROLE+" TEXT,"
+                + ""+Tags.REFERENCE+" TEXT,"
+                + ""+Tags.TYPE+" INTEGER NOT NULL,"//Human 0 Equipment 1
+                + ""+Tags.ID_TASK+" INTEGER NOT NULL,"
+                + ""+Tags.COST+" FLOAT NOT NULL)";
         stmt.executeUpdate(sql);
         
         sql = "CREATE TABLE IF NOT EXISTS PREDECESSOR"
-                + "(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-                + "TYPE TEXT,"
-                + "IDTASK INTEGER NOT NULL,"
-                + "GAP TEXT,"
-                + "CONSTRAINT TEXT)";
+                + "("+Tags.ID+" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+                + ""+Tags.TYPE+" TEXT,"
+                + ""+Tags.ID_TASK+" INTEGER NOT NULL,"
+                + ""+Tags.ID_TASK_PARENT+" INTEGER NOT NULL,"
+                + ""+Tags.GAP+" TEXT,"
+                + ""+Tags.CONSTRAINT+" TEXT)";
         stmt.executeUpdate(sql);
         
         stmt.close();

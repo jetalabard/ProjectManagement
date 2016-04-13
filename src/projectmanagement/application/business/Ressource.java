@@ -11,11 +11,13 @@ package projectmanagement.application.business;
  * @author Mahon--Puget
  */
 public class Ressource{
-    private int id;
+    private Integer id;
+    
+    private Integer idTask;
     
     private float cost;
     
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -30,11 +32,23 @@ public class Ressource{
     public void setCost(float cost) {
         this.cost = cost;
     }
+    
+    
+    public Integer getIdTask() {
+        return idTask;
+    }
+
+    public void setIdTask(Integer idTask) {
+        this.idTask = idTask;
+    }
+    
+    
 
 
-    public Ressource(int id, float cost) {
+    public Ressource(int id, float cost, int idTask) {
         this.id = id;
         this.cost = cost;
+        this.idTask = idTask;
     }
     
     

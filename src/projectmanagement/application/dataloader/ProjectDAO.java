@@ -13,7 +13,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import projectmanagement.application.business.Project;
+import projectmanagement.application.business.Task;
 import projectmanagement.application.model.MyDate;
+import projectmanagement.ihm.controller.Tags;
 
 /**
  *
@@ -50,9 +52,9 @@ public class ProjectDAO implements IProjectDAO {
         Project p = null;
         try {
             Statement stmt = Database.getInstance().getConnection().createStatement();
-            ResultSet result = stmt.executeQuery("Select * from PROJECT where ID=" + id+";");
+            ResultSet result = stmt.executeQuery("Select * from PROJECT where "+Tags.ID+"=" + id+";");
             result.first();
-            p = new Project(result.getInt("ID"), result.getString("NAME"),MyDate.valueOf(result.getString("LASTUSE")));
+            p = new Project(result.getInt(Tags.ID), result.getString(Tags.NAME),MyDate.valueOf(result.getString(Tags.LASTUSE)));
             result.close();
             stmt.close();
         } catch (SQLException ex) {
@@ -71,7 +73,7 @@ public class ProjectDAO implements IProjectDAO {
             Statement stmt = Database.getInstance().getConnection().createStatement();
             ResultSet result = stmt.executeQuery("SELECT * from PROJECT;");
             while (result.next()) {
-                list.add(new Project(result.getInt("ID"), result.getString("NAME"), MyDate.valueOf(result.getString("LASTUSE"))));
+                list.add(new Project(result.getInt(Tags.ID), result.getString(Tags.NAME), MyDate.valueOf(result.getString(Tags.LASTUSE))));
             }
             result.close();
             stmt.close();
@@ -85,19 +87,24 @@ public class ProjectDAO implements IProjectDAO {
     
     @Override
     public Project insertProject(String name,MyDate lastUse) {
-        Database.getInstance().insert("INSERT INTO PROJECT (NAME,LASTUSE) VALUES('"+ name +"','"+MyDate.valueOf(lastUse)+"');");
+        Database.getInstance().insert("INSERT INTO PROJECT ("+Tags.NAME+","+Tags.LASTUSE+") VALUES('"+ name +"','"+MyDate.valueOf(lastUse)+"');");
         return new Project(Database.getInstance().getLastInsertId(),name,lastUse);
     }
 
     @Override
     public Project updateProject(int id, String name,MyDate lastUse) {
-        Database.getInstance().update("UPDATE PROJECT set NAME='" + name + "', LASTUSE='" + MyDate.valueOf(lastUse) + "' WHERE ID=" + id + ";");
+        Database.getInstance().update("UPDATE PROJECT set "+Tags.NAME+"='" + name + "', "+Tags.LASTUSE+"='" + MyDate.valueOf(lastUse) + "' WHERE "+Tags.ID+"=" + id + ";");
         return new Project(id,name, lastUse);
     }
 
     @Override
     public void removeProject(int id) {
-        Database.getInstance().delete("DELETE from PROJECT where ID=" + id + ";");
+        Database.getInstance().delete("DELETE from PROJECT where "+Tags.ID+"=" + id + ";");
+        List<Task> tasks =  DAOTask.getInstance().getAllTasksByIdProject(id);
+        for(Task t:tasks){
+            DAOTask.getInstance().deleteTask(t.getId());
+        }
+        
     }
 
 }

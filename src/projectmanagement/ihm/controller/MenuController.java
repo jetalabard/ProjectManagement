@@ -9,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
+import projectmanagement.application.business.StateNotSave;
 import projectmanagement.application.business.Task;
 import projectmanagement.application.dataloader.ProjectDAO;
 import projectmanagement.application.model.MyDate;
@@ -63,7 +64,10 @@ public class MenuController extends Controller  implements EventHandler<ActionEv
                 CreateDialogSaveProjectAs(stage);
                 break;
              case Tags.ADD_TASK:
-                table.getItems().add(new Task("",MyDate.now(),MyDate.now(),0,"",ProjectDAO.getInstance().getCurrentProject().getId()));
+                 Task task = new Task("",MyDate.now(),MyDate.now(),0,"",ProjectDAO.getInstance().getCurrentProject().getId());
+                table.getItems().add(task);
+                ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
+                ProjectDAO.getInstance().getCurrentProject().getTasks().add(task);
                 break;
             case Tags.OPEN_EXTERIOR:
                 CreateDialogSaveProject(stage);

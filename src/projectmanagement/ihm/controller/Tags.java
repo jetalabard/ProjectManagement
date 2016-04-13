@@ -17,8 +17,8 @@ public class Tags {
     public static final String TASK ="task";
     public static final String ID="id";
     public static final String NAME ="name";
-    public static final String DATE_BEGIN="datebegin";
-    public static final String DATE_END="dateend";
+    public static final String DATE_BEGIN="date_begin";
+    public static final String DATE_END="date_end";
     public static final String PRIORITY="priority";
     public static final String NOTE ="note";
     public static final String RESSOURCE ="ressource";
@@ -33,6 +33,8 @@ public class Tags {
     public static final String PREDECESSOR ="predecessor";
     public static final String CONSTRAINT = "constraint";
     public static final String GAP  ="gap";
+     public static final String ID_TASK_PARENT="parentTaskID";
+     public static final String ID_TASK="taskID";
 
     public static final String FACEBOOK_URL = "https://www.facebook.com/projectmanagement.ubp/info/?tab=overview";
     public static final String TWITTER_URL = "https://twitter.com/Project_Managem";
@@ -73,6 +75,8 @@ public class Tags {
     public static final String CONFIRMATION_NO_SAVE_NOT_QUIT="CONFIRMATION_NO_SAVE_NOT_QUIT";
     public static final String ID_PROJECT="ID_PROJECT";
     public static final String ADD_TASK = "ADD_TASK";
+    public static final String UPDATE_TASK="UPDATE_TASK";
+   
     
     
     

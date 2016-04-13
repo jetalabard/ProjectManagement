@@ -5,11 +5,13 @@
  */
 package projectmanagement.ihm.view;
 
+import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
@@ -151,15 +153,23 @@ public class MenuPM extends BorderPane {
         Button createProject =createToolBarButton(LoaderImage.getImage("Folder Filled-20.png") ,new MenuController(Tags.PROJECT,Tags.NEW,mainStage),false);
         Button OpenProject =createToolBarButton(LoaderImage.getImage("Open Folder Filled-20.png") ,new MenuController(Tags.PROJECT,Tags.OPEN,mainStage),false);
         Button SaveProject =createToolBarButton(LoaderImage.getImage("Save-20.png") ,new MenuController(Tags.PROJECT,Tags.SAVE,mainStage),disableAllButton);
+        
         Button undo =createToolBarButton(LoaderImage.getImage("undo-20.png") ,new MenuController(Tags.PROJECT,Tags.UNDO,mainStage),disableAllButton);
         Button redo =createToolBarButton(LoaderImage.getImage("redo-20.png") ,new MenuController(Tags.PROJECT,Tags.REDO,mainStage),disableAllButton);
+        
         MenuController ctrl = new MenuController(Tags.PROJECT,Tags.ADD_TASK,mainStage);
         ctrl.setTableView(table);
         Button addTask =createToolBarButton(LoaderImage.getImage("Edit Row-20.png") ,ctrl,disableAllButton);
-        toolBar.getItems().addAll(createProject, OpenProject, SaveProject, undo, redo,addTask);
+         if(disableAllButton == false){
+            Separator separator1 = new Separator(Orientation.VERTICAL);
+            Separator separator2 = new Separator(Orientation.VERTICAL);
+            toolBar.getItems().addAll(createProject, OpenProject, SaveProject, separator1, undo, redo, separator2, addTask);
+        } else {
+            toolBar.getItems().addAll(createProject, OpenProject, SaveProject, undo, redo, addTask);
+        }
         return toolBar;
     }
- 
+
     private Button createToolBarButton(String image, MenuController event,boolean disable) {
         Button b = new Button();
         b.setGraphic(new ImageView(image));

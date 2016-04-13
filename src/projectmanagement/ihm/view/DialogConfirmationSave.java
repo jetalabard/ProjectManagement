@@ -12,7 +12,6 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import projectmanagement.application.model.Dialog;
 import projectmanagement.application.model.LoaderImage;
-import projectmanagement.application.model.ManagerLanguage;
 import projectmanagement.ihm.controller.ClickController;
 import projectmanagement.ihm.controller.Tags;
 

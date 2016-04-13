@@ -150,6 +150,14 @@ public class ManageExportImportXML {
             attr = new Element(Tags.ID);
             attr.setText(String.valueOf(pred.getId()));
             predecessor.addContent(attr);
+            
+             attr = new Element(Tags.ID_TASK);
+            attr.setText(String.valueOf(pred.getIdTask()));
+            predecessor.addContent(attr);
+            
+             attr = new Element(Tags.ID_TASK_PARENT);
+            attr.setText(String.valueOf(pred.getIdTaskParent()));
+            predecessor.addContent(attr);
 
             attr = new Element(Tags.CONSTRAINT);
             attr.setText(pred.getConstraint());
@@ -219,10 +227,10 @@ public class ManageExportImportXML {
                 
                 String firstname = res.getChild(Tags.FIRSTNAME).getValue();
                 String role = res.getChild(Tags.ROLE).getValue();
-                ressource = new Human(id,cost, name,firstname , role);
+                ressource = new Human(id,cost, name,firstname , role,task.getId());
             } else {
                 String reference = res.getChild(Tags.REFERENCE).getValue();
-                ressource = new Equipment(id, cost, reference, name);
+                ressource = new Equipment(id, cost, reference, name,task.getId());
             }
 
             task.getRessources().add(ressource);
@@ -270,8 +278,9 @@ public class ManageExportImportXML {
             int id = Integer.valueOf(res.getChild(Tags.ID).getValue());
             String constraint = res.getChild(Tags.CONSTRAINT).getValue();
             String name = res.getChild(Tags.NAME).getValue();
+            int id_task =Integer.valueOf(res.getChild(Tags.ID_TASK).getValue());
             
-            Predecessor predecessor = new Predecessor(id,name, MyDate.valueOf(gap), constraint);
+            Predecessor predecessor = new Predecessor(id,name, MyDate.valueOf(gap), constraint,id_task,task.getId());
             task.getPredecessor().add(predecessor);
         }
         return task;

@@ -34,4 +34,8 @@ interface IDAOTask {
     public List<Task> getAllInformationProject(int idProject);
 
     public void insertTask(String name,int id_project,MyDate date_Begin,MyDate date_End,int priority,String note);
+    
+     public void insertPredecessor(String type, MyDate gap, String constraint, Integer idTask,Integer idTaskParent);
+     
+     public void updatePredecessor(Integer id, String type, MyDate gap, String constraint, Integer idTask,Integer idTaskParent);
 }

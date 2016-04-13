@@ -12,8 +12,7 @@ package projectmanagement.application.business;
 public abstract class State {
     
     public boolean isSave(){
-        //return this instanceof StateSave;
-        return false;
+        return this instanceof StateSave;
     }
     
 }

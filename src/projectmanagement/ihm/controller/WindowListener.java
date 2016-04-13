@@ -24,8 +24,8 @@ public class WindowListener extends Controller implements EventHandler<WindowEve
 
     @Override
     public void handle(WindowEvent event) {
-        if (this.tags.equals(Tags.QUIT)) 
-        {
+        event.consume();
+        if (this.tags.equals(Tags.QUIT)) {
             CreateDialogConfirmationSave(stage);
         }
     }
