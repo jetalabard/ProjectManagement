@@ -9,7 +9,6 @@ import javafx.animation.FadeTransition;
 import projectmanagement.ihm.view.SplashScreen;
 import projectmanagement.ihm.view.*;
 import javafx.application.Application;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
 import javafx.scene.Scene;

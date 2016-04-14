@@ -7,12 +7,15 @@ package projectmanagement.ihm.controller;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 import projectmanagement.application.business.StateNotSave;
 import projectmanagement.application.business.Task;
 import projectmanagement.application.dataloader.ProjectDAO;
+import projectmanagement.application.model.ManageUndoRedo;
 import projectmanagement.application.model.MyDate;
+import projectmanagement.ihm.view.Page;
 
 /**
  *
@@ -23,7 +26,7 @@ public class MenuController extends Controller  implements EventHandler<ActionEv
     private String where;
     private Stage stage;
     private TableView<Task> table;
-
+    private Slider slider;
 
     public MenuController(String what, String where,Stage mainStage) {
         this.what = what;
@@ -64,18 +67,19 @@ public class MenuController extends Controller  implements EventHandler<ActionEv
                 CreateDialogSaveProjectAs(stage);
                 break;
              case Tags.ADD_TASK:
-                 Task task = new Task("",MyDate.now(),MyDate.now(),0,"",ProjectDAO.getInstance().getCurrentProject().getId());
-                table.getItems().add(task);
-                ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
-                ProjectDAO.getInstance().getCurrentProject().getTasks().add(task);
+                addTask(table);
                 break;
             case Tags.OPEN_EXTERIOR:
                 CreateDialogSaveProject(stage);
+                break;
+            case Tags.EXPORT_IMAGE:
                 break;
             default:
                 break;
         }
     }
+
+   
 
     private void redirection() {
         if(this.where.equals(Tags.FACEBOOK)){
@@ -85,10 +89,10 @@ public class MenuController extends Controller  implements EventHandler<ActionEv
             redirectTo(Tags.TWITTER_URL);
         }
         if(this.where.equals(Tags.QUESTIONS)){
-            redirectTo(Tags.TWITTER_URL);
+            redirectTo(Tags.QUESTIONS_URL);
         }
         if(this.where.equals(Tags.COMMENTS)){
-            redirectTo(Tags.TWITTER_URL);
+            redirectTo(Tags.QUESTIONS_URL);
         }
     }
 
@@ -96,6 +100,21 @@ public class MenuController extends Controller  implements EventHandler<ActionEv
         switch (this.where) {
             case Tags.QUIT:
                 CreateDialogConfirmationSave(stage);
+                break;
+            case Tags.ZOOM:
+                slider.adjustValue(slider.getValue()+0.25);
+                break;
+            case Tags.ZOOM_L:
+                slider.adjustValue(slider.getValue()-0.25);
+                break;
+            case Tags.UNDO:
+                ManageUndoRedo.getInstance().undo();
+                break;
+            case Tags.REDO:
+                ManageUndoRedo.getInstance().redo();
+                break;
+            case Tags.PREFERENCE:
+                CreateDialogPreference(stage);
                 break;
             default:
                 break;
@@ -106,6 +125,11 @@ public class MenuController extends Controller  implements EventHandler<ActionEv
         this.table = table;
     }
 
-   
+
+    public void setSlider(Slider slider) {
+        this.slider = slider;
+    }
+
+
     
 }

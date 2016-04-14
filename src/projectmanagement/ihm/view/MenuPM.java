@@ -12,6 +12,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.Separator;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
@@ -45,13 +46,15 @@ public class MenuPM extends BorderPane {
     public static String lang = "fr";
     private final Stage mainStage;
     private final TableView<Task> table;
+    private final Slider slider;
 
-    public MenuPM(Page parent,Stage stage,TableView<Task> table) {
+    public MenuPM(Page parent,Stage stage,TableView<Task> table,Slider slider) {
         super();
         this.parent = parent;
         managerLang = ManagerLanguage.getInstance();
         this.mainStage =stage;
         this.table = table;
+        this.slider = slider;
         
         if(parent instanceof Home){
             createMenu(true);
@@ -81,7 +84,7 @@ public class MenuPM extends BorderPane {
         MenuItem exportImage = createMenuItem(managerLang.getLocalizedTexte("ExportImage"),LoaderImage.getImage("Share.png"),new MenuController(Tags.PROJECT,Tags.EXPORT_IMAGE,mainStage),disableAllButton);
         MenuItem exit = createMenuItem(managerLang.getLocalizedTexte("Exit"),LoaderImage.getImage("Exit.png"),new MenuController(Tags.APP,Tags.QUIT,mainStage),false);
         
-        menuFile.getItems().addAll(newp, openp,openExterior, save, saveAs, exit);
+        menuFile.getItems().addAll(newp, openp,openExterior, save, saveAs,exportImage, exit);
     }
 
     private MenuItem createMenuItem(String text,String image,MenuController event,boolean disable) {
@@ -100,8 +103,12 @@ public class MenuPM extends BorderPane {
 
     private void createMenuView(boolean disableAllButton) {
         menuView = new Menu(managerLang.getLocalizedTexte("View"));
-        MenuItem zommp = createMenuItem(managerLang.getLocalizedTexte("ZoomP"),LoaderImage.getImage("Plus.png"),new MenuController(Tags.PROJECT,Tags.ZOOM,mainStage),disableAllButton);
-        MenuItem zommm = createMenuItem(managerLang.getLocalizedTexte("ZoomL"),LoaderImage.getImage("Minus.png"),new MenuController(Tags.PROJECT,Tags.ZOOM_L,mainStage),disableAllButton);
+        MenuController menuCtrlZoom =new MenuController(Tags.APP,Tags.ZOOM,mainStage);
+        menuCtrlZoom.setSlider(slider);
+        MenuController menuCtrlZoom_l =new MenuController(Tags.APP,Tags.ZOOM_L,mainStage);
+         menuCtrlZoom_l.setSlider(slider);
+        MenuItem zommp = createMenuItem(managerLang.getLocalizedTexte("ZoomP"),LoaderImage.getImage("Plus.png"),menuCtrlZoom,disableAllButton);
+        MenuItem zommm = createMenuItem(managerLang.getLocalizedTexte("ZoomL"),LoaderImage.getImage("Minus.png"),menuCtrlZoom_l,disableAllButton);
         MenuItem preferences = createMenuItem(managerLang.getLocalizedTexte("Preference"),LoaderImage.getImage("Settings.png"),new MenuController(Tags.APP,Tags.PREFERENCE,mainStage),disableAllButton);
         Menu language = createMenuLanguage();
         menuView.getItems().addAll(zommp, zommm, language,preferences);
@@ -160,10 +167,12 @@ public class MenuPM extends BorderPane {
         MenuController ctrl = new MenuController(Tags.PROJECT,Tags.ADD_TASK,mainStage);
         ctrl.setTableView(table);
         Button addTask =createToolBarButton(LoaderImage.getImage("Edit Row-20.png") ,ctrl,disableAllButton);
-         if(disableAllButton == false){
+         if(disableAllButton == false)
+         {
             Separator separator1 = new Separator(Orientation.VERTICAL);
             Separator separator2 = new Separator(Orientation.VERTICAL);
-            toolBar.getItems().addAll(createProject, OpenProject, SaveProject, separator1, undo, redo, separator2, addTask);
+            Separator separator3 = new Separator(Orientation.VERTICAL);
+            toolBar.getItems().addAll(createProject, OpenProject, SaveProject, separator1, undo, redo, separator2, addTask,separator3,slider);
         } else {
             toolBar.getItems().addAll(createProject, OpenProject, SaveProject, undo, redo, addTask);
         }

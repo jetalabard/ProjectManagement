@@ -39,7 +39,7 @@ public class Home extends Page{
 
     @Override
     public void createView() {
-        this.setTop(new MenuPM(this,mainStage,null));
+        this.setTop(new MenuPM(this,mainStage,null,null));
         FlowPane flow1 = getChoiceCreateOpen(mainStage);
         FlowPane flow2 = getOpenProject(mainStage);
         Separator sep = createSeparator();
@@ -53,6 +53,7 @@ public class Home extends Page{
         Style.getStyle("home.css", this);
         
         this.setCenter(vbox);
+        
     }
 
     private FlowPane getChoiceCreateOpen(Stage mainStage) {

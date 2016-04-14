@@ -12,6 +12,7 @@ import javafx.scene.control.TextField;
 import projectmanagement.application.business.StateNotSave;
 import projectmanagement.application.business.Task;
 import projectmanagement.application.dataloader.ProjectDAO;
+import projectmanagement.application.model.ManageUndoRedo;
 
 /**
  *
@@ -25,17 +26,24 @@ public class IntegerEditingCell extends TableCell<Task, Number> {
     public IntegerEditingCell() {
         textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
             if (!isNowFocused) {
-                processEdit();
+                processEdit(0);
             }
         });
-        textField.setOnAction(event -> processEdit());
+        textField.setOnAction(event -> processEdit(1));
         setAlignment(Pos.CENTER);
     }
 
-    private void processEdit() {
+    private void processEdit(int mode) {
         String text = textField.getText();
         if (intPattern.matcher(text).matches()) {
-            commitEdit(Integer.parseInt(text));
+            if (mode == 0) {
+                commitEdit(Integer.parseInt(text));
+            } else {
+                commitEdit(Integer.parseInt(text));
+                ManageUndoRedo.getInstance().add(ProjectDAO.getInstance().getCurrentProject().getTasks());
+                ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
+            }
+
         } else {
             cancelEdit();
         }
@@ -65,6 +73,7 @@ public class IntegerEditingCell extends TableCell<Task, Number> {
             textField.setText(value.toString());
             setGraphic(textField);
             setText(null);
+            
         }
     }
 
@@ -79,12 +88,12 @@ public class IntegerEditingCell extends TableCell<Task, Number> {
     @Override
     public void commitEdit(Number value) {
         super.commitEdit(value);
-        ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
-        for(Task t: ProjectDAO.getInstance().getCurrentProject().getTasks()){
-                if(t.equals(this.getTableRow().getItem())){
-                    t.setPriority(value.intValue());
-                }
+        
+        for (Task t : ProjectDAO.getInstance().getCurrentProject().getTasks()) {
+            if (t.equals(this.getTableRow().getItem())) {
+                t.setPriority(value.intValue());
             }
+        }
         ((Task) this.getTableRow().getItem()).setPriority(value.intValue());
     }
 }

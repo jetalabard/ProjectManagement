@@ -16,10 +16,6 @@ import projectmanagement.application.model.MyDate;
 public class Project {
     private int id;
     
-    private Diagram pert;
-    
-    private Diagram Gantt;
-    
     private List<Task> tasks = null;
     
     private String title;

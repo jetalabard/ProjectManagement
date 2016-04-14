@@ -12,23 +12,28 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import projectmanagement.application.business.Project;
+import projectmanagement.application.business.StateNotSave;
 import projectmanagement.application.business.Task;
 import projectmanagement.application.dataloader.DAOTask;
 import projectmanagement.application.dataloader.ProjectDAO;
 import projectmanagement.application.model.Dialog;
 import projectmanagement.application.model.ManageExportImportXML;
+import projectmanagement.application.model.ManageUndoRedo;
 import projectmanagement.application.model.ManagerLanguage;
+import projectmanagement.application.model.MyDate;
 import projectmanagement.application.model.Save;
 import static projectmanagement.ihm.controller.PMApplication.SPLASH_IMAGE;
 import projectmanagement.ihm.view.DialogConfirmationSave;
 import projectmanagement.ihm.view.DialogCreateProject;
 import projectmanagement.ihm.view.DialogOpenProject;
+import projectmanagement.ihm.view.DialogPreference;
 import projectmanagement.ihm.view.DialogUpdateTask;
 import projectmanagement.ihm.view.MainWindow;
 
@@ -55,6 +60,24 @@ public abstract class Controller {
         parentStage.show();
     }
 
+    private void makeDialog(Dialog dialog, String title, Stage stage, Stage stageParent) {
+        stage.setScene(new Scene(dialog));
+        stage.setResizable(false);
+        stage.getIcons().add(new Image(SPLASH_IMAGE));
+        stage.setTitle(title);
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initOwner(stageParent);
+        stage.show();
+    }
+    
+     public void addTask(TableView table) {
+        Task task = new Task("",MyDate.now(),MyDate.now(),0,"",ProjectDAO.getInstance().getCurrentProject().getId());
+        table.getItems().add(task);
+        ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
+        ProjectDAO.getInstance().getCurrentProject().getTasks().add(task);
+        ManageUndoRedo.getInstance().add( ProjectDAO.getInstance().getCurrentProject().getTasks());
+    }
+
     public void SaveProject(Project proj) {
         if (proj != null) {
             new Save(proj).execute();
@@ -65,56 +88,55 @@ public abstract class Controller {
         Platform.exit();
     }
 
+    public void CreateDialogPreference(Stage stageParent) {
+        Stage stage = new Stage();
+        makeDialog(
+                new DialogPreference(stage, stageParent),
+                ManagerLanguage.getInstance().getLocalizedTexte("Preference"),
+                stage,
+                stageParent
+        );
+    }
+
     public void CreateDialogConfirmationSave(Stage stageParent) {
         if (ProjectDAO.getInstance().getCurrentProject() != null && !ProjectDAO.getInstance().getCurrentProject().getState().isSave()) {
             Stage stage = new Stage();
-            DialogConfirmationSave dialog = new DialogConfirmationSave(stage, stageParent,0,null);
-            stage.setScene(new Scene(dialog));
-            stage.setResizable(false);
-            stage.getIcons().add(new Image(SPLASH_IMAGE));
-            stage.setTitle(ManagerLanguage.getInstance().getLocalizedTexte("Confirmation"));
-            stage.initModality(Modality.WINDOW_MODAL);
-            stage.initOwner(stageParent);
-            stage.show();
+            makeDialog(
+                    new DialogConfirmationSave(stage, stageParent, 0, null),
+                    ManagerLanguage.getInstance().getLocalizedTexte("Confirmation"),
+                    stage,
+                    stageParent
+            );
+        } else {
+            Quit();
         }
-        else{
-            System.out.println("QUIt");
-               Quit();
-        }
-        
+
     }
-    
+
     public void CreateDialogConfirmationSaveButNotQuit(Stage stageParent, String tags) {
         if (ProjectDAO.getInstance().getCurrentProject() != null && !ProjectDAO.getInstance().getCurrentProject().getState().isSave()) {
             Stage stage = new Stage();
-            DialogConfirmationSave dialog = new DialogConfirmationSave(stage, stageParent,1,tags);
-            stage.setScene(new Scene(dialog));
-            stage.setResizable(false);
-            stage.getIcons().add(new Image(SPLASH_IMAGE));
-            stage.setTitle(ManagerLanguage.getInstance().getLocalizedTexte("Confirmation"));
-            stage.initModality(Modality.WINDOW_MODAL);
-            stage.initOwner(stageParent);
-            stage.show();
+            makeDialog(
+                    new DialogConfirmationSave(stage, stageParent, 1, tags),
+                    ManagerLanguage.getInstance().getLocalizedTexte("Confirmation"),
+                    stage,
+                    stageParent
+            );
         }
-        
-    }
-    
-    public void  CreateDialogUpdateTask(Task task,Stage stageParent) {
-        Stage stage = new Stage();
-            DialogUpdateTask dialog = new DialogUpdateTask(stage, stageParent);
-            dialog.setTask(task);
-            stage.setScene(new Scene(dialog));
-            stage.setResizable(false);
-            stage.getIcons().add(new Image(SPLASH_IMAGE));
-            stage.setTitle(ManagerLanguage.getInstance().getLocalizedTexte("UpdateTask") + " - "+task.getName());
-            stage.initModality(Modality.WINDOW_MODAL);
-            stage.initOwner(stageParent);
-            stage.show();
-    }
-    
 
-    public void CreateDialogSaveProjectAs(Stage stageParent) 
-    {
+    }
+
+    public void CreateDialogUpdateTask(Task task, Stage stageParent) {
+        Stage stage = new Stage();
+        makeDialog(
+                new DialogUpdateTask(stage, stageParent),
+                ManagerLanguage.getInstance().getLocalizedTexte("UpdateTask") + " - " + task.getName(),
+                stage,
+                stageParent
+        );
+    }
+
+    public void CreateDialogSaveProjectAs(Stage stageParent) {
         String path = createFileChooser(stageParent);
         ManageExportImportXML exp = new ManageExportImportXML();
         exp.export(ProjectDAO.getInstance().getCurrentProject(), path);
@@ -129,22 +151,17 @@ public abstract class Controller {
         OpenProject(p, null, stageParent);
     }
 
-    public void CreateDialogOpenProject(Stage stageParent) 
-    {
-        if (ProjectDAO.getInstance().getCurrentProject() != null && !ProjectDAO.getInstance().getCurrentProject().getState().isSave()) 
-        {
-            CreateDialogConfirmationSaveButNotQuit(stageParent,Tags.OPEN_PROJECT);
-        }
-        else{
+    public void CreateDialogOpenProject(Stage stageParent) {
+        if (ProjectDAO.getInstance().getCurrentProject() != null && !ProjectDAO.getInstance().getCurrentProject().getState().isSave()) {
+            CreateDialogConfirmationSaveButNotQuit(stageParent, Tags.OPEN_PROJECT);
+        } else {
             Stage stage = new Stage();
-            Dialog dialog = new DialogOpenProject(stage, stageParent);
-            stage.setScene(new Scene(dialog));
-            stage.setResizable(false);
-            stage.getIcons().add(new Image(SPLASH_IMAGE));
-            stage.setTitle(ManagerLanguage.getInstance().getLocalizedTexte("OpenProject"));
-            stage.initModality(Modality.WINDOW_MODAL);
-            stage.initOwner(stageParent);
-            stage.show();
+            makeDialog(
+                    new DialogOpenProject(stage, stageParent),
+                    ManagerLanguage.getInstance().getLocalizedTexte("OpenProject"),
+                    stage,
+                    stageParent
+            );
         }
     }
 
@@ -166,22 +183,17 @@ public abstract class Controller {
         return selectedDirectory.getAbsolutePath();
     }
 
-    public void CreateDialogProject(Stage stageParent) 
-    {
-        if (ProjectDAO.getInstance().getCurrentProject() != null && !ProjectDAO.getInstance().getCurrentProject().getState().isSave()) 
-        {
-            CreateDialogConfirmationSaveButNotQuit(stageParent,Tags.NEW);
-        }
-        else{
+    public void CreateDialogProject(Stage stageParent) {
+        if (ProjectDAO.getInstance().getCurrentProject() != null && !ProjectDAO.getInstance().getCurrentProject().getState().isSave()) {
+            CreateDialogConfirmationSaveButNotQuit(stageParent, Tags.NEW);
+        } else {
             Stage stage = new Stage();
-            Dialog dialog = new DialogCreateProject(stage, stageParent);
-            stage.setScene(new Scene(dialog));
-            stage.setResizable(false);
-            stage.getIcons().add(new Image(SPLASH_IMAGE));
-            stage.setTitle(ManagerLanguage.getInstance().getLocalizedTexte("NewProject"));
-            stage.initModality(Modality.WINDOW_MODAL);
-            stage.initOwner(stageParent);
-            stage.show();
+            makeDialog(
+                    new DialogCreateProject(stage, stageParent),
+                    ManagerLanguage.getInstance().getLocalizedTexte("NewProject"),
+                    stage,
+                    stageParent
+            );
         }
     }
 

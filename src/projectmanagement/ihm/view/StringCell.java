@@ -13,6 +13,7 @@ import javafx.scene.text.FontWeight;
 import projectmanagement.application.business.StateNotSave;
 import projectmanagement.application.business.Task;
 import projectmanagement.application.dataloader.ProjectDAO;
+import projectmanagement.application.model.ManageUndoRedo;
 import projectmanagement.ihm.controller.Tags;
 
 /**
@@ -21,24 +22,32 @@ import projectmanagement.ihm.controller.Tags;
  */
 public class StringCell extends TableCell<Task, String> {
 
-    private final TextField textField = new TextField();
+    private TextField textField;
     private String column;
 
     public StringCell(String column) {
+        textField = new TextField();
         this.column = column;
         textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
             if (!isNowFocused) {
-                processEdit();
+                processEdit(0);
             }
         });
         textField.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
-        textField.setOnAction(event -> processEdit());
+        textField.setOnAction(event -> processEdit(1));
         setAlignment(Pos.CENTER);
     }
 
-    private void processEdit() {
+    private void processEdit(int mode) {
+        if(mode ==0){
+            commitEdit(textField.getText());
+        }
+        else{
+            commitEdit(textField.getText());
+            ManageUndoRedo.getInstance().add(ProjectDAO.getInstance().getCurrentProject().getTasks());
+            ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
+        }
         
-        commitEdit(textField.getText());
     }
 
     @Override
@@ -73,29 +82,31 @@ public class StringCell extends TableCell<Task, String> {
         super.cancelEdit();
         setText(getItem());
         setGraphic(null);
+
     }
 
     // This seems necessary to persist the edit on loss of focus; not sure why:
     @Override
     public void commitEdit(String value) {
         super.commitEdit(value);
-        ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
-        if(this.column.equals(Tags.NAME)){
-            for(Task t: ProjectDAO.getInstance().getCurrentProject().getTasks()){
-                if(t.equals(this.getTableRow().getItem())){
+
+        if (this.column.equals(Tags.NAME)) {
+            for (Task t : ProjectDAO.getInstance().getCurrentProject().getTasks()) {
+                if (t.equals(this.getTableRow().getItem())) {
                     t.setName(value);
+
                 }
             }
             ((Task) this.getTableRow().getItem()).setName(value);
-            
-        }
-        else{
-            for(Task t: ProjectDAO.getInstance().getCurrentProject().getTasks()){
-                if(t.equals(this.getTableRow().getItem())){
+
+        } else {
+            for (Task t : ProjectDAO.getInstance().getCurrentProject().getTasks()) {
+                if (t.equals(this.getTableRow().getItem())) {
                     t.setNote(value);
                 }
             }
             ((Task) this.getTableRow().getItem()).setNote(value);
         }
+
     }
 }

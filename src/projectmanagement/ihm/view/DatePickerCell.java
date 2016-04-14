@@ -18,6 +18,7 @@ import javafx.scene.control.TableCell;
 import projectmanagement.application.business.StateNotSave;
 import projectmanagement.application.business.Task;
 import projectmanagement.application.dataloader.ProjectDAO;
+import projectmanagement.application.model.ManageUndoRedo;
 import projectmanagement.application.model.MyDate;
 import projectmanagement.ihm.controller.Tags;
 
@@ -29,7 +30,8 @@ public class DatePickerCell<S, T> extends TableCell<Task, MyDate> {
 
     private DatePicker datePicker;
     private ObservableList<Task> tasks;
-    private final String column;
+    private final String column; 
+    private boolean initialzation = true;
 
     public DatePickerCell(ObservableList<Task> tasks, String column) {
         super();
@@ -42,9 +44,6 @@ public class DatePickerCell<S, T> extends TableCell<Task, MyDate> {
         setGraphic(datePicker);
         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 
-        Platform.runLater(() -> {
-            datePicker.requestFocus();
-        });
     }
 
     @Override
@@ -61,6 +60,7 @@ public class DatePickerCell<S, T> extends TableCell<Task, MyDate> {
                 if (item != null) {
                     setDatepikerDate(item.toString());
                     setText(item.toString());
+                    
                 }
                 setGraphic(this.datePicker);
                 setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -106,36 +106,50 @@ public class DatePickerCell<S, T> extends TableCell<Task, MyDate> {
 
                 if (null != getTasks()) {
                     if (column.equals(Tags.DATE_BEGIN)) {
-                        ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
                         Task task = ProjectDAO.getInstance().getCurrentProject().getTasks().get(index);
-                        if (task.equals(getTasks().get(index))) {
-                            task.setDatebegin(mydate);
+                        task.setDatebegin(mydate);
+                        if(task.equals(getTasks().get(index))){
+                            getTasks().get(index).setDatebegin(mydate);
                         }
-                        getTasks().get(index).setDatebegin(mydate);
+                        if(initialzation == false){
+                            ManageUndoRedo.getInstance().add(ProjectDAO.getInstance().getCurrentProject().getTasks());
+                        }
+                        else{
+                            initialzation = false;
+                        }
                     } else {
-                        ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
                         Task task = ProjectDAO.getInstance().getCurrentProject().getTasks().get(index);
-                        if (task.equals(getTasks().get(index))) {
-                            task.setDateend(mydate);
+                        task.setDateend(mydate);
+                        if(task.equals(getTasks().get(index))){
+                            getTasks().get(index).setDateend(mydate);
+                        }
+                        if(initialzation == false){
+                            ManageUndoRedo.getInstance().add(ProjectDAO.getInstance().getCurrentProject().getTasks());
+                        }
+                        else{
+                            initialzation = false;
                         }
                     }
-                    getTasks().get(index).setDateend(mydate);
+                    
+
                 }
             }
         });
-
         setAlignment(Pos.CENTER);
     }
+   
 
     @Override
     public void startEdit() {
         super.startEdit();
+        ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
     }
 
     @Override
     public void cancelEdit() {
         super.cancelEdit();
         setContentDisplay(ContentDisplay.TEXT_ONLY);
+        
     }
 
     public ObservableList<Task> getTasks() {

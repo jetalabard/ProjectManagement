@@ -38,6 +38,7 @@ public class Tags {
 
     public static final String FACEBOOK_URL = "https://www.facebook.com/projectmanagement.ubp/info/?tab=overview";
     public static final String TWITTER_URL = "https://twitter.com/Project_Managem";
+    public static final String QUESTIONS_URL = "http://projectmanagement.esy.es/index.php/page-d-exemple/";
 
     public static final String FACEBOOK = "FACEBOOK";
     public static final String TWITTER = "TWITTER";
