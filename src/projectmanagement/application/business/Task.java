@@ -49,7 +49,8 @@ public class Task extends TaskComponent{
         ressources = new ArrayList<>();
         this.idProject = idProject;
     }
-    public Task(String name, MyDate datebegin, MyDate dateend, int priority, String note,int idProject) {
+    
+     public Task( String name, MyDate datebegin, MyDate dateend, int priority, String note,int idProject) {
         this.name = name;
         this.datebegin = datebegin;
         this.dateend = dateend;
@@ -59,6 +60,40 @@ public class Task extends TaskComponent{
         ressources = new ArrayList<>();
         this.idProject = idProject;
     }
+    
+    
+   
+    public Task(int id,String name, MyDate datebegin, MyDate dateend, int priority, String note,int idProject, List<Ressource> ressources, List<Predecessor> predecessors) {
+        this.name = name;
+        this.id = id;
+        this.datebegin = datebegin;
+        this.dateend = dateend;
+        this.priority = priority;
+        this.note = note;
+        this.predecessor = predecessors;
+        this.ressources = ressources;
+        this.idProject = idProject;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("Task{" + "id=" + id + ", idProject=" + idProject + ", name=" + name + ", datebegin=" + datebegin + ", dateend=" + dateend + ", priority=" + priority + ", note=" + note + '}');
+        sb.append(" \n ");
+        for(Predecessor pred : predecessor){
+            sb.append(pred.toString());
+            sb.append(" \n ");
+        }
+        sb.append(" \n ");
+        for(Ressource res : ressources){
+           sb.append( res.toString());
+            sb.append(" \n ");
+        }
+        sb.append(" \n ");
+        return sb.toString();
+        
+    }
+    
+    
 
     public int getIdProject() {
         return idProject;

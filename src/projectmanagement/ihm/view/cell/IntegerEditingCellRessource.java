@@ -1,29 +1,38 @@
+/**
+ *
+ * @author Jérémy
+ */
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package projectmanagement.ihm.view;
+package projectmanagement.ihm.view.cell;
 
 import java.util.regex.Pattern;
 import javafx.geometry.Pos;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TextField;
 import projectmanagement.application.business.StateNotSave;
-import projectmanagement.application.business.Task;
 import projectmanagement.application.dataloader.ProjectDAO;
 import projectmanagement.application.model.ManageUndoRedo;
+import projectmanagement.application.model.RessourcesTable;
+import projectmanagement.ihm.controller.Tags;
 
 /**
  *
  * @author Jérémy
  */
-public class IntegerEditingCell extends TableCell<Task, Number> {
+public class IntegerEditingCellRessource extends TableCell<RessourcesTable, Float> {
 
     private final TextField textField = new TextField();
     private final Pattern intPattern = Pattern.compile("-?\\d+");
+    private String tags;
+    private int mode;
 
-    public IntegerEditingCell() {
+    public IntegerEditingCellRessource(String tags,int mode) {
+        this.tags = tags;
+        this.mode = mode;
         textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
             if (!isNowFocused) {
                 processEdit(0);
@@ -37,11 +46,13 @@ public class IntegerEditingCell extends TableCell<Task, Number> {
         String text = textField.getText();
         if (intPattern.matcher(text).matches()) {
             if (mode == 0) {
-                commitEdit(Integer.parseInt(text));
+                commitEdit(Float.parseFloat(text));
             } else {
-                commitEdit(Integer.parseInt(text));
-                ManageUndoRedo.getInstance().add(ProjectDAO.getInstance().getCurrentProject().getTasks());
-                ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
+                commitEdit(Float.parseFloat(text));
+                if (this.mode == 0) {
+                    ManageUndoRedo.getInstance().add(ProjectDAO.getInstance().getCurrentProject().getTasks());
+                    ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
+                }
             }
 
         } else {
@@ -50,15 +61,21 @@ public class IntegerEditingCell extends TableCell<Task, Number> {
     }
 
     @Override
-    public void updateItem(Number value, boolean empty) {
+    public void updateItem(Float value, boolean empty) {
         super.updateItem(value, empty);
         if (empty) {
             setText(null);
             setGraphic(null);
         } else if (isEditing()) {
             setText(null);
-            textField.setText(value.toString());
-            setGraphic(textField);
+            if (value < 0) {
+                textField.setText("0");
+                setGraphic(textField);
+            } else {
+                textField.setText(value.toString());
+                setGraphic(textField);
+            }
+
         } else {
             setText(value.toString());
             setGraphic(null);
@@ -86,14 +103,15 @@ public class IntegerEditingCell extends TableCell<Task, Number> {
 
     // This seems necessary to persist the edit on loss of focus; not sure why:
     @Override
-    public void commitEdit(Number value) {
+    public void commitEdit(Float value) {
         super.commitEdit(value);
-        
-        for (Task t : ProjectDAO.getInstance().getCurrentProject().getTasks()) {
-            if (t.equals(this.getTableRow().getItem())) {
-                t.setPriority(value.intValue());
-            }
+        if(tags.equals(Tags.COST))
+        {
+            //pas de sauvegarde direct
+            ((RessourcesTable) this.getTableRow().getItem()).setCost(value);
+        } 
+        else{
+            
         }
-        ((Task) this.getTableRow().getItem()).setPriority(value.intValue());
     }
 }

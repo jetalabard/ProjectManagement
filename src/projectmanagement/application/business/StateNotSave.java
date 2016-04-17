@@ -10,5 +10,8 @@ package projectmanagement.application.business;
  * @author Jérémy
  */
 public class StateNotSave extends State {
+
+    public StateNotSave() {
+    }
     
 }

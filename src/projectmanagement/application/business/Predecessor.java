@@ -6,7 +6,6 @@
 package projectmanagement.application.business;
 
 import java.util.Objects;
-import projectmanagement.application.model.MyDate;
 
 /**
  *
@@ -18,18 +17,33 @@ public class Predecessor {
     
     private Integer idTask;
     
-     private Integer idTaskParent;
+    private Integer idTaskParent;
     
-    private String type;
+    private String type; 
     
-    private MyDate gap;
+    private Integer gap;
     
     private String constraint;
 
-    public Predecessor(int id,String type, MyDate gap, String constraint,int idTask,int idTaskParent) {
+    public Predecessor(int id,String type, Integer gap, String constraint,Integer idTask,Integer idTaskParent) {
         this.id = id;
         this.type = type;
         this.gap = gap;
+        this.constraint = constraint;
+        this.idTask = idTask;
+         this.idTaskParent = idTaskParent;
+    }
+
+    @Override
+    public String toString() {
+        return "Predecessor{" + "id=" + id + ", idTask=" + idTask + ", idTaskParent=" + idTaskParent + ", type=" + type + ", gap=" + gap + ", constraint=" + constraint + '}';
+    }
+    
+    
+    public Predecessor(String type, Integer gap, String constraint,Integer idTask,Integer idTaskParent) {
+        this.type = type;
+        this.gap = gap;
+        this.id = null;
         this.constraint = constraint;
         this.idTask = idTask;
          this.idTaskParent = idTaskParent;
@@ -46,12 +60,16 @@ public class Predecessor {
     public Integer getId() {
         return id;
     }
+    
+    public void setId(Integer id){
+        this.id = id;
+    }
 
     public String getType() {
         return type;
     }
 
-    public MyDate getGap() {
+    public Integer getGap() {
         return gap;
     }
 
@@ -66,6 +84,19 @@ public class Predecessor {
     public void setIdTaskParent(Integer idTaskParent) {
         this.idTaskParent = idTaskParent;
     }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setGap(Integer gap) {
+        this.gap = gap;
+    }
+
+    public void setConstraint(String constraint) {
+        this.constraint = constraint;
+    }
+    
     
      
 

@@ -31,7 +31,13 @@ public class Project {
         state = new StateSave();
         tasks = new ArrayList<Task>();
     }
-    
+
+    public Project(String title,MyDate lastUse) {
+        this.title = title;
+        this.lastUse = lastUse;
+        state = new StateSave();
+        tasks = new ArrayList<Task>();
+    }
 
     public String getTitle() {
         return this.title;
@@ -55,7 +61,12 @@ public class Project {
 
     @Override
     public String toString() {
-        return title;
+        StringBuilder sb =  new StringBuilder(title);
+        sb.append(" ");
+        for(Task t : this.tasks){
+            sb.append(t.toString());
+        }
+        return sb.toString();
     }
 
     public State getState() {

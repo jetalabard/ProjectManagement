@@ -5,12 +5,8 @@
  */
 package projectmanagement.application.model;
 
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import javafx.collections.FXCollections;
-import javafx.scene.control.TableView;
 import projectmanagement.application.business.Task;
 import projectmanagement.application.dataloader.ProjectDAO;
 import projectmanagement.ihm.view.MainWindow;

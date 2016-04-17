@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package projectmanagement.ihm.view;
+package projectmanagement.ihm.view.cell;
 
 import java.time.LocalDate;
 import java.util.Calendar;
-import javafx.application.Platform;
+import java.util.Locale;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -19,6 +19,7 @@ import projectmanagement.application.business.StateNotSave;
 import projectmanagement.application.business.Task;
 import projectmanagement.application.dataloader.ProjectDAO;
 import projectmanagement.application.model.ManageUndoRedo;
+import projectmanagement.application.model.ManagerLanguage;
 import projectmanagement.application.model.MyDate;
 import projectmanagement.ihm.controller.Tags;
 
@@ -31,7 +32,8 @@ public class DatePickerCell<S, T> extends TableCell<Task, MyDate> {
     private DatePicker datePicker;
     private ObservableList<Task> tasks;
     private final String column; 
-    private boolean initialzation = true;
+    private boolean initialzation;
+    private static int init;
 
     public DatePickerCell(ObservableList<Task> tasks, String column) {
         super();
@@ -39,6 +41,7 @@ public class DatePickerCell<S, T> extends TableCell<Task, MyDate> {
         this.column = column;
 
         if (datePicker == null) {
+            initialzation = true;
             createDatePicker();
         }
         setGraphic(datePicker);
@@ -87,10 +90,10 @@ public class DatePickerCell<S, T> extends TableCell<Task, MyDate> {
     }
 
     private void createDatePicker() {
+        Locale.setDefault(ManagerLanguage.getInstance().getLocaleCourante());
         this.datePicker = new DatePicker();
         datePicker.setPromptText(MyDate.DATE_FORMAT);
         datePicker.setEditable(true);
-
         datePicker.setOnAction(new EventHandler() {
             public void handle(Event t) {
                 LocalDate date = datePicker.getValue();
@@ -113,6 +116,7 @@ public class DatePickerCell<S, T> extends TableCell<Task, MyDate> {
                         }
                         if(initialzation == false){
                             ManageUndoRedo.getInstance().add(ProjectDAO.getInstance().getCurrentProject().getTasks());
+                             ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
                         }
                         else{
                             initialzation = false;
@@ -125,6 +129,7 @@ public class DatePickerCell<S, T> extends TableCell<Task, MyDate> {
                         }
                         if(initialzation == false){
                             ManageUndoRedo.getInstance().add(ProjectDAO.getInstance().getCurrentProject().getTasks());
+                             ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
                         }
                         else{
                             initialzation = false;
@@ -142,13 +147,14 @@ public class DatePickerCell<S, T> extends TableCell<Task, MyDate> {
     @Override
     public void startEdit() {
         super.startEdit();
-        ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
+        
     }
 
     @Override
     public void cancelEdit() {
         super.cancelEdit();
         setContentDisplay(ContentDisplay.TEXT_ONLY);
+       
         
     }
 
@@ -167,5 +173,26 @@ public class DatePickerCell<S, T> extends TableCell<Task, MyDate> {
     public void setDatePicker(DatePicker datePicker) {
         this.datePicker = datePicker;
     }
+    
+    public static void UninitializedInLayoutChildrenFunction(boolean value){
+        if(value == true){
+            init =0;
+        }
+        else{
+            init =1;
+        }
+        
+    }
+
+    @Override
+    protected void layoutChildren() {
+        super.layoutChildren(); //To change body of generated methods, choose Tools | Templates.
+        if(init != 0){
+            System.out.println("Date cell layout children");
+            initialzation = true;
+        }
+    }
+    
+    
 
 }

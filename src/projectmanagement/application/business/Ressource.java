@@ -21,7 +21,7 @@ public class Ressource{
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -42,17 +42,24 @@ public class Ressource{
         this.idTask = idTask;
     }
     
-    
 
-
-    public Ressource(int id, float cost, int idTask) {
+    public Ressource(Integer id, float cost, Integer idTask) {
         this.id = id;
         this.cost = cost;
         this.idTask = idTask;
     }
     
-    
-    
-    
+    public Ressource( float cost, Integer idTask) {
+        this.cost = cost;
+        if(idTask==null){
+            this.idTask =null;
+        }else{
+            this.idTask = idTask;
+        }
+        this.id = null;
+    }
+
+    public Ressource() {
+    }
     
 }

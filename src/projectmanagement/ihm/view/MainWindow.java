@@ -11,6 +11,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.ScrollEvent;
 import javafx.stage.Stage;
+import projectmanagement.application.dataloader.ProjectDAO;
 import projectmanagement.application.model.ManageUndoRedo;
 import projectmanagement.application.model.ManagerShowDiagram;
 import projectmanagement.ihm.controller.KeyListener;
@@ -31,16 +32,14 @@ public class MainWindow extends Page {
     public MainWindow(Stage mainstage) {
         super();
         this.mainStage = mainstage;
-        ManageUndoRedo.getInstance().setWindows(MainWindow.this);
+        ManageUndoRedo.getInstance().setWindows(this);
         createView();
     }
 
     @Override
     public void createView() {
-        table = new MyTableView(mainStage);
-
+        table = new MyTableView(mainStage,this);
         tabpane = new MyTabPane();
-
         SplitPane splitPane = createSplitPane();
 
         Slider slider = new Slider(0.5, 2, 1);
@@ -49,7 +48,6 @@ public class MainWindow extends Page {
         addListener(slider);
         this.setTop(new MenuPM(this, mainStage, table, slider));
         this.setCenter(zoomingPane);
-        
         
         ManagerShowDiagram.getInstance().setTabPaneDiagram(tabpane);
     }
@@ -86,6 +84,7 @@ public class MainWindow extends Page {
     public void reloadTable() {
         table.getItems().clear();
         reload();
+        System.out.println(ProjectDAO.getInstance().getCurrentProject().toString());
     }
 
 }

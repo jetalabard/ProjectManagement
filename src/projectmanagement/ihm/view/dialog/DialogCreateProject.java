@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package projectmanagement.ihm.view;
+package projectmanagement.ihm.view.dialog;
 
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import projectmanagement.application.model.Dialog;
 import projectmanagement.application.model.LoaderImage;
 import projectmanagement.ihm.controller.Tags;
+import projectmanagement.ihm.view.Style;
 
 /**
  *

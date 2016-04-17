@@ -74,9 +74,13 @@ public class Home extends Page{
         List<Project> projects = ProjectDAO.getInstance().getAllProject();
         FlowPane pane = new FlowPane();
         pane.setAlignment(Pos.CENTER);
-        for (Project p : projects) {
-            BorderPane border = createPanelOpenProject(LoaderImage.getImage("Open Folder Filled-50.png"), p.getTitle(), p, true,mainStage);
-            pane.getChildren().add(border);
+        int number = 0;
+        for (int i = projects.size()-1; i >= 0; i--) {
+            if (number < 8) {
+                number++;
+                BorderPane border = createPanelOpenProject(LoaderImage.getImage("Open Folder Filled-50.png"), projects.get(i).getTitle(), projects.get(i), true, mainStage);
+                pane.getChildren().add(border);
+            }
         }
 
         return pane;

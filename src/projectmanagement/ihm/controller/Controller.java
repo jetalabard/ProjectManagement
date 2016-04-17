@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Locale;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.TableView;
@@ -19,7 +20,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import projectmanagement.application.business.Project;
-import projectmanagement.application.business.StateNotSave;
 import projectmanagement.application.business.Task;
 import projectmanagement.application.dataloader.DAOTask;
 import projectmanagement.application.dataloader.ProjectDAO;
@@ -30,12 +30,13 @@ import projectmanagement.application.model.ManagerLanguage;
 import projectmanagement.application.model.MyDate;
 import projectmanagement.application.model.Save;
 import static projectmanagement.ihm.controller.PMApplication.SPLASH_IMAGE;
-import projectmanagement.ihm.view.DialogConfirmationSave;
-import projectmanagement.ihm.view.DialogCreateProject;
-import projectmanagement.ihm.view.DialogOpenProject;
-import projectmanagement.ihm.view.DialogPreference;
-import projectmanagement.ihm.view.DialogUpdateTask;
+import projectmanagement.ihm.view.dialog.DialogConfirmationSave;
+import projectmanagement.ihm.view.dialog.DialogCreateProject;
+import projectmanagement.ihm.view.dialog.DialogOpenProject;
+import projectmanagement.ihm.view.dialog.DialogPreference;
+import projectmanagement.ihm.view.dialog.DialogUpdateTask;
 import projectmanagement.ihm.view.MainWindow;
+import projectmanagement.ihm.view.MyTableView;
 
 /**
  *
@@ -71,9 +72,10 @@ public abstract class Controller {
     }
     
      public void addTask(TableView table) {
-        Task task = new Task("",MyDate.now(),MyDate.now(),0,"",ProjectDAO.getInstance().getCurrentProject().getId());
+        Task task = new Task(ManagerLanguage.getInstance().getLocalizedTexte("Name"),MyDate.now(),MyDate.now(),0,"",ProjectDAO.getInstance().getCurrentProject().getId());
+        int id = DAOTask.getInstance().insertTask(task.getName(),task.getIdProject(),task.getDatebegin(),task.getDateend(),task.getPriority(),task.getNote());
+        task.setId(id);
         table.getItems().add(task);
-        ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
         ProjectDAO.getInstance().getCurrentProject().getTasks().add(task);
         ManageUndoRedo.getInstance().add( ProjectDAO.getInstance().getCurrentProject().getTasks());
     }
@@ -125,11 +127,35 @@ public abstract class Controller {
         }
 
     }
-
-    public void CreateDialogUpdateTask(Task task, Stage stageParent) {
+    
+    public void createDialogCreateOrOpenProjectAndQuitPrecedentProject(String tags,Stage parent) {
         Stage stage = new Stage();
+        Dialog dialog=null;
+        if (tags.equals(Tags.NEW)) {
+            dialog = new DialogCreateProject(stage, parent);
+            stage.setTitle(ManagerLanguage.getInstance().getLocalizedTexte("NewProject"));
+        }
+        else{
+            dialog = new DialogOpenProject(stage, parent);
+            stage.setTitle(ManagerLanguage.getInstance().getLocalizedTexte("OpenProject"));
+        }
+        stage.setScene(new Scene(dialog));
+        stage.setResizable(false);
+        stage.getIcons().add(new Image(SPLASH_IMAGE));
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initOwner(parent);
+        stage.show();
+    }
+
+    public void CreateDialogUpdateTask(Task task, Stage stageParent,int index,MyTableView table) {
+        Stage stage = new Stage();
+        DialogUpdateTask update = new DialogUpdateTask(stage, stageParent);
+        update.setTask(task);
+        update.setTableView(table);
+        update.setIndexTask(index);
+        update.createDialog();
         makeDialog(
-                new DialogUpdateTask(stage, stageParent),
+                update,
                 ManagerLanguage.getInstance().getLocalizedTexte("UpdateTask") + " - " + task.getName(),
                 stage,
                 stageParent
@@ -143,12 +169,15 @@ public abstract class Controller {
     }
 
     public void CreateDialogSaveProject(Stage stageParent) {
+        Locale.setDefault(ManagerLanguage.getInstance().getLocaleCourante());
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(ManagerLanguage.getInstance().getLocalizedTexte("OpenProject"));
         File file = fileChooser.showOpenDialog(stageParent);
         ManageExportImportXML exp = new ManageExportImportXML();
         Project p = exp.lecture(file.getAbsolutePath());
-        OpenProject(p, null, stageParent);
+        if(p != null){
+            OpenProject(p, null, stageParent);
+        }
     }
 
     public void CreateDialogOpenProject(Stage stageParent) {
@@ -177,10 +206,16 @@ public abstract class Controller {
     }
 
     public String createFileChooser(Stage mainstage) {
+        Locale.setDefault(ManagerLanguage.getInstance().getLocaleCourante());
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle(ManagerLanguage.getInstance().getLocalizedTexte("OpenProject"));
         File selectedDirectory = chooser.showDialog(mainstage);
-        return selectedDirectory.getAbsolutePath();
+        if(selectedDirectory !=null){
+            return selectedDirectory.getAbsolutePath();
+        }
+        else{
+            return new File(System.getProperty("user.home"), "Desktop").getAbsolutePath();
+        }
     }
 
     public void CreateDialogProject(Stage stageParent) {

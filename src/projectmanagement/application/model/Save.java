@@ -11,6 +11,7 @@ import projectmanagement.application.business.Human;
 import projectmanagement.application.business.Predecessor;
 import projectmanagement.application.business.Project;
 import projectmanagement.application.business.Ressource;
+import projectmanagement.application.business.StateSave;
 import projectmanagement.application.business.Task;
 import projectmanagement.application.dataloader.DAOTask;
 import projectmanagement.application.dataloader.ProjectDAO;
@@ -30,7 +31,6 @@ public class Save {
     public void execute() {
 
         if (!this.currentProject.getState().isSave()) {
-            System.out.println("Sauvegarde en cours");
             ProjectDAO.getInstance().updateProject(currentProject.getId(), currentProject.getTitle(), MyDate.now());
             if (currentProject.getTasks() != null && !currentProject.getTasks().isEmpty()) {
                 List tasks = DAOTask.getInstance().getAllTasksByIdProject(currentProject.getId());
@@ -40,18 +40,16 @@ public class Save {
                         savePredecessors(t);
                         saveRessources(t);
                     } else {
-                        DAOTask.getInstance().insertTask(t.getName(), t.getIdProject(), t.getDatebegin(), t.getDateend(), t.getPriority(), t.getNote());
+                        int id = DAOTask.getInstance().insertTask(t.getName(), t.getIdProject(), t.getDatebegin(), t.getDateend(), t.getPriority(), t.getNote());
+                        t.setId(id);
                         savePredecessors(t);
                         saveRessources(t);
                     }
 
                 }
             }
-            currentProject.changeState();
-        } else {
-            System.out.println("Déjà sauvegardé");
-        }
-
+            currentProject.setState(new StateSave());
+        } 
     }
 
     private void saveRessources(Task t) {
@@ -70,10 +68,12 @@ public class Save {
                 } else {
                     if (ress instanceof Human) {
                         Human h = (Human) ress;
-                        DAOTask.getInstance().insertRessource(h.getIdTask(), h.getCost(), h.getName(), h.getFirstname(), h.getRole(), null, 0);
+                        int id = DAOTask.getInstance().insertRessource(t.getId(), h.getCost(), h.getName(), h.getFirstname(), h.getRole(), null, 0);
+                        h.setId(id);
                     } else {
                         Equipment equip = (Equipment) ress;
-                        DAOTask.getInstance().insertRessource(equip.getIdTask(), equip.getCost(), equip.getName(), null, null, equip.getReference(), 1);
+                        int id = DAOTask.getInstance().insertRessource(t.getId(), equip.getCost(), equip.getName(), null, null, equip.getReference(), 1);
+                        equip.setId(id);
                     }
                 }
             }
@@ -88,7 +88,8 @@ public class Save {
                 if (predecessors != null && !predecessors.isEmpty() && predecessors.contains(t)) {
                     DAOTask.getInstance().updatePredecessor(pred.getId(), pred.getType(), pred.getGap(), pred.getConstraint(), pred.getIdTask(), t.getId());
                 } else {
-                    DAOTask.getInstance().insertPredecessor(pred.getType(), pred.getGap(), pred.getConstraint(), pred.getIdTask(), t.getId());
+                    int id = DAOTask.getInstance().insertPredecessor(pred.getType(), pred.getGap(), pred.getConstraint(), pred.getIdTask(), t.getId());
+                    pred.setId(id);
                 }
             }
 

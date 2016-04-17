@@ -5,22 +5,26 @@
  */
 package projectmanagement.application.model;
 
+import java.util.List;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import projectmanagement.application.business.Predecessor;
 import projectmanagement.application.business.Project;
+import projectmanagement.application.business.Task;
 import projectmanagement.application.dataloader.ProjectDAO;
 import projectmanagement.ihm.controller.ClickController;
 import projectmanagement.ihm.controller.Tags;
+import projectmanagement.ihm.view.dialog.DialogUpdateTask;
+import projectmanagement.ihm.view.MyTableView;
 
 /**
  *
@@ -55,7 +59,7 @@ public abstract class Dialog extends VBox {
         return managerLang;
     }
 
-    public HBox createLignDialog(String text, TextField textField) {
+    public HBox createLignDialog(String text, Node textField) {
         HBox box1 = new HBox();
         Label lab = new Label(text);
         box1.setAlignment(Pos.CENTER);
@@ -78,18 +82,6 @@ public abstract class Dialog extends VBox {
         return box1;
     }
 
-    /* public HBox createLignDialogBrowse(String text, Stage mainStage,TextField textField) {
-     HBox box1 = new HBox();
-     Label lab = new Label(text);
-     box1.setPadding(new Insets(15, 12, 15, 12));
-     box1.setSpacing(10);
-     textField = new TextField();
-
-     Button b = new Button("...");
-     b.setOnAction(new ClickController(Tags.BROWSE_FILE_TO_CREATE_PROJECT,mainStage,textField));
-     box1.getChildren().addAll(lab, textField, b);
-     return box1;
-     }*/
     public HBox createLignDialogButtonValidation(String localizedTexte, String localizedTexte2, Stage stage, Stage stageParent, Node name,String tag) {
         HBox box1 = new HBox();
         box1.setPadding(new Insets(15, 12, 15, 12));
@@ -100,6 +92,28 @@ public abstract class Dialog extends VBox {
         Button bClose = new Button(localizedTexte2);
         bCreate.setOnAction(new ClickController(tag, stage, stageParent, name));
         bClose.setOnAction(new ClickController(Tags.CLOSE_DIALOG, stage));
+        box1.getChildren().addAll(bCreate, bClose);
+        return box1;
+    }
+
+    public HBox createLignDialogButtonValidationUpdateTask(String localizedTexte, String localizedTexte2,
+            Stage stage, DialogUpdateTask dialogParent) {
+        HBox box1 = new HBox();
+        box1.setPadding(new Insets(15, 12, 15, 12));
+        box1.setSpacing(10);
+        box1.setAlignment(Pos.CENTER);
+
+        Button bCreate = new Button(localizedTexte);
+        Button bClose = new Button(localizedTexte2);
+
+        ClickController apply = new ClickController(Tags.APPLY_TASK, stage);
+        apply.setTask(dialogParent.getTask(), dialogParent.getIndexTaskUpdate(),dialogParent.getListeRessource(), dialogParent.getListePredecessor(),dialogParent.getTable());
+        bCreate.setOnAction(apply);
+        
+        ClickController click = new ClickController(Tags.PREVIOUS_TASK, stage);
+        click.setTask(dialogParent.getInitialtask(), dialogParent.getIndexTaskUpdate(),null,null,dialogParent.getTable());
+        bClose.setOnAction(click);
+        
         box1.getChildren().addAll(bCreate, bClose);
         return box1;
     }

@@ -77,6 +77,10 @@ public class Tags {
     public static final String ID_PROJECT="ID_PROJECT";
     public static final String ADD_TASK = "ADD_TASK";
     public static final String UPDATE_TASK="UPDATE_TASK";
+    public static final String PREVIOUS_TASK ="PREVIOUS_TASK";
+    public static final String APPLY_TASK ="APPLY_TASK";
+    public static final String RESSOURCE_NAME="RESSOURCE_NAME";
+    public static final String RESSOURCE_FIRSTNAME = "RESSOURCE_FIRSTNAME";
    
     
     

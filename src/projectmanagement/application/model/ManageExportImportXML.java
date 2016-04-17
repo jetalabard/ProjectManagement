@@ -168,7 +168,7 @@ public class ManageExportImportXML {
             predecessor.addContent(attr);
 
             attr = new Element(Tags.GAP);
-            attr.setText(MyDate.valueOf(pred.getGap()));
+            attr.setText(String.valueOf(pred.getGap()));
             predecessor.addContent(attr);
             
             tache.addContent(predecessor);
@@ -274,13 +274,13 @@ public class ManageExportImportXML {
         Iterator j = listRes.iterator();
         while (j.hasNext()) {
             Element res = (Element) j.next();
-            String gap = res.getChild(Tags.GAP).getValue();
+            int gap = Integer.valueOf(res.getChild(Tags.GAP).getValue());
             int id = Integer.valueOf(res.getChild(Tags.ID).getValue());
             String constraint = res.getChild(Tags.CONSTRAINT).getValue();
             String name = res.getChild(Tags.NAME).getValue();
             int id_task =Integer.valueOf(res.getChild(Tags.ID_TASK).getValue());
             
-            Predecessor predecessor = new Predecessor(id,name, MyDate.valueOf(gap), constraint,id_task,task.getId());
+            Predecessor predecessor = new Predecessor(id,name, gap, constraint,id_task,task.getId());
             task.getPredecessor().add(predecessor);
         }
         return task;

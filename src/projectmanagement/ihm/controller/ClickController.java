@@ -5,56 +5,56 @@
  */
 package projectmanagement.ihm.controller;
 
+import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
+import projectmanagement.application.business.Predecessor;
 import projectmanagement.application.business.Project;
+import projectmanagement.application.business.StateNotSave;
+import projectmanagement.application.business.Task;
 import projectmanagement.application.dataloader.ProjectDAO;
-import projectmanagement.application.model.Dialog;
-import projectmanagement.application.model.ManagerLanguage;
+import projectmanagement.application.model.ManageUndoRedo;
 import projectmanagement.application.model.MyDate;
-import static projectmanagement.ihm.controller.PMApplication.SPLASH_IMAGE;
-import projectmanagement.ihm.view.DialogCreateProject;
-import projectmanagement.ihm.view.DialogOpenProject;
+import projectmanagement.application.model.RessourcesTable;
+import projectmanagement.ihm.view.MyTableView;
 
 /**
  *
  * @author Jérémy
  */
 public class ClickController extends Controller implements EventHandler<ActionEvent> {
-    
+
     private final Stage stage;
     private String what;
     private final Node FieldName;
     private Stage stageParent;
     private String tags;
-    
+    private Task task;
+    private MyTableView table;
+    private List<RessourcesTable> listRessource;
+    private List<Predecessor> listPredecessor;
+    private int indexTask;
+
     public ClickController(String what, Stage dialogStage, Stage stageParent, Node name) {
         this.what = what;
         this.stage = dialogStage;
         this.FieldName = name;
         this.stageParent = stageParent;
     }
-    
+
     public ClickController(String what, Stage stage) {
         this.what = what;
         this.stage = stage;
         this.FieldName = null;
     }
-    
+
     @Override
     public void handle(ActionEvent event) {
-        if (what != null && what.equals(Tags.BROWSE_FILE_TO_CREATE_PROJECT)) 
-        {
-            /*String path = createFileChooser(ManagerLanguage.getInstance().getLocalizedTexte("ProjectLocation"),mainstage);
-             FieldPath.setText(path);*/
-        } else if (what != null && what.equals(Tags.CLOSE_DIALOG)) {
+        if (what != null && what.equals(Tags.CLOSE_DIALOG)) {
             if (stage != null) {
                 stage.close();
             }
@@ -66,7 +66,7 @@ public class ClickController extends Controller implements EventHandler<ActionEv
                 String text = ((TextField) this.FieldName).getText();
                 Project p = ProjectDAO.getInstance().insertProject(text, MyDate.now());
                 OpenProject(p, stage, stageParent);
-                
+
             }
         } else if (what != null && what.equals(Tags.OPEN_PROJECT)) {
             if (((ComboBox) this.FieldName).getSelectionModel().getSelectedItem() == null) {
@@ -75,48 +75,58 @@ public class ClickController extends Controller implements EventHandler<ActionEv
             } else {
                 Project p = (Project) ((ComboBox) this.FieldName).getSelectionModel().getSelectedItem();
                 OpenProject(p, stage, stageParent);
-                
+
             }
         } else if (what != null && what.equals(Tags.CONFIRMATION_NO_SAVE)) {
             Quit();
         } else if (what != null && what.equals(Tags.CONFIRMATION_YES_SAVE)) {
             SaveProject(ProjectDAO.getInstance().getCurrentProject());
             Quit();
-        }
-        else if (what != null && what.equals(Tags.CONFIRMATION_NO_SAVE_NOT_QUIT)) 
-        {
-            createDialogCreateOrOpenProjectAndQuitPrecedentProject();
+        } else if (what != null && what.equals(Tags.CONFIRMATION_NO_SAVE_NOT_QUIT)) {
+            createDialogCreateOrOpenProjectAndQuitPrecedentProject(tags, stageParent);
             stage.close();
-        } else if (what != null && what.equals(Tags.CONFIRMATION_YES_SAVE_NOT_QUIT)) 
-        {
+        } else if (what != null && what.equals(Tags.CONFIRMATION_YES_SAVE_NOT_QUIT)) {
             SaveProject(ProjectDAO.getInstance().getCurrentProject());
             stage.close();
-            createDialogCreateOrOpenProjectAndQuitPrecedentProject();
-        } else {
+            createDialogCreateOrOpenProjectAndQuitPrecedentProject(tags, stageParent);
+        } else if (what != null && what.equals(Tags.PREVIOUS_TASK))
+        {
+            //retour à la tâche que l'on avait précédemment 
+            int index = 0;
+            for (int i = 0; i < ProjectDAO.getInstance().getCurrentProject().getTasks().size(); i++) {
+                if (ProjectDAO.getInstance().getCurrentProject().getTasks().get(i).equals(task)) {
+                    index = i;
+                }
+            }
+            table.getItems().set(index, task);
+            ProjectDAO.getInstance().getCurrentProject().getTasks().set(index, task);
+            table.reload();
+            stage.close();
+        } else if (what != null && what.equals(Tags.APPLY_TASK)) {
+            //actualisation du tableau avec nouvelle tâche saisie
+            task.setPredecessor(listPredecessor);
+            task.setRessources(RessourcesTable.transformRessourceTableToResssource(listRessource));
+            table.getItems().set(indexTask, task);
+            ProjectDAO.getInstance().getCurrentProject().getTasks().set(indexTask, task);
             
-        }
-    }
+            ManageUndoRedo.getInstance().add(ProjectDAO.getInstance().getCurrentProject().getTasks());
+            ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
+            table.reload();
+            stage.close();
+        } else {
 
-    private void createDialogCreateOrOpenProjectAndQuitPrecedentProject() {
-        Stage stage = new Stage();
-        Dialog dialog=null;
-        if (this.tags.equals(Tags.NEW)) {
-            dialog = new DialogCreateProject(stage, stageParent);
-            stage.setTitle(ManagerLanguage.getInstance().getLocalizedTexte("NewProject"));
         }
-        else{
-            dialog = new DialogOpenProject(stage, stageParent);
-            stage.setTitle(ManagerLanguage.getInstance().getLocalizedTexte("OpenProject"));
-        }
-        stage.setScene(new Scene(dialog));
-        stage.setResizable(false);
-        stage.getIcons().add(new Image(SPLASH_IMAGE));
-        stage.initModality(Modality.WINDOW_MODAL);
-        stage.initOwner(stageParent);
-        stage.show();
     }
 
     public void setTags(String tags) {
         this.tags = tags;
+    }
+
+    public void setTask(Task task,int indexTask,  List<RessourcesTable> ressource, List<Predecessor> listPredecessor,MyTableView table) {
+        this.task = task;
+        this.table = table;
+        this.listRessource = ressource;
+        this.listPredecessor = listPredecessor;
+        this.indexTask = indexTask;
     }
 }

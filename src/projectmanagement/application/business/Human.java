@@ -6,7 +6,6 @@
 
 package projectmanagement.application.business;
 
-import java.util.Objects;
 
 /**
  *
@@ -24,7 +23,10 @@ public class Human extends Ressource{
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
-        } else {
+        } 
+        else if(obj instanceof Equipment) {
+            return false;
+        }else {
             Human h = (Human) obj;
             if (getId() != null && h.getId() != null && getId().equals(h.getId())) {
                 if (getIdTask() != null && h.getIdTask() != null && getIdTask().equals(h.getIdTask())) {
@@ -66,8 +68,25 @@ public class Human extends Ressource{
         this.role = role;
     }
 
-    public Human(int id, float cost,String name, String firstname, String role,int idTask) {
+    @Override
+    public String toString() {
+        return "Human{" + "name=" + name + ", firstname=" + firstname + ", role=" + role + '}';
+    }
+    
+    
+
+    public Human(Integer id, float cost,String name, String firstname, String role,Integer idTask) {
         super(id, cost,idTask);
+        this.name = name;
+        this.firstname = firstname;
+        this.role = role;
+    }
+    
+     public Human(float cost,String name, String firstname, String role,Integer idTask) {
+        super();
+         this.setCost(cost);
+         this.setIdTask(idTask);
+         this.setId(null);
         this.name = name;
         this.firstname = firstname;
         this.role = role;

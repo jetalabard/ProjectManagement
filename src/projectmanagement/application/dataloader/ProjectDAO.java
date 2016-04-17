@@ -53,9 +53,10 @@ public class ProjectDAO implements IProjectDAO {
         try {
             Statement stmt = Database.getInstance().getConnection().createStatement();
             ResultSet result = stmt.executeQuery("Select * from PROJECT where "+Tags.ID+"=" + id+";");
-            result.first();
-            p = new Project(result.getInt(Tags.ID), result.getString(Tags.NAME),MyDate.valueOf(result.getString(Tags.LASTUSE)));
-            result.close();
+            while (result.next()) {
+                p = new Project(result.getInt(Tags.ID), result.getString(Tags.NAME),MyDate.valueOf(result.getString(Tags.LASTUSE)));
+            }
+             result.close();
             stmt.close();
         } catch (SQLException ex) {
             Logger.getLogger(ProjectDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -65,6 +66,7 @@ public class ProjectDAO implements IProjectDAO {
         return p;
 
     }
+    
 
     @Override
     public List<Project> getAllProject() {
@@ -85,10 +87,11 @@ public class ProjectDAO implements IProjectDAO {
         return list;
     }
     
+   
     @Override
     public Project insertProject(String name,MyDate lastUse) {
-        Database.getInstance().insert("INSERT INTO PROJECT ("+Tags.NAME+","+Tags.LASTUSE+") VALUES('"+ name +"','"+MyDate.valueOf(lastUse)+"');");
-        return new Project(Database.getInstance().getLastInsertId(),name,lastUse);
+        int id = Database.getInstance().insert("INSERT INTO PROJECT ("+Tags.NAME+","+Tags.LASTUSE+") VALUES('"+ name +"','"+MyDate.valueOf(lastUse)+"');");
+        return getProject(id);
     }
 
     @Override
