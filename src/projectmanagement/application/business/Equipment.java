@@ -24,7 +24,6 @@ public class Equipment extends Ressource {
     public Equipment( float cost, String reference, String name,Integer idTask) {
         super();
         this.setCost(cost);
-        this.setId(null);
         this.setIdTask(idTask);
         this.reference = reference;
         this.name = name;

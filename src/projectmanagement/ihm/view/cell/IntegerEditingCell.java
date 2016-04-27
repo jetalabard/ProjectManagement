@@ -11,7 +11,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TextField;
 import projectmanagement.application.business.StateNotSave;
 import projectmanagement.application.business.Task;
-import projectmanagement.application.dataloader.ProjectDAO;
+import projectmanagement.application.model.DAO;
 import projectmanagement.application.model.ManageUndoRedo;
 import projectmanagement.ihm.controller.Tags;
 
@@ -46,8 +46,8 @@ public class IntegerEditingCell extends TableCell<Task, Integer> {
             } else {
                 commitEdit(Integer.parseInt(text));
                 if (this.mode == 0) {
-                    ManageUndoRedo.getInstance().add(ProjectDAO.getInstance().getCurrentProject().getTasks());
-                    ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
+                    ManageUndoRedo.getInstance().add(DAO.getInstance().getCurrentProject().getTasks());
+                    DAO.getInstance().getCurrentProject().setState(new StateNotSave());
                 }
             }
 
@@ -99,7 +99,7 @@ public class IntegerEditingCell extends TableCell<Task, Integer> {
     public void commitEdit(Integer value) {
         super.commitEdit(value);
         if(tags.equals(Tags.PRIORITY)){
-            for (Task t : ProjectDAO.getInstance().getCurrentProject().getTasks()) {
+            for (Task t : DAO.getInstance().getCurrentProject().getTasks()) {
                 if (t.equals(this.getTableRow().getItem())) {
                     if(value>0 && value <10){
                         t.setPriority(value);

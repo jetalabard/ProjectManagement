@@ -12,6 +12,9 @@ import java.util.Date;
 import java.util.List;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -43,12 +46,15 @@ public class DialogUpdateTask extends Dialog {
     private Task task;
     private MyTableView table;
     private List<RessourcesTable> listeRessource;
-     private List<Predecessor> listePredecessor;
+    private List<Predecessor> listePredecessor;
     private int indexTask;
+    private DatePicker endDatePicker;
+    private DatePicker startDatePicker;
+    private NumberSpinner duration;
 
     public DialogUpdateTask(Stage dialog, Stage stageParent) {
         super(dialog, stageParent, 1);
-        
+
     }
 
     @Override
@@ -75,13 +81,19 @@ public class DialogUpdateTask extends Dialog {
     }
 
     public void setTask(Task task) {
-        this.task = new Task(task.getId(), task.getName(), task.getDatebegin(), task.getDateend(), task.getPriority(), task.getNote(), task.getIdProject(),task.getRessources(),task.getPredecessor());
-        this.initialtask = new Task(task.getId(), task.getName(), task.getDatebegin(), task.getDateend(), task.getPriority(), task.getNote(), task.getIdProject(),task.getRessources(),task.getPredecessor());
+        this.task = new Task(task.getId(), task.getName(), task.getDatebegin(), task.getDateend(), task.getPriority(), task.getNote(), task.getIdProject(), task.getRessources(), task.getPredecessor());
+        this.initialtask = new Task(task.getId(), task.getName(), task.getDatebegin(), task.getDateend(), task.getPriority(), task.getNote(), task.getIdProject(), task.getRessources(), task.getPredecessor());
     }
 
     private Tab createTabGeneral() {
         Tab general = new Tab(ManagerLanguage.getInstance().getLocalizedTexte("GeneralInformation"));
         VBox vbox = new VBox();
+        LocalDate date = task.getDatebegin().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        startDatePicker = new DatePicker(date);
+        LocalDate dateEnd = task.getDateend().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        endDatePicker = new DatePicker(dateEnd);
+        duration = new NumberSpinner(1);
+        duration.setNumber(BigDecimal.valueOf(MyDate.days(MyDate.diff(task.getDatebegin(), task.getDateend()))));
         TextField name = new TextField(task.getName());
         name.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
@@ -90,36 +102,44 @@ public class DialogUpdateTask extends Dialog {
         });
         vbox.getChildren().add(createLignDialog(getManagerLang().getLocalizedTexte("Name"), name));
 
-        LocalDate date = task.getDatebegin().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        DatePicker startDatePicker = new DatePicker(date);
-        startDatePicker.valueProperty().addListener(new ChangeListener<LocalDate>() {
+        createComboBox(vbox);
 
-            @Override
-            public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
-                task.setDatebegin(new MyDate(Date.from(newValue.atStartOfDay(ZoneId.systemDefault()).toInstant())));
+        startDatePicker.valueProperty().addListener((ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) -> {
+            task.setDatebegin(new MyDate(Date.from(newValue.atStartOfDay(ZoneId.systemDefault()).toInstant())));
+            if (task.getDatebegin().after(task.getDateend())) 
+            {
+                task.setDateend(new MyDate(task.getDatebegin().getTime() + MyDate.DAY));
+                LocalDate date1 = task.getDateend().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                endDatePicker.setValue(date1);
+                duration.setNumber(BigDecimal.valueOf(MyDate.diffDays(task.getDatebegin(), task.getDateend())));
             }
-
         });
         vbox.getChildren().add(createLignDialog(getManagerLang().getLocalizedTexte("DateBegin"), startDatePicker));
 
-        LocalDate dateEnd = task.getDatebegin().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        DatePicker endDatePicker = new DatePicker(dateEnd);
-        endDatePicker.valueProperty().addListener(new ChangeListener<LocalDate>() {
-
-            @Override
-            public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
-                task.setDateend(new MyDate(Date.from(newValue.atStartOfDay(ZoneId.systemDefault()).toInstant())));
+        endDatePicker.valueProperty().addListener((ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) -> {
+            MyDate date1 = new MyDate(Date.from(newValue.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+            if (date1.after(task.getDatebegin())) {
+                task.setDateend(date1);
+                endDatePicker.setValue(newValue);
+                duration.setNumber(BigDecimal.valueOf(MyDate.diffDays(task.getDatebegin(), task.getDateend())));
             }
-
+            
         });
         vbox.getChildren().add(createLignDialog(getManagerLang().getLocalizedTexte("DateEnd"), endDatePicker));
 
-        NumberSpinner number = new NumberSpinner();
+        vbox.getChildren().add(createLignDialog(getManagerLang().getLocalizedTexte("Duration"), duration));
+        duration.getTextField().textProperty().addListener((observable, oldValue, newValue) -> {
+               // duration ne s incrémente plus dans le cas par défaut
+                task.setDateend(new MyDate(task.getDatebegin().getTime() + Integer.valueOf(newValue) * MyDate.DAY));
+                endDatePicker.setValue(task.getDateend().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+        });
+
+        NumberSpinner number = new NumberSpinner(0);
         number.setNumber(BigDecimal.valueOf(task.getPriority()));
         vbox.getChildren().add(createLignDialog(getManagerLang().getLocalizedTexte("Priority"), number));
         number.getTextField().textProperty().addListener((observable, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                if(Integer.valueOf(newValue) <10 && Integer.valueOf(newValue)>0){
+                if (Integer.valueOf(newValue) < 10 && Integer.valueOf(newValue) > 0) {
                     task.setPriority(Integer.valueOf(newValue));
                 }
             }
@@ -135,6 +155,35 @@ public class DialogUpdateTask extends Dialog {
 
         general.setContent(vbox);
         return general;
+    }
+
+    private void createComboBox(VBox vbox) {
+        ObservableList<String> options = FXCollections.observableArrayList(
+                ManagerLanguage.getInstance().getLocalizedTexte("textOptionUpdate1"),
+                ManagerLanguage.getInstance().getLocalizedTexte("textOptionUpdate2"),
+                ManagerLanguage.getInstance().getLocalizedTexte("textOptionUpdate3")
+        );
+        ComboBox comboBox = new ComboBox(options);
+        comboBox.setValue(ManagerLanguage.getInstance().getLocalizedTexte("textOptionUpdate2"));
+        endDatePicker.setDisable(true);
+        startDatePicker.setDisable(false);
+        duration.setDisable(false);
+        comboBox.valueProperty().addListener((ObservableValue observable, Object oldValue, Object newValue) -> {
+            if (newValue.toString().equals(ManagerLanguage.getInstance().getLocalizedTexte("textOptionUpdate2"))) {
+                endDatePicker.setDisable(true);
+                startDatePicker.setDisable(false);
+                duration.setDisable(false);
+            } else if (newValue.toString().equals(ManagerLanguage.getInstance().getLocalizedTexte("textOptionUpdate1"))) {
+                endDatePicker.setDisable(false);
+                startDatePicker.setDisable(true);
+                duration.setDisable(false);
+            } else {
+                endDatePicker.setDisable(false);
+                startDatePicker.setDisable(false);
+                duration.setDisable(true);
+            }
+        });
+        vbox.getChildren().add(createLignDialog(getManagerLang().getLocalizedTexte("Options"), comboBox));
     }
 
     public void setTableView(MyTableView table) {
@@ -195,8 +244,8 @@ public class DialogUpdateTask extends Dialog {
     public void setIndexTask(int index) {
         this.indexTask = index;
     }
-    
-    public int getIndexTaskUpdate(){
+
+    public int getIndexTaskUpdate() {
         return indexTask;
     }
 

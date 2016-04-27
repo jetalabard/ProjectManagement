@@ -10,21 +10,19 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
-import projectmanagement.application.business.StateNotSave;
 import projectmanagement.application.business.Task;
-import projectmanagement.application.dataloader.ProjectDAO;
+import projectmanagement.application.model.DAO;
 import projectmanagement.application.model.ManageUndoRedo;
-import projectmanagement.application.model.MyDate;
-import projectmanagement.ihm.view.Page;
+import projectmanagement.application.model.ManagerShowDiagram;
 
 /**
  *
  * @author Jérémy
  */
 public class MenuController extends Controller  implements EventHandler<ActionEvent>{
-    private String what;
-    private String where;
-    private Stage stage;
+    private final String what;
+    private final String where;
+    private final Stage stage;
     private TableView<Task> table;
     private Slider slider;
 
@@ -61,7 +59,7 @@ public class MenuController extends Controller  implements EventHandler<ActionEv
                 CreateDialogOpenProject(stage);
                 break;
             case Tags.SAVE:
-                SaveProject(ProjectDAO.getInstance().getCurrentProject());
+                SaveProject(DAO.getInstance().getCurrentProject());
                 break;
             case Tags.SAVEAS:
                 CreateDialogSaveProjectAs(stage);
@@ -73,6 +71,11 @@ public class MenuController extends Controller  implements EventHandler<ActionEv
                 CreateDialogSaveProject(stage);
                 break;
             case Tags.EXPORT_IMAGE:
+                break;
+            case Tags.DELETE:
+                deleteProjectAndRunHomePage(stage);
+            case Tags.CHANGE_NAME:
+                CreateDialogChangeName(stage);
                 break;
             default:
                 break;
@@ -116,6 +119,25 @@ public class MenuController extends Controller  implements EventHandler<ActionEv
             case Tags.PREFERENCE:
                 CreateDialogPreference(stage);
                 break;
+            case Tags.DELETE_ALL:
+                deleteAllAndReloadHomePage(stage);
+                break;
+            case Tags.SHOW_GANTT:
+                if(ManagerShowDiagram.getInstance().isGanttTabShow() == true){
+                    ManagerShowDiagram.getInstance().closeTabGantt();
+                }
+                else{
+                    ManagerShowDiagram.getInstance().showTabGantt();
+                }
+                break;
+            case Tags.SHOW_PERT:
+                if(ManagerShowDiagram.getInstance().isPertTabShow()== true){
+                    ManagerShowDiagram.getInstance().closeTabPert();
+                }
+                else{
+                    ManagerShowDiagram.getInstance().showTabPert();
+                }
+                break;
             default:
                 break;
         }
@@ -130,6 +152,9 @@ public class MenuController extends Controller  implements EventHandler<ActionEv
         this.slider = slider;
     }
 
+    
+
+    
 
     
 }

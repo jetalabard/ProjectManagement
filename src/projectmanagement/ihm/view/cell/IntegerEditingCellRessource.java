@@ -14,7 +14,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TextField;
 import projectmanagement.application.business.StateNotSave;
-import projectmanagement.application.dataloader.ProjectDAO;
+import projectmanagement.application.model.DAO;
 import projectmanagement.application.model.ManageUndoRedo;
 import projectmanagement.application.model.RessourcesTable;
 import projectmanagement.ihm.controller.Tags;
@@ -50,8 +50,8 @@ public class IntegerEditingCellRessource extends TableCell<RessourcesTable, Floa
             } else {
                 commitEdit(Float.parseFloat(text));
                 if (this.mode == 0) {
-                    ManageUndoRedo.getInstance().add(ProjectDAO.getInstance().getCurrentProject().getTasks());
-                    ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
+                    ManageUndoRedo.getInstance().add(DAO.getInstance().getCurrentProject().getTasks());
+                    DAO.getInstance().getCurrentProject().setState(new StateNotSave());
                 }
             }
 

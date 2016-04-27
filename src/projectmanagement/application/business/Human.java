@@ -86,7 +86,6 @@ public class Human extends Ressource{
         super();
          this.setCost(cost);
          this.setIdTask(idTask);
-         this.setId(null);
         this.name = name;
         this.firstname = firstname;
         this.role = role;

@@ -12,7 +12,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import projectmanagement.application.business.StateNotSave;
 import projectmanagement.application.business.Task;
-import projectmanagement.application.dataloader.ProjectDAO;
+import projectmanagement.application.model.DAO;
 import projectmanagement.application.model.ManageUndoRedo;
 import projectmanagement.ihm.controller.Tags;
 
@@ -46,8 +46,8 @@ public class StringCell extends TableCell<Task, String> {
         } else {
             commitEdit(textField.getText());
             if (this.mode == 0) {
-                ManageUndoRedo.getInstance().add(ProjectDAO.getInstance().getCurrentProject().getTasks());
-                ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
+                ManageUndoRedo.getInstance().add(DAO.getInstance().getCurrentProject().getTasks());
+                DAO.getInstance().getCurrentProject().setState(new StateNotSave());
             }
         }
 
@@ -94,7 +94,7 @@ public class StringCell extends TableCell<Task, String> {
         super.commitEdit(value);
 
         if (this.column.equals(Tags.NAME)) {
-            for (Task t : ProjectDAO.getInstance().getCurrentProject().getTasks()) {
+            for (Task t : DAO.getInstance().getCurrentProject().getTasks()) {
                 if (t.equals(this.getTableRow().getItem())) {
                     t.setName(value);
                 }
@@ -102,7 +102,7 @@ public class StringCell extends TableCell<Task, String> {
             ((Task) this.getTableRow().getItem()).setName(value);
 
         } else if (this.column.equals(Tags.NOTE)) {
-            for (Task t : ProjectDAO.getInstance().getCurrentProject().getTasks()) {
+            for (Task t : DAO.getInstance().getCurrentProject().getTasks()) {
                 if (t.equals(this.getTableRow().getItem())) {
                     t.setNote(value);
                 }

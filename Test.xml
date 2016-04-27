@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PROJECT id="300" name="Test" lastuse="21-04-2016">
+  <task>
+    <id>388</id>
+    <name>name</name>
+    <date_begin>21-04-2016</date_begin>
+    <date_end>21-04-2016</date_end>
+    <priority>0</priority>
+    <ID_PROJECT>300</ID_PROJECT>
+    <note />
+    <predecessor>
+      <id>241</id>
+      <taskID>388</taskID>
+      <parentTaskID>0</parentTaskID>
+      <constraintPred />
+      <type />
+      <gap>0</gap>
+    </predecessor>
+    <ressource type="0">
+      <id>234</id>
+      <cost>0.0</cost>
+      <name>name</name>
+      <firstname>firstname</firstname>
+      <role />
+    </ressource>
+  </task>
+  <task>
+    <id>389</id>
+    <name>name</name>
+    <date_begin>21-04-2016</date_begin>
+    <date_end>21-04-2016</date_end>
+    <priority>0</priority>
+    <ID_PROJECT>300</ID_PROJECT>
+    <note>note</note>
+    <predecessor>
+      <id>242</id>
+      <taskID>389</taskID>
+      <parentTaskID>0</parentTaskID>
+      <constraintPred>constraint</constraintPred>
+      <type>type</type>
+      <gap>0</gap>
+    </predecessor>
+    <ressource type="1">
+      <id>235</id>
+      <cost>0.0</cost>
+      <reference />
+      <name>name</name>
+    </ressource>
+    <ressource type="1">
+      <id>236</id>
+      <cost>0.0</cost>
+      <reference>reference</reference>
+      <name>name</name>
+    </ressource>
+  </task>
+  <task>
+    <id>390</id>
+    <name>name</name>
+    <date_begin>21-04-2016</date_begin>
+    <date_end>21-04-2016</date_end>
+    <priority>0</priority>
+    <ID_PROJECT>300</ID_PROJECT>
+    <note />
+  </task>
+</PROJECT>

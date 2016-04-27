@@ -25,6 +25,8 @@ public class Ressource{
         this.id = id;
     }
 
+    
+
     public float getCost() {
         return cost;
     }

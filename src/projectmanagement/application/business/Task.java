@@ -14,7 +14,7 @@ import projectmanagement.application.model.MyDate;
  *
  * @author Jérémy
  */
-public class Task extends TaskComponent{
+public class Task {
 
     private Integer id;
     
@@ -34,9 +34,16 @@ public class Task extends TaskComponent{
     private List<Ressource> ressources = null;
 
     public Task() {
+        priority =0;
         predecessor = new ArrayList<>();
         ressources = new ArrayList<>();
     }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    
+    
 
     public Task(int id, String name, MyDate datebegin, MyDate dateend, int priority, String note,int idProject) {
         this.id = id;
@@ -99,19 +106,10 @@ public class Task extends TaskComponent{
         return idProject;
     }
 
-    public void setIdProject(int idProject) {
-        this.idProject = idProject;
-    }
-    
-    
     
 
     public Integer getId() {
         return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getName() {

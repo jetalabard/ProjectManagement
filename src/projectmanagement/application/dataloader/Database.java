@@ -30,7 +30,6 @@ public class Database {
         }
         return instance;
     }
-    private Object statement;
 
     public Database() {
         try {
@@ -73,33 +72,14 @@ public class Database {
 
         sql = "CREATE TABLE IF NOT EXISTS PREDECESSOR"
                 + "(" + Tags.ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-                + "" + Tags.TYPE + " TEXT,"
-                + "" + Tags.ID_TASK + " INTEGER NOT NULL,"
-                + "" + Tags.ID_TASK_PARENT + " INTEGER NOT NULL,"
-                + "" + Tags.GAP + " INTEGER,"
-                + "" + Tags.CONSTRAINT + " TEXT)";
+                + " " + Tags.TYPE + " TEXT,"
+                + " " + Tags.ID_TASK + " INTEGER NOT NULL,"
+                + " " + Tags.ID_TASK_PARENT + " INTEGER NOT NULL,"
+                + " " + Tags.GAP + " INTEGER NOT NULL,"
+                + " " + Tags.CONSTRAINT + " TEXT)";
         stmt.executeUpdate(sql);
 
         stmt.close();
-    }
-
-    public int getLastInsertId() {
-        int value = -1;
-        try {
-            Statement stmt = getConnection().createStatement();
-            ResultSet result = stmt.executeQuery("SELECT last_insert_rowid();");
-            while (result.next()) {
-                System.out.println("Last insert row id " + result.getInt(1));
-                value = result.getInt(1);
-            }
-            result.close();
-            stmt.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(ProjectDAO.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            closeConnection();
-        }
-        return value;
     }
 
     public Connection getConnection() {
@@ -121,7 +101,6 @@ public class Database {
         PreparedStatement stmt = null;
         long returnValue = -1;
         try {
-            System.out.println(requete);
             stmt = getConnection().prepareStatement(requete,
                     Statement.RETURN_GENERATED_KEYS);
             stmt.executeUpdate();
@@ -141,7 +120,6 @@ public class Database {
     }
 
     public void update(String requete) {
-        System.out.println(requete);
         try {
             try (Statement stmt = getConnection().createStatement()) {
                 stmt.executeUpdate(requete);

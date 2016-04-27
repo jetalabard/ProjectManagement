@@ -13,6 +13,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import projectmanagement.application.business.StateNotSave;
 import projectmanagement.application.business.Task;
+import projectmanagement.application.model.DAO;
 import projectmanagement.application.dataloader.ProjectDAO;
 import projectmanagement.application.model.ManageUndoRedo;
 import projectmanagement.application.model.Save;
@@ -49,7 +50,7 @@ public class KeyListener extends Controller implements EventHandler<KeyEvent> {
     @Override
     public void handle(KeyEvent event) {
         if (ctrlS.match(event)) {
-            new Save(ProjectDAO.getInstance().getCurrentProject()).execute();
+            DAO.getInstance().setCurrentProject(new Save(DAO.getInstance().getCurrentProject()).execute());
         }
         if (ctrlY.match(event)) {
             ManageUndoRedo.getInstance().redo();
@@ -77,9 +78,9 @@ public class KeyListener extends Controller implements EventHandler<KeyEvent> {
         }
         if (ctrlV.match(event) && copyTask != null) {
             table.getItems().add(copyTask);
-            ProjectDAO.getInstance().getCurrentProject().getTasks().add(copyTask);
-            ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
-            ManageUndoRedo.getInstance().add(ProjectDAO.getInstance().getCurrentProject().getTasks());
+            DAO.getInstance().getCurrentProject().getTasks().add(copyTask);
+            DAO.getInstance().getCurrentProject().setState(new StateNotSave());
+            ManageUndoRedo.getInstance().add(DAO.getInstance().getCurrentProject().getTasks());
             table.getContextMenu().getItems().remove(table.getContextMenu().getItems().size() - 1);
             copyTask = null;
         }

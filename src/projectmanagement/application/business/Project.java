@@ -7,6 +7,7 @@ package projectmanagement.application.business;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import projectmanagement.application.model.MyDate;
 
 /**
@@ -14,7 +15,7 @@ import projectmanagement.application.model.MyDate;
  * @author Jérémy
  */
 public class Project {
-    private int id;
+    private Integer id;
     
     private List<Task> tasks = null;
     
@@ -23,16 +24,34 @@ public class Project {
     private MyDate lastUse = null;
     
     private State state = null;
-    
-    public Project(int id,String title,MyDate lastUse){
-        this.id = id;
-        this.title = title;
-        this.lastUse = lastUse;
-        state = new StateSave();
-        tasks = new ArrayList<Task>();
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == null){
+            return false;
+        }else{
+            if(obj instanceof Project){
+                Project proj = (Project)obj;
+                if(id.equals(proj.getId())){
+                    return true;
+                }
+            }
+            else{
+                return false;
+            }
+        }
+        return false;
     }
 
-    public Project(String title,MyDate lastUse) {
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 89 * hash + Objects.hashCode(this.id);
+        return hash;
+    }
+    
+    public Project(Integer id,String title,MyDate lastUse){
+        this.id = id;
         this.title = title;
         this.lastUse = lastUse;
         state = new StateSave();
@@ -43,7 +62,14 @@ public class Project {
         return this.title;
     }
 
-    public int getId() {
+    public void setTitle(String title) {
+        this.title = title;
+        this.state = new StateNotSave();
+    }
+    
+    
+
+    public Integer getId() {
         return id;
     }
 
@@ -53,6 +79,7 @@ public class Project {
 
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
+        this.state = new StateNotSave();
     }
 
     public MyDate getLastUse() {
@@ -63,6 +90,7 @@ public class Project {
     public String toString() {
         StringBuilder sb =  new StringBuilder(title);
         sb.append(" ");
+        sb.append(id+" "+ lastUse.toString() +"\n");
         for(Task t : this.tasks){
             sb.append(t.toString());
         }

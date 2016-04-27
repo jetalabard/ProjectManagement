@@ -12,7 +12,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import projectmanagement.application.business.Predecessor;
 import projectmanagement.application.business.StateNotSave;
-import projectmanagement.application.dataloader.ProjectDAO;
+import projectmanagement.application.model.DAO;
 import projectmanagement.application.model.ManageUndoRedo;
 import projectmanagement.ihm.controller.Tags;
 
@@ -46,8 +46,8 @@ public class StringCellPredecessor extends TableCell<Predecessor, String> {
         } else {
             commitEdit(textField.getText());
             if (this.mode == 0) {
-                ManageUndoRedo.getInstance().add(ProjectDAO.getInstance().getCurrentProject().getTasks());
-                ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
+                ManageUndoRedo.getInstance().add(DAO.getInstance().getCurrentProject().getTasks());
+                DAO.getInstance().getCurrentProject().setState(new StateNotSave());
             }
         }
 

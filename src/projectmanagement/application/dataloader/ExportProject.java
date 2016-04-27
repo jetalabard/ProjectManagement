@@ -3,16 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package projectmanagement.application.model;
+package projectmanagement.application.dataloader;
 
-import java.io.File;
 import java.io.FileOutputStream;
-import java.util.Iterator;
-import java.util.List;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import projectmanagement.application.business.Equipment;
@@ -21,31 +17,43 @@ import projectmanagement.application.business.Predecessor;
 import projectmanagement.application.business.Project;
 import projectmanagement.application.business.Ressource;
 import projectmanagement.application.business.Task;
+import projectmanagement.application.model.MyDate;
 import projectmanagement.ihm.controller.Tags;
 
 /**
  *
- * @author Mahon--Puget
+ * @author Jérémy
  */
-public class ManageExportImportXML {
+public class ExportProject {
 
     private static Element racine = null;
     private static Document document = null;
 
-    public ManageExportImportXML() {
+    public ExportProject() {
         //Nous allons commencer notre arborescence en créant la racine XML
         racine = new Element(Tags.PROJECT);
         //On crée un nouveau Document JDOM basé sur la racine que l'on vient de créer
         document = new Document(racine);
     }
 
-    public static void export(Project prj, String path) {
+    public void export(Project prj, String path) {
         exportProject(prj);
         if (prj.getTasks() != null) {
             exportTaskProject(prj);
         }
-        //affiche();
         enregistre(path + "/" + prj.getTitle() + ".xml");
+    }
+    
+    private void enregistre(String fichier) {
+        try {
+            //On utilise ici un affichage classique avec getPrettyFormat()
+            XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+            //Remarquez qu'il suffit simplement de créer une instance de FileOutputStream
+            //avec en argument le nom du fichier pour effectuer la sérialisation.
+            sortie.output(document, new FileOutputStream(fichier));
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void exportTaskProject(Project prj) {
@@ -72,7 +80,9 @@ public class ManageExportImportXML {
             info.setText(String.valueOf(task.getIdProject()));
             tache.addContent(info);
             info = new Element(Tags.NOTE);
-            info.setText(task.getNote());
+            if (task.getNote() != null) {
+                info.setText(task.getNote());
+            }
             tache.addContent(info);
             if (task.getPredecessor() != null) {
                 exportPredecessorTask(task, tache);
@@ -83,7 +93,7 @@ public class ManageExportImportXML {
         }
     }
 
-    private static void exportRessourceTask( Task task, Element tache) {
+    private static void exportRessourceTask(Task task, Element tache) {
         Element info;
         for (Ressource res : task.getRessources()) {
             Element attr;
@@ -95,7 +105,7 @@ public class ManageExportImportXML {
                 classe = new Attribute(Tags.TYPE, "1");
             }
             info.setAttribute(classe);
-            
+
             if (res instanceof Human) {
                 Human hum = (Human) res;
                 attr = new Element(Tags.ID);
@@ -108,10 +118,15 @@ public class ManageExportImportXML {
                 attr.setText(hum.getName());
                 info.addContent(attr);
                 attr = new Element(Tags.FIRSTNAME);
-                attr.setText(hum.getFirstname());
+                if (hum.getFirstname() != null) {
+                    attr.setText(hum.getFirstname());
+                }
                 info.addContent(attr);
+
                 attr = new Element(Tags.ROLE);
-                attr.setText(hum.getRole());
+                if (hum.getRole() != null) {
+                    attr.setText(hum.getRole());
+                }
                 info.addContent(attr);
             } else {
                 Equipment equi = (Equipment) res;
@@ -122,7 +137,9 @@ public class ManageExportImportXML {
                 attr.setText(String.valueOf(res.getCost()));
                 info.addContent(attr);
                 attr = new Element(Tags.REFERENCE);
-                attr.setText(equi.getReference());
+                if (equi.getReference() != null) {
+                    attr.setText(equi.getReference());
+                }
                 info.addContent(attr);
                 attr = new Element(Tags.NAME);
                 attr.setText(equi.getName());
@@ -142,7 +159,7 @@ public class ManageExportImportXML {
         racine.setAttribute(classe);
     }
 
-    private static void exportPredecessorTask( Task task, Element tache) {
+    private static void exportPredecessorTask(Task task, Element tache) {
         for (Predecessor pred : task.getPredecessor()) {
             Element predecessor = new Element(Tags.PREDECESSOR);
             Element attr;
@@ -150,102 +167,37 @@ public class ManageExportImportXML {
             attr = new Element(Tags.ID);
             attr.setText(String.valueOf(pred.getId()));
             predecessor.addContent(attr);
-            
-             attr = new Element(Tags.ID_TASK);
+
+            attr = new Element(Tags.ID_TASK);
             attr.setText(String.valueOf(pred.getIdTask()));
             predecessor.addContent(attr);
-            
-             attr = new Element(Tags.ID_TASK_PARENT);
+
+            attr = new Element(Tags.ID_TASK_PARENT);
             attr.setText(String.valueOf(pred.getIdTaskParent()));
             predecessor.addContent(attr);
 
             attr = new Element(Tags.CONSTRAINT);
-            attr.setText(pred.getConstraint());
+            if (pred.getConstraint() != null) {
+                attr.setText(pred.getConstraint());
+            }
             predecessor.addContent(attr);
 
             attr = new Element(Tags.TYPE);
-            attr.setText(pred.getType());
+            if (pred.getType() != null) {
+                attr.setText(pred.getType());
+            }
             predecessor.addContent(attr);
 
             attr = new Element(Tags.GAP);
-            attr.setText(String.valueOf(pred.getGap()));
+            if (pred.getGap() != null) {
+                attr.setText(String.valueOf(pred.getGap()));
+            }
             predecessor.addContent(attr);
-            
+
             tache.addContent(predecessor);
 
         }
     }
-
-    public Project lecture(String filename) {
-        SAXBuilder sxb = new SAXBuilder();
-        try {
-            document = sxb.build(new File(filename));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        racine = document.getRootElement();
-        Project prj = readAndCreateProject();
-
-        prj = readProjectTask(prj);
-        return prj;
-    }
-
-    private Project readProjectTask(Project proj) throws NumberFormatException {
-        List listTask = racine.getChildren(Tags.TASK);
-        Iterator i = listTask.iterator();
-        while (i.hasNext()) {
-            Element courant = (Element) i.next();
-
-            int idtask = Integer.parseInt(courant.getChild(Tags.ID).getText());
-            String name = courant.getChild(Tags.NAME).getText();
-            MyDate dateb = MyDate.valueOf(courant.getChild(Tags.DATE_BEGIN).getText());
-            MyDate datee = MyDate.valueOf(courant.getChild(Tags.DATE_END).getText());
-            int priority = Integer.parseInt(courant.getChild(Tags.PRIORITY).getText());
-            int id_project = Integer.parseInt(courant.getChild(Tags.ID_PROJECT).getText());
-            String note = courant.getChild(Tags.NOTE).getText();
-            Task task = new Task(idtask, name, dateb, datee, priority, note,id_project);
-
-            task = readTaskRessource(courant, task);
-            task = readTaskPredecessor(courant, task);
-            proj.getTasks().add(task);
-        }
-        return proj;
-    }
-
-    private Task readTaskRessource(Element courant, Task task) {
-        List listRes = courant.getChildren(Tags.RESSOURCE);
-        Iterator j = listRes.iterator();
-        while (j.hasNext()) {
-            Element res = (Element) j.next();
-            int type = Integer.valueOf(res.getAttribute(Tags.TYPE).getValue());
-            int id = Integer.valueOf(res.getChild(Tags.ID).getValue());
-            float cost = Float.valueOf(res.getChild(Tags.COST).getValue());
-            
-            String name = res.getChild(Tags.NAME).toString();
-            Ressource ressource = null;
-            if (type == 0) {//human{
-                
-                String firstname = res.getChild(Tags.FIRSTNAME).getValue();
-                String role = res.getChild(Tags.ROLE).getValue();
-                ressource = new Human(id,cost, name,firstname , role,task.getId());
-            } else {
-                String reference = res.getChild(Tags.REFERENCE).getValue();
-                ressource = new Equipment(id, cost, reference, name,task.getId());
-            }
-
-            task.getRessources().add(ressource);
-        }
-        return task;
-    }
-
-    private Project readAndCreateProject() throws NumberFormatException {
-        //extraire id et title de la racine
-        int id = Integer.valueOf(racine.getAttribute(Tags.ID).getValue());
-        String title = racine.getAttribute(Tags.NAME).getValue();
-        MyDate lastuse = MyDate.valueOf(racine.getAttribute(Tags.LASTUSE).getValue());
-        return new Project(id, title, lastuse);
-    }
-
     private static void affiche() {
         try {
             //On utilise ici un affichage classique avec getPrettyFormat()
@@ -254,35 +206,5 @@ public class ManageExportImportXML {
         } catch (java.io.IOException e) {
             e.printStackTrace();
         }
-    }
-
-    static void enregistre(String fichier) {
-        try {
-            //On utilise ici un affichage classique avec getPrettyFormat()
-            XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
-            //Remarquez qu'il suffit simplement de créer une instance de FileOutputStream
-            //avec en argument le nom du fichier pour effectuer la sérialisation.
-            sortie.output(document, new FileOutputStream(fichier));
-        } catch (java.io.IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private Task readTaskPredecessor(Element courant, Task task)
-    {
-        List listRes = courant.getChildren(Tags.RESSOURCE);
-        Iterator j = listRes.iterator();
-        while (j.hasNext()) {
-            Element res = (Element) j.next();
-            int gap = Integer.valueOf(res.getChild(Tags.GAP).getValue());
-            int id = Integer.valueOf(res.getChild(Tags.ID).getValue());
-            String constraint = res.getChild(Tags.CONSTRAINT).getValue();
-            String name = res.getChild(Tags.NAME).getValue();
-            int id_task =Integer.valueOf(res.getChild(Tags.ID_TASK).getValue());
-            
-            Predecessor predecessor = new Predecessor(id,name, gap, constraint,id_task,task.getId());
-            task.getPredecessor().add(predecessor);
-        }
-        return task;
     }
 }

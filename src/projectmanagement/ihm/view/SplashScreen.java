@@ -15,6 +15,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.paint.Color;
+import projectmanagement.application.model.LoaderImage;
 
 /**
  *
@@ -23,7 +24,7 @@ import javafx.scene.paint.Color;
 public class SplashScreen extends BorderPane {
 
     private ProgressBar loadProgress;
-    private final String SPLASH_IMAGE = "/ressources/logo_PM_2.png";
+    private final String SPLASH_IMAGE = LoaderImage.getImage("logo_PM_2.png");
 
     public SplashScreen() {
         super();
@@ -38,21 +39,11 @@ public class SplashScreen extends BorderPane {
         setPrefHeight(200);
         setPrefWidth(300);
 
-        //add some borders to visualise the element' locations
         setBorder(new Border(new BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, null, null)));
 
         setStyle("-fx-background-color: rgba(0, 0, 0, 0);");
-            //(ii) set the scene fill to transparent
-        //(iii) set the stage background to transparent
-
-        ImageView splash = new ImageView(new Image(
-                SPLASH_IMAGE
-        ));
-        getStylesheets().add(
-                getClass().getResource(
-                        "/ressources/splash.css"
-                ).toExternalForm()
-        );
+        ImageView splash = new ImageView(new Image(SPLASH_IMAGE));
+        Style.getStyle("splash.css", this);
         splash.setFitHeight(200);
         splash.setPreserveRatio(true);
         this.setCenter(splash);

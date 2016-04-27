@@ -26,7 +26,8 @@ import javafx.scene.input.TransferMode;
 import javafx.util.Callback;
 import projectmanagement.application.business.Predecessor;
 import projectmanagement.application.business.Task;
-import projectmanagement.application.dataloader.DAOTask;
+import projectmanagement.application.model.DAO;
+import projectmanagement.application.dataloader.TaskDAO;
 import projectmanagement.application.model.ManagerLanguage;
 import projectmanagement.application.model.RessourcesTable;
 import projectmanagement.ihm.controller.Tags;
@@ -125,7 +126,7 @@ public class MyTableViewPredecessor extends TableView<Predecessor> {
                     if (item != null) {
                         if (item.getId() != null) {
                             //en base sinon si == null pas encore eu le insert
-                            DAOTask.getInstance().deletePredecessor(item.getId());
+                            DAO.getInstance().deletePredecessor(item.getId());
                         }
 
                         dialogParent.getListePredecessor().remove(item);
@@ -212,7 +213,7 @@ public class MyTableViewPredecessor extends TableView<Predecessor> {
         {
             @Override
             public TableCell<Predecessor, Integer> call(TableColumn<Predecessor, Integer> roomPropertyBooleanTableColumn) {
-                List<Integer> listId = DAOTask.getInstance().getAllIdTask(task.getIdProject());
+                List<Integer> listId = DAO.getInstance().getAllIdTask(task.getIdProject());
                 listId.remove(task.getId());
                 return new ComboBoxTableCell<Predecessor, Integer>(new PredecessorConverter(), FXCollections.observableArrayList(listId) );
             }

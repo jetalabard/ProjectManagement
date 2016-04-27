@@ -20,16 +20,18 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import projectmanagement.application.business.Project;
+import projectmanagement.application.business.StateSave;
 import projectmanagement.application.business.Task;
-import projectmanagement.application.dataloader.DAOTask;
-import projectmanagement.application.dataloader.ProjectDAO;
+import projectmanagement.application.dataloader.ExportProject;
+import projectmanagement.application.dataloader.ImportProject;
+import projectmanagement.application.model.DAO;
 import projectmanagement.application.model.Dialog;
-import projectmanagement.application.model.ManageExportImportXML;
 import projectmanagement.application.model.ManageUndoRedo;
 import projectmanagement.application.model.ManagerLanguage;
 import projectmanagement.application.model.MyDate;
 import projectmanagement.application.model.Save;
 import static projectmanagement.ihm.controller.PMApplication.SPLASH_IMAGE;
+import projectmanagement.ihm.view.Home;
 import projectmanagement.ihm.view.dialog.DialogConfirmationSave;
 import projectmanagement.ihm.view.dialog.DialogCreateProject;
 import projectmanagement.ihm.view.dialog.DialogOpenProject;
@@ -37,6 +39,7 @@ import projectmanagement.ihm.view.dialog.DialogPreference;
 import projectmanagement.ihm.view.dialog.DialogUpdateTask;
 import projectmanagement.ihm.view.MainWindow;
 import projectmanagement.ihm.view.MyTableView;
+import projectmanagement.ihm.view.dialog.DialogChangePropertiesProject;
 
 /**
  *
@@ -52,13 +55,29 @@ public abstract class Controller {
         parentStage = new Stage();
         parentStage.setTitle(p.getTitle() + " - " + ManagerLanguage.getInstance().getLocalizedTexte("AppTitle"));
         parentStage.getIcons().add(new Image(SPLASH_IMAGE));
-        p.setTasks(DAOTask.getInstance().getAllInformationProject(p.getId()));
-        ProjectDAO.getInstance().setCurrentProject(p);
+        p.setTasks(DAO.getInstance().getAllInformationProject(p.getId()));
+        p.setState(new StateSave());
+        DAO.getInstance().setCurrentProject(p);
         MainWindow home = new MainWindow(parentStage);
         Scene mainScene = new Scene(home);
         parentStage.setScene(mainScene);
         parentStage.setMaximized(true);
         parentStage.show();
+    }
+    
+     public void deleteAllAndReloadHomePage(Stage stage) {
+        DAO.getInstance().deleteAll();
+        stage.close();
+        new StartController().showMainStage();
+    }
+
+
+    public void deleteProjectAndRunHomePage(Stage stage) {
+        int idProject = DAO.getInstance().getCurrentProject().getId();
+        DAO.getInstance().removeProject(idProject);
+        DAO.getInstance().setCurrentProject(null);
+        stage.close();
+        new StartController().showMainStage();
     }
 
     private void makeDialog(Dialog dialog, String title, Stage stage, Stage stageParent) {
@@ -70,19 +89,22 @@ public abstract class Controller {
         stage.initOwner(stageParent);
         stage.show();
     }
-    
-     public void addTask(TableView table) {
-        Task task = new Task(ManagerLanguage.getInstance().getLocalizedTexte("Name"),MyDate.now(),MyDate.now(),0,"",ProjectDAO.getInstance().getCurrentProject().getId());
-        int id = DAOTask.getInstance().insertTask(task.getName(),task.getIdProject(),task.getDatebegin(),task.getDateend(),task.getPriority(),task.getNote());
+
+    public void addTask(TableView table) {
+        Task task = new Task(ManagerLanguage.getInstance().getLocalizedTexte("Name"),
+                MyDate.now(), new MyDate(MyDate.now().getTime()+MyDate.DAY), 0, "", DAO.getInstance().getCurrentProject().getId());
+        
+        int id = DAO.getInstance().insertTask(task.getName(), task.getIdProject(),
+                task.getDatebegin(), task.getDateend(), task.getPriority(), task.getNote());
         task.setId(id);
         table.getItems().add(task);
-        ProjectDAO.getInstance().getCurrentProject().getTasks().add(task);
-        ManageUndoRedo.getInstance().add( ProjectDAO.getInstance().getCurrentProject().getTasks());
+        DAO.getInstance().getCurrentProject().getTasks().add(task);
+        ManageUndoRedo.getInstance().add(DAO.getInstance().getCurrentProject().getTasks());
     }
 
     public void SaveProject(Project proj) {
         if (proj != null) {
-            new Save(proj).execute();
+            DAO.getInstance().setCurrentProject(new Save(proj).execute());
         }
     }
 
@@ -99,9 +121,19 @@ public abstract class Controller {
                 stageParent
         );
     }
+    
+    public void CreateDialogChangeName(Stage stageParent) {
+        Stage stage = new Stage();
+        makeDialog(
+                new DialogChangePropertiesProject(stage, stageParent),
+                ManagerLanguage.getInstance().getLocalizedTexte("Project"),
+                stage,
+                stageParent
+        );
+    }
 
     public void CreateDialogConfirmationSave(Stage stageParent) {
-        if (ProjectDAO.getInstance().getCurrentProject() != null && !ProjectDAO.getInstance().getCurrentProject().getState().isSave()) {
+        if (DAO.getInstance().getCurrentProject() != null && !DAO.getInstance().getCurrentProject().getState().isSave()) {
             Stage stage = new Stage();
             makeDialog(
                     new DialogConfirmationSave(stage, stageParent, 0, null),
@@ -116,7 +148,7 @@ public abstract class Controller {
     }
 
     public void CreateDialogConfirmationSaveButNotQuit(Stage stageParent, String tags) {
-        if (ProjectDAO.getInstance().getCurrentProject() != null && !ProjectDAO.getInstance().getCurrentProject().getState().isSave()) {
+        if (DAO.getInstance().getCurrentProject() != null && !DAO.getInstance().getCurrentProject().getState().isSave()) {
             Stage stage = new Stage();
             makeDialog(
                     new DialogConfirmationSave(stage, stageParent, 1, tags),
@@ -127,15 +159,14 @@ public abstract class Controller {
         }
 
     }
-    
-    public void createDialogCreateOrOpenProjectAndQuitPrecedentProject(String tags,Stage parent) {
+
+    public void createDialogCreateOrOpenProjectAndQuitPrecedentProject(String tags, Stage parent) {
         Stage stage = new Stage();
-        Dialog dialog=null;
+        Dialog dialog = null;
         if (tags.equals(Tags.NEW)) {
             dialog = new DialogCreateProject(stage, parent);
             stage.setTitle(ManagerLanguage.getInstance().getLocalizedTexte("NewProject"));
-        }
-        else{
+        } else {
             dialog = new DialogOpenProject(stage, parent);
             stage.setTitle(ManagerLanguage.getInstance().getLocalizedTexte("OpenProject"));
         }
@@ -147,7 +178,7 @@ public abstract class Controller {
         stage.show();
     }
 
-    public void CreateDialogUpdateTask(Task task, Stage stageParent,int index,MyTableView table) {
+    public void CreateDialogUpdateTask(Task task, Stage stageParent, int index, MyTableView table) {
         Stage stage = new Stage();
         DialogUpdateTask update = new DialogUpdateTask(stage, stageParent);
         update.setTask(task);
@@ -164,8 +195,8 @@ public abstract class Controller {
 
     public void CreateDialogSaveProjectAs(Stage stageParent) {
         String path = createFileChooser(stageParent);
-        ManageExportImportXML exp = new ManageExportImportXML();
-        exp.export(ProjectDAO.getInstance().getCurrentProject(), path);
+        ExportProject exp = new ExportProject();
+        exp.export(DAO.getInstance().getCurrentProject(), path);
     }
 
     public void CreateDialogSaveProject(Stage stageParent) {
@@ -173,15 +204,15 @@ public abstract class Controller {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(ManagerLanguage.getInstance().getLocalizedTexte("OpenProject"));
         File file = fileChooser.showOpenDialog(stageParent);
-        ManageExportImportXML exp = new ManageExportImportXML();
+        ImportProject exp = new ImportProject();
         Project p = exp.lecture(file.getAbsolutePath());
-        if(p != null){
+        if (p != null) {
             OpenProject(p, null, stageParent);
         }
     }
 
     public void CreateDialogOpenProject(Stage stageParent) {
-        if (ProjectDAO.getInstance().getCurrentProject() != null && !ProjectDAO.getInstance().getCurrentProject().getState().isSave()) {
+        if (DAO.getInstance().getCurrentProject() != null && !DAO.getInstance().getCurrentProject().getState().isSave()) {
             CreateDialogConfirmationSaveButNotQuit(stageParent, Tags.OPEN_PROJECT);
         } else {
             Stage stage = new Stage();
@@ -210,16 +241,15 @@ public abstract class Controller {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle(ManagerLanguage.getInstance().getLocalizedTexte("OpenProject"));
         File selectedDirectory = chooser.showDialog(mainstage);
-        if(selectedDirectory !=null){
+        if (selectedDirectory != null) {
             return selectedDirectory.getAbsolutePath();
-        }
-        else{
+        } else {
             return new File(System.getProperty("user.home"), "Desktop").getAbsolutePath();
         }
     }
 
     public void CreateDialogProject(Stage stageParent) {
-        if (ProjectDAO.getInstance().getCurrentProject() != null && !ProjectDAO.getInstance().getCurrentProject().getState().isSave()) {
+        if (DAO.getInstance().getCurrentProject() != null && !DAO.getInstance().getCurrentProject().getState().isSave()) {
             CreateDialogConfirmationSaveButNotQuit(stageParent, Tags.NEW);
         } else {
             Stage stage = new Stage();

@@ -5,7 +5,6 @@
  */
 package projectmanagement.application.model;
 
-import java.util.List;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -17,14 +16,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import projectmanagement.application.business.Predecessor;
 import projectmanagement.application.business.Project;
-import projectmanagement.application.business.Task;
-import projectmanagement.application.dataloader.ProjectDAO;
 import projectmanagement.ihm.controller.ClickController;
 import projectmanagement.ihm.controller.Tags;
 import projectmanagement.ihm.view.dialog.DialogUpdateTask;
-import projectmanagement.ihm.view.MyTableView;
 
 /**
  *
@@ -75,7 +70,7 @@ public abstract class Dialog extends VBox {
         box1.setAlignment(Pos.CENTER);
         box1.setPadding(new Insets(15, 12, 15, 12));
         box1.setSpacing(10);
-        for (Project p : ProjectDAO.getInstance().getAllProject()) {
+        for (Project p : DAO.getInstance().getAllProject()) {
             comboBox.getItems().add(p);
         }
         box1.getChildren().addAll(lab, comboBox);

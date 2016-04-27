@@ -29,7 +29,8 @@ import javafx.scene.input.TransferMode;
 import javafx.util.Callback;
 import projectmanagement.application.business.Human;
 import projectmanagement.application.business.Task;
-import projectmanagement.application.dataloader.DAOTask;
+import projectmanagement.application.model.DAO;
+import projectmanagement.application.dataloader.TaskDAO;
 import projectmanagement.application.model.ManagerLanguage;
 import projectmanagement.application.model.RessourceConverter;
 import projectmanagement.application.model.RessourcesTable;
@@ -130,7 +131,7 @@ public class MyTableViewRessource extends TableView<RessourcesTable> {
                     if (item != null) {
                         if (item.getId() != null) {
                             //en base sinon si == null pas encore eu le insert
-                            DAOTask.getInstance().deleteRessource(item.getId());
+                            DAO.getInstance().deleteRessource(item.getId());
                         }
 
                         dialogParent.getListeRessource().remove(item);

@@ -10,31 +10,29 @@ package projectmanagement.ihm.controller;
  * @author Jérémy
  */
 public class Tags {
-    
-    
-    
+
     //pour export et import xml
-    public static final String TASK ="task";
-    public static final String ID="id";
-    public static final String NAME ="name";
-    public static final String DATE_BEGIN="date_begin";
-    public static final String DATE_END="date_end";
-    public static final String PRIORITY="priority";
-    public static final String NOTE ="note";
-    public static final String RESSOURCE ="ressource";
-    public static final String TYPE ="type";
+    public static final String TASK = "task";
+    public static final String ID = "id";
+    public static final String NAME = "name";
+    public static final String DATE_BEGIN = "date_begin";
+    public static final String DATE_END = "date_end";
+    public static final String PRIORITY = "priority";
+    public static final String NOTE = "note";
+    public static final String RESSOURCE = "ressource";
+    public static final String TYPE = "type";
     public static final String HUMAN = "human";
-    public static final String COST ="cost";
+    public static final String COST = "cost";
     public static final String FIRSTNAME = "firstname";
-    public static final String ROLE ="role";
+    public static final String ROLE = "role";
     public static final String EQUIPMENT = "equipment";
     public static final String REFERENCE = "reference";
-    public static final String LASTUSE="lastuse";
-    public static final String PREDECESSOR ="predecessor";
-    public static final String CONSTRAINT = "constraint";
-    public static final String GAP  ="gap";
-     public static final String ID_TASK_PARENT="parentTaskID";
-     public static final String ID_TASK="taskID";
+    public static final String LASTUSE = "lastuse";
+    public static final String PREDECESSOR = "predecessor";
+    public static final String CONSTRAINT = "constraintPred";
+    public static final String GAP = "gap";
+    public static final String ID_TASK_PARENT = "parentTaskID";
+    public static final String ID_TASK = "taskID";
 
     public static final String FACEBOOK_URL = "https://www.facebook.com/projectmanagement.ubp/info/?tab=overview";
     public static final String TWITTER_URL = "https://twitter.com/Project_Managem";
@@ -55,38 +53,36 @@ public class Tags {
     public static final String APP = "APP";
     public static final String SETTINGS = "SETTINGS";
     public static final String QUIT = "QUIT";
-    
+
     public static final String CREATE_PROJECT = "CREATE_PROJECT";
-    public static final String CLOSE_DIALOG ="CLOSE_DIALOG";
-    
+    public static final String CLOSE_DIALOG = "CLOSE_DIALOG";
+
     public static final String BROWSE_FILE_TO_CREATE_PROJECT = "BROWSE_FILE_TO_CREATE_PROJECT";
     public static final String PREFERENCE = "PREFERENCE";
-    public static final String OPEN_EXTERIOR  = "OPEN_EXTERIOR";
-    public static final String EXPORT_IMAGE  = "EXPORT_IMAGE";
+    public static final String OPEN_EXTERIOR = "OPEN_EXTERIOR";
+    public static final String EXPORT_IMAGE = "EXPORT_IMAGE";
     public static final String OPEN_PROJECT = "OPEN_PROJECT";
-    public static final String QUESTIONS="QUESTIONS";
-    public static final String COMMENTS="COMMENTS";
+    public static final String QUESTIONS = "QUESTIONS";
+    public static final String COMMENTS = "COMMENTS";
     public static final String UNDO = "UNDO";
-    public static final String REDO ="REDO";
+    public static final String REDO = "REDO";
     public static final String ZOOM = "ZOOM";
-    public static final String ZOOM_L ="ZOOM_L";
+    public static final String ZOOM_L = "ZOOM_L";
     public static final String CONFIRMATION_NO_SAVE = "CONFIRMATION_NO_SAVE";
-    public static final String CONFIRMATION_YES_SAVE ="CONFIRMATION_YES_SAVE";
-    public static final String CONFIRMATION_YES_SAVE_NOT_QUIT="CONFIRMATION_YES_SAVE_NOT_QUIT";
-    public static final String CONFIRMATION_NO_SAVE_NOT_QUIT="CONFIRMATION_NO_SAVE_NOT_QUIT";
-    public static final String ID_PROJECT="ID_PROJECT";
+    public static final String CONFIRMATION_YES_SAVE = "CONFIRMATION_YES_SAVE";
+    public static final String CONFIRMATION_YES_SAVE_NOT_QUIT = "CONFIRMATION_YES_SAVE_NOT_QUIT";
+    public static final String CONFIRMATION_NO_SAVE_NOT_QUIT = "CONFIRMATION_NO_SAVE_NOT_QUIT";
+    public static final String ID_PROJECT = "ID_PROJECT";
     public static final String ADD_TASK = "ADD_TASK";
-    public static final String UPDATE_TASK="UPDATE_TASK";
-    public static final String PREVIOUS_TASK ="PREVIOUS_TASK";
-    public static final String APPLY_TASK ="APPLY_TASK";
-    public static final String RESSOURCE_NAME="RESSOURCE_NAME";
+    public static final String UPDATE_TASK = "UPDATE_TASK";
+    public static final String PREVIOUS_TASK = "PREVIOUS_TASK";
+    public static final String APPLY_TASK = "APPLY_TASK";
+    public static final String RESSOURCE_NAME = "RESSOURCE_NAME";
     public static final String RESSOURCE_FIRSTNAME = "RESSOURCE_FIRSTNAME";
-   
-    
-    
-    
-    
-    
-    
-    
+    public static final String DELETE_ALL = "DELETE_ALL";
+    public static final String DELETE = "DELETE";
+    public static final String CHANGE_NAME = "CHANGE_NAME";
+    public static final String SHOW_PERT = "SHOW_PERT";
+    public static final String SHOW_GANTT = "SHOW_GANTT";
+
 }

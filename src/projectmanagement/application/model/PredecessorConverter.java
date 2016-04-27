@@ -7,8 +7,7 @@ package projectmanagement.application.model;
 
 import javafx.util.StringConverter;
 import projectmanagement.application.business.Task;
-import projectmanagement.application.dataloader.DAOTask;
-import projectmanagement.application.dataloader.ProjectDAO;
+import projectmanagement.application.dataloader.TaskDAO;
 
 /**
  *
@@ -18,7 +17,7 @@ public class PredecessorConverter extends StringConverter<Integer> {
     
      @Override
     public String toString(Integer integer) {
-        for (Task t : ProjectDAO.getInstance().getCurrentProject().getTasks()) {
+        for (Task t : DAO.getInstance().getCurrentProject().getTasks()) {
             if (t.getId().equals(integer)) {
                 return t.getId()+" - "+ t.getName();
             }
@@ -29,6 +28,6 @@ public class PredecessorConverter extends StringConverter<Integer> {
     @Override
     public Integer fromString(String string) {
         String[] item = string.split(" - ");
-        return DAOTask.getInstance().getTask(Integer.valueOf(item[0])).getId();
+        return DAO.getInstance().getTask(Integer.valueOf(item[0])).getId();
     }
 }

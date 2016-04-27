@@ -11,7 +11,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.ScrollEvent;
 import javafx.stage.Stage;
-import projectmanagement.application.dataloader.ProjectDAO;
+import projectmanagement.application.model.DAO;
 import projectmanagement.application.model.ManageUndoRedo;
 import projectmanagement.application.model.ManagerShowDiagram;
 import projectmanagement.ihm.controller.KeyListener;
@@ -39,7 +39,9 @@ public class MainWindow extends Page {
     @Override
     public void createView() {
         table = new MyTableView(mainStage,this);
-        tabpane = new MyTabPane();
+        if(ManagerShowDiagram.getInstance().canShowTabPane()){
+            tabpane = new MyTabPane(DAO.getInstance().getCurrentProject().getTasks(),this);
+        }
         SplitPane splitPane = createSplitPane();
 
         Slider slider = new Slider(0.5, 2, 1);
@@ -49,13 +51,16 @@ public class MainWindow extends Page {
         this.setTop(new MenuPM(this, mainStage, table, slider));
         this.setCenter(zoomingPane);
         
-        ManagerShowDiagram.getInstance().setTabPaneDiagram(tabpane);
     }
 
     private SplitPane createSplitPane() {
         SplitPane splitPane = new SplitPane();
         splitPane.setOrientation(Orientation.VERTICAL);
-        splitPane.getItems().addAll(table, tabpane);
+        if(ManagerShowDiagram.getInstance().canShowTabPane()){
+            splitPane.getItems().addAll(table, tabpane);
+        }else{
+            splitPane.getItems().add(table);
+        }
         return splitPane;
     }
 
@@ -82,9 +87,9 @@ public class MainWindow extends Page {
     }
 
     public void reloadTable() {
-        table.getItems().clear();
-        reload();
-        System.out.println(ProjectDAO.getInstance().getCurrentProject().toString());
+        if (table != null) {
+            table.getItems().clear();
+            reload();
+        }
     }
-
 }

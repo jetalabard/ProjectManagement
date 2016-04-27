@@ -44,9 +44,11 @@ public class NumberSpinner extends HBox {
     private final Button decrementButton;
     private final NumberBinding buttonHeight;
     private final NumberBinding spacing;
+    private int mode;
 
-    public NumberSpinner() {
+    public NumberSpinner(int mode) {
         this(BigDecimal.ZERO, BigDecimal.ONE);
+        this.mode = mode;
     }
 
     public NumberSpinner(BigDecimal value, BigDecimal stepWidth) {
@@ -64,18 +66,14 @@ public class NumberSpinner extends HBox {
         numberField.setId(NUMBER_FIELD);
 
         // Enable arrow keys for dec/inc
-        numberField.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                if (keyEvent.getCode() == KeyCode.DOWN) {
-                    decrement();
-                    keyEvent.consume();
-                }
-                if (keyEvent.getCode() == KeyCode.UP) {
-                    increment();
-                    keyEvent.consume();
-                }
+        numberField.addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent keyEvent) -> {
+            if (keyEvent.getCode() == KeyCode.DOWN) {
+                decrement();
+                keyEvent.consume();
+            }
+            if (keyEvent.getCode() == KeyCode.UP) {
+                increment();
+                keyEvent.consume();
             }
         });
 
@@ -111,12 +109,9 @@ public class NumberSpinner extends HBox {
         incrementButton.prefHeightProperty().bind(buttonHeight.add(spacing));
         incrementButton.minHeightProperty().bind(buttonHeight.add(spacing));
         incrementButton.setFocusTraversable(false);
-        incrementButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent ae) {
-                increment();
-                ae.consume();
-            }
+        incrementButton.setOnAction((ActionEvent ae) -> {
+            increment();
+            ae.consume();
         });
 
         // Paint arrow path on button using a StackPane
@@ -133,13 +128,9 @@ public class NumberSpinner extends HBox {
         decrementButton.minHeightProperty().bind(buttonHeight);
 
         decrementButton.setFocusTraversable(false);
-        decrementButton.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent ae) {
-                decrement();
-                ae.consume();
-            }
+        decrementButton.setOnAction((ActionEvent ae) -> {
+            decrement();
+            ae.consume();
         });
 
         StackPane decPane = new StackPane();
@@ -155,9 +146,14 @@ public class NumberSpinner extends HBox {
      */
     private void increment() {
         BigDecimal value = numberField.getNumber();
-        if (value.intValue() < 10) {
+        if (mode == 1) {
             value = value.add(stepWitdhProperty.get());
             numberField.setNumber(value);
+        } else {
+            if (value.intValue() < 10) {
+                value = value.add(stepWitdhProperty.get());
+                numberField.setNumber(value);
+            }
         }
     }
 
@@ -192,8 +188,8 @@ public class NumberSpinner extends HBox {
         System.out.println("binding=" + buttonHeight.toString());
         System.out.println("spacing=" + spacing.toString());
     }
-    
-    public TextField getTextField(){
+
+    public TextField getTextField() {
         return this.numberField;
     }
 }

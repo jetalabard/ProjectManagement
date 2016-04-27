@@ -6,7 +6,6 @@ import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import projectmanagement.application.model.ManagerLanguage;
-import projectmanagement.application.model.ManagerLanguage;
 import projectmanagement.ihm.view.MenuPM;
 import projectmanagement.ihm.view.Page;
 

@@ -8,7 +8,6 @@ package projectmanagement.application.model;
 import java.util.ArrayList;
 import java.util.List;
 import projectmanagement.application.business.Task;
-import projectmanagement.application.dataloader.ProjectDAO;
 import projectmanagement.ihm.view.MainWindow;
 
 /**
@@ -61,20 +60,17 @@ public class ManageUndoRedo
     }
 
     private void reloadList(List<Task> list){
-        ProjectDAO.getInstance().getCurrentProject().setTasks(list);
-        window.reloadTable();
+        DAO.getInstance().getCurrentProject().setTasks(list);
+        if(window != null){
+            window.reloadTable();
+        }
         
     }
     
     public void setWindows(MainWindow window) {
         this.window = window;
-        add(ProjectDAO.getInstance().getCurrentProject().getTasks());
+        add(DAO.getInstance().getCurrentProject().getTasks());
     }
-    
-    
-    
-    
-    
-    
+
     
 }

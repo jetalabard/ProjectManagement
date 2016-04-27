@@ -27,8 +27,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import projectmanagement.application.business.StateNotSave;
 import projectmanagement.application.business.Task;
-import projectmanagement.application.dataloader.DAOTask;
-import projectmanagement.application.dataloader.ProjectDAO;
+import projectmanagement.application.model.DAO;
 import projectmanagement.application.model.ManageUndoRedo;
 import projectmanagement.application.model.ManagerLanguage;
 import projectmanagement.application.model.MyDate;
@@ -56,16 +55,14 @@ public class MyTableView extends TableView<Task> {
     }
 
     private void createTableView() {
-        setItems(FXCollections.observableArrayList(ProjectDAO.getInstance().getCurrentProject().getTasks()));
+        setItems(FXCollections.observableArrayList(DAO.getInstance().getCurrentProject().getTasks()));
         setEditable(true);
         setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        DatePickerCell.UninitializedInLayoutChildrenFunction(true);
         TableColumn col = createColumnName();
         TableColumn col2 = createColumnDateBegin();
         TableColumn col3 = createColumnDateEnd();
         TableColumn col4 = createColumnPriority();
         TableColumn col5 = createColumnNote();
-
         getColumns().addAll(col, col2, col3, col4, col5);
 
         setContextMenu(new ContextMenu(createContextMenuAddTask(), createContextMenuUpdate(), createContextMenuDelete(),
@@ -74,7 +71,7 @@ public class MyTableView extends TableView<Task> {
             TableRow<Task> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (!row.isEmpty())) {
-                    Task rowData = ProjectDAO.getInstance().getCurrentProject().getTasks().get(row.getIndex());
+                    Task rowData = DAO.getInstance().getCurrentProject().getTasks().get(row.getIndex());
                     if (rowData != null) {
                         new ClickController(Tags.UPDATE_TASK, mainStage).CreateDialogUpdateTask(rowData, mainStage,row.getIndex(),this);
                     }
@@ -117,10 +114,10 @@ public class MyTableView extends TableView<Task> {
                     }
 
                     getItems().add(dropIndex, draggedtask);
-                    ProjectDAO.getInstance().getCurrentProject().getTasks().remove(draggedtask);
-                    ProjectDAO.getInstance().getCurrentProject().getTasks().add(dropIndex, draggedtask);
-                    ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
-                    ManageUndoRedo.getInstance().add(ProjectDAO.getInstance().getCurrentProject().getTasks());
+                    DAO.getInstance().getCurrentProject().getTasks().remove(draggedtask);
+                    DAO.getInstance().getCurrentProject().getTasks().add(dropIndex, draggedtask);
+                    DAO.getInstance().getCurrentProject().setState(new StateNotSave());
+                    ManageUndoRedo.getInstance().add(DAO.getInstance().getCurrentProject().getTasks());
                     event.setDropCompleted(true);
                     getSelectionModel().select(dropIndex);
                     event.consume();
@@ -160,21 +157,20 @@ public class MyTableView extends TableView<Task> {
         col.setCellFactory(new Callback<TableColumn, TableCell>() {
             @Override
             public TableCell call(TableColumn p) {
-                DatePickerCell datePick = new DatePickerCell(getItems(), Tags.DATE_END);
+                DatePickerCell datePick = new DatePickerCell(getItems(), Tags.DATE_END, MyTableView.this);
                 return datePick;
             }
         });
-        col.setMinWidth(150);
         return col;
     }
-
+    
     private TableColumn createColumnDateBegin() {
         TableColumn col2 = new TableColumn(ManagerLanguage.getInstance().getLocalizedTexte("DateBegin"));
         col2.setCellValueFactory(new PropertyValueFactory<Task, MyDate>("datebegin"));
         col2.setCellFactory(new Callback<TableColumn, TableCell>() {
             @Override
             public TableCell call(TableColumn p) {
-                return new DatePickerCell(getItems(), Tags.DATE_BEGIN);
+                return new DatePickerCell(getItems(), Tags.DATE_BEGIN, MyTableView.this);
             }
         });
         col2.setMinWidth(150);
@@ -205,13 +201,13 @@ public class MyTableView extends TableView<Task> {
                     if (item != null) {
                         if (item.getId() != null) {
                             //en base sinon si == null pas encore eu le insert
-                            DAOTask.getInstance().deleteTask(item.getId());
+                            DAO.getInstance().deleteTask(item.getId());
                         }
 
-                        ProjectDAO.getInstance().getCurrentProject().getTasks().remove(item);
+                        DAO.getInstance().getCurrentProject().getTasks().remove(item);
                         getItems().remove(item);
-                        ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
-                        ManageUndoRedo.getInstance().add(ProjectDAO.getInstance().getCurrentProject().getTasks());
+                        DAO.getInstance().getCurrentProject().setState(new StateNotSave());
+                        ManageUndoRedo.getInstance().add(DAO.getInstance().getCurrentProject().getTasks());
                     }
                 }
             }
@@ -221,14 +217,11 @@ public class MyTableView extends TableView<Task> {
 
     private MenuItem createContextMenuUpdate() {
         MenuItem mnuDel = new MenuItem(ManagerLanguage.getInstance().getLocalizedTexte("Update"));
-        mnuDel.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent t) {
-                if (!getItems().isEmpty()) {
-                    Task item = ProjectDAO.getInstance().getCurrentProject().getTasks().get(getSelectionModel().getSelectedIndex());
-                    if (item != null) {
-                        new ClickController(Tags.UPDATE_TASK, mainStage).CreateDialogUpdateTask(item, mainStage, getSelectionModel().getSelectedIndex(), MyTableView.this);
-                    }
+        mnuDel.setOnAction((ActionEvent t) -> {
+            if (!getItems().isEmpty()) {
+                Task item = DAO.getInstance().getCurrentProject().getTasks().get(getSelectionModel().getSelectedIndex());
+                if (item != null) {
+                    new ClickController(Tags.UPDATE_TASK, mainStage).CreateDialogUpdateTask(item, mainStage, getSelectionModel().getSelectedIndex(), MyTableView.this);
                 }
             }
         });
@@ -271,9 +264,9 @@ public class MyTableView extends TableView<Task> {
                 @Override
                 public void handle(ActionEvent t) {
                     getItems().add(copyTask);
-                    ProjectDAO.getInstance().getCurrentProject().getTasks().add(copyTask);
-                    ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
-                    ManageUndoRedo.getInstance().add(ProjectDAO.getInstance().getCurrentProject().getTasks());
+                    DAO.getInstance().getCurrentProject().getTasks().add(copyTask);
+                    DAO.getInstance().getCurrentProject().setState(new StateNotSave());
+                    ManageUndoRedo.getInstance().add(DAO.getInstance().getCurrentProject().getTasks());
                     getContextMenu().getItems().remove(getContextMenu().getItems().size()-1);
                     copyTask =null;
                 }
@@ -283,11 +276,6 @@ public class MyTableView extends TableView<Task> {
     public void reload(){
         getItems().clear();
         main.reload();
-        /*DatePickerCell.UninitializedInLayoutChildrenFunction(false);
-        setItems(null); 
-        layout(); 
-        setItems(FXCollections.observableList(ProjectDAO.getInstance().getCurrentProject().getTasks())); 
-        DatePickerCell.UninitializedInLayoutChildrenFunction(true);*/
     }
 
 }

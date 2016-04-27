@@ -16,8 +16,10 @@ import projectmanagement.application.business.Predecessor;
 import projectmanagement.application.business.Project;
 import projectmanagement.application.business.StateNotSave;
 import projectmanagement.application.business.Task;
+import projectmanagement.application.model.DAO;
 import projectmanagement.application.dataloader.ProjectDAO;
 import projectmanagement.application.model.ManageUndoRedo;
+import projectmanagement.application.model.ManagerLanguage;
 import projectmanagement.application.model.MyDate;
 import projectmanagement.application.model.RessourcesTable;
 import projectmanagement.ihm.view.MyTableView;
@@ -64,8 +66,21 @@ public class ClickController extends Controller implements EventHandler<ActionEv
                         + "  -fx-focus-color: red ;");
             } else {
                 String text = ((TextField) this.FieldName).getText();
-                Project p = ProjectDAO.getInstance().insertProject(text, MyDate.now());
+                Project p = DAO.getInstance().insertProject(text, MyDate.now());
                 OpenProject(p, stage, stageParent);
+
+            }
+        } else if (what != null && what.equals(Tags.CHANGE_NAME)) 
+        {
+            if (((TextField) this.FieldName).getText().equals("")) {
+                this.FieldName.setStyle("-fx-text-box-border: red ;\n"
+                        + "  -fx-focus-color: red ;");
+            } else {
+                String text = ((TextField) this.FieldName).getText();
+                DAO.getInstance().updateProject(DAO.getInstance().getCurrentProject().getId(),text, MyDate.now());
+                DAO.getInstance().getCurrentProject().setTitle(text);
+                stageParent.setTitle(text + " - " + ManagerLanguage.getInstance().getLocalizedTexte("AppTitle"));
+                stage.close();
 
             }
         } else if (what != null && what.equals(Tags.OPEN_PROJECT)) {
@@ -80,26 +95,26 @@ public class ClickController extends Controller implements EventHandler<ActionEv
         } else if (what != null && what.equals(Tags.CONFIRMATION_NO_SAVE)) {
             Quit();
         } else if (what != null && what.equals(Tags.CONFIRMATION_YES_SAVE)) {
-            SaveProject(ProjectDAO.getInstance().getCurrentProject());
+            SaveProject(DAO.getInstance().getCurrentProject());
             Quit();
         } else if (what != null && what.equals(Tags.CONFIRMATION_NO_SAVE_NOT_QUIT)) {
             createDialogCreateOrOpenProjectAndQuitPrecedentProject(tags, stageParent);
             stage.close();
         } else if (what != null && what.equals(Tags.CONFIRMATION_YES_SAVE_NOT_QUIT)) {
-            SaveProject(ProjectDAO.getInstance().getCurrentProject());
+            SaveProject(DAO.getInstance().getCurrentProject());
             stage.close();
             createDialogCreateOrOpenProjectAndQuitPrecedentProject(tags, stageParent);
         } else if (what != null && what.equals(Tags.PREVIOUS_TASK))
         {
             //retour à la tâche que l'on avait précédemment 
             int index = 0;
-            for (int i = 0; i < ProjectDAO.getInstance().getCurrentProject().getTasks().size(); i++) {
-                if (ProjectDAO.getInstance().getCurrentProject().getTasks().get(i).equals(task)) {
+            for (int i = 0; i < DAO.getInstance().getCurrentProject().getTasks().size(); i++) {
+                if (DAO.getInstance().getCurrentProject().getTasks().get(i).equals(task)) {
                     index = i;
                 }
             }
             table.getItems().set(index, task);
-            ProjectDAO.getInstance().getCurrentProject().getTasks().set(index, task);
+            DAO.getInstance().getCurrentProject().getTasks().set(index, task);
             table.reload();
             stage.close();
         } else if (what != null && what.equals(Tags.APPLY_TASK)) {
@@ -107,10 +122,10 @@ public class ClickController extends Controller implements EventHandler<ActionEv
             task.setPredecessor(listPredecessor);
             task.setRessources(RessourcesTable.transformRessourceTableToResssource(listRessource));
             table.getItems().set(indexTask, task);
-            ProjectDAO.getInstance().getCurrentProject().getTasks().set(indexTask, task);
+            DAO.getInstance().getCurrentProject().getTasks().set(indexTask, task);
             
-            ManageUndoRedo.getInstance().add(ProjectDAO.getInstance().getCurrentProject().getTasks());
-            ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
+            ManageUndoRedo.getInstance().add(DAO.getInstance().getCurrentProject().getTasks());
+            DAO.getInstance().getCurrentProject().setState(new StateNotSave());
             table.reload();
             stage.close();
         } else {

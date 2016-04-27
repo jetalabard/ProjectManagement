@@ -5,42 +5,77 @@
  */
 package projectmanagement.application.model;
 
-import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import projectmanagement.ihm.view.MyTabPane;
 
 /**
  *
  * @author Jérémy
  */
-public class ManagerShowDiagram 
-{
-    
-    private static ManagerShowDiagram instance = null;
-    
-    private boolean ganttTabShow; 
-    private boolean pertTabShow; 
-    
-    private TabPane tabDiagram;
-    
-    private ManagerShowDiagram(){
+public class ManagerShowDiagram {
+
+    private static ManagerShowDiagram instance;
+
+    private boolean ganttTabShow;
+    private boolean pertTabShow;
+
+    private MyTabPane tabDiagram;
+
+    private ManagerShowDiagram() {
         this.pertTabShow = true;
         this.ganttTabShow = true;
     }
-    
-    public void removeTabDiagram(Tab diagram){
-        this.tabDiagram.getTabs().remove(diagram);
+
+    public void closeTabGantt() {
+        if (tabDiagram != null) {
+            ganttTabShow = false;
+            this.tabDiagram.closeGantt();
+        }
     }
     
-    public void addTabDiagram(Tab diagram){
-        this.tabDiagram.getTabs().add(diagram);
-    }
     
-    public void setTabPaneDiagram(TabPane tabDiagram){
+    public boolean canShowTabPane(){
+        return pertTabShow || ganttTabShow;
+    }
+
+    public void closeTabPert() {
+        if (tabDiagram != null) {
+            pertTabShow = false;
+            this.tabDiagram.closePert();
+        }
+    }
+
+    public void showTabGantt() {
+        ganttTabShow = true;
+        this.tabDiagram.createTabGantt();
+        this.tabDiagram.reload();
+    }
+
+    public void showTabPert() {
+        pertTabShow = true;
+        this.tabDiagram.createTabPert();
+        this.tabDiagram.reload();
+    }
+
+    public void setGanttTabShow(boolean ganttTabShow) {
+        this.ganttTabShow = ganttTabShow;
+    }
+
+    public void setPertTabShow(boolean pertTabShow) {
+       this.pertTabShow = pertTabShow;
+    }
+
+
+    public TabPane getTabDiagram() {
+        return tabDiagram;
+    }
+
+    public void setTabDiagram(MyTabPane tabDiagram) {
         this.tabDiagram = tabDiagram;
     }
-    
-    public static ManagerShowDiagram getInstance(){
-        if(instance == null){
+
+    public final static ManagerShowDiagram getInstance() {
+        if (instance == null) {
             instance = new ManagerShowDiagram();
         }
         return instance;
@@ -50,17 +85,8 @@ public class ManagerShowDiagram
         return ganttTabShow;
     }
 
-    public void setGanttTabShow(boolean ganttTabShow) {
-        this.ganttTabShow = ganttTabShow;
-    }
-
     public boolean isPertTabShow() {
         return pertTabShow;
     }
 
-    public void setPertTabShow(boolean pertTabShow) {
-        this.pertTabShow = pertTabShow;
-    }
-   
-    
 }

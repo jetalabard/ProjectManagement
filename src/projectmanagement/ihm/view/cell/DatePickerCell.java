@@ -17,11 +17,12 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableCell;
 import projectmanagement.application.business.StateNotSave;
 import projectmanagement.application.business.Task;
-import projectmanagement.application.dataloader.ProjectDAO;
+import projectmanagement.application.model.DAO;
 import projectmanagement.application.model.ManageUndoRedo;
 import projectmanagement.application.model.ManagerLanguage;
 import projectmanagement.application.model.MyDate;
 import projectmanagement.ihm.controller.Tags;
+import projectmanagement.ihm.view.MyTableView;
 
 /**
  *
@@ -33,13 +34,13 @@ public class DatePickerCell<S, T> extends TableCell<Task, MyDate> {
     private ObservableList<Task> tasks;
     private final String column; 
     private boolean initialzation;
-    private static int init;
+    private MyTableView main;
 
-    public DatePickerCell(ObservableList<Task> tasks, String column) {
+    public DatePickerCell(ObservableList<Task> tasks, String column,MyTableView main) {
         super();
         this.tasks = tasks;
         this.column = column;
-
+this.main = main;
         if (datePicker == null) {
             initialzation = true;
             createDatePicker();
@@ -109,27 +110,37 @@ public class DatePickerCell<S, T> extends TableCell<Task, MyDate> {
 
                 if (null != getTasks()) {
                     if (column.equals(Tags.DATE_BEGIN)) {
-                        Task task = ProjectDAO.getInstance().getCurrentProject().getTasks().get(index);
+                        Task task = DAO.getInstance().getCurrentProject().getTasks().get(index);
                         task.setDatebegin(mydate);
                         if(task.equals(getTasks().get(index))){
                             getTasks().get(index).setDatebegin(mydate);
                         }
+                        if(task.getDateend().before(task.getDatebegin())){
+                            task.setDateend(new MyDate(mydate.getTime()+MyDate.DAY));
+                            getTasks().get(index).setDateend(new MyDate(mydate.getTime()+MyDate.DAY));
+                            
+                        }
                         if(initialzation == false){
-                            ManageUndoRedo.getInstance().add(ProjectDAO.getInstance().getCurrentProject().getTasks());
-                             ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
+                            ManageUndoRedo.getInstance().add(DAO.getInstance().getCurrentProject().getTasks());
+                             DAO.getInstance().getCurrentProject().setState(new StateNotSave());
+                             main.reload();
                         }
                         else{
                             initialzation = false;
                         }
                     } else {
-                        Task task = ProjectDAO.getInstance().getCurrentProject().getTasks().get(index);
-                        task.setDateend(mydate);
-                        if(task.equals(getTasks().get(index))){
-                            getTasks().get(index).setDateend(mydate);
+                        
+                        Task task = DAO.getInstance().getCurrentProject().getTasks().get(index);
+                        if (task.getDatebegin().before(mydate)) {
+                            task.setDateend(mydate);
+                            if (task.equals(getTasks().get(index))) {
+                                getTasks().get(index).setDateend(mydate);
+                            }
                         }
                         if(initialzation == false){
-                            ManageUndoRedo.getInstance().add(ProjectDAO.getInstance().getCurrentProject().getTasks());
-                             ProjectDAO.getInstance().getCurrentProject().setState(new StateNotSave());
+                            ManageUndoRedo.getInstance().add(DAO.getInstance().getCurrentProject().getTasks());
+                             DAO.getInstance().getCurrentProject().setState(new StateNotSave());
+                             main.reload();
                         }
                         else{
                             initialzation = false;
@@ -174,25 +185,6 @@ public class DatePickerCell<S, T> extends TableCell<Task, MyDate> {
         this.datePicker = datePicker;
     }
     
-    public static void UninitializedInLayoutChildrenFunction(boolean value){
-        if(value == true){
-            init =0;
-        }
-        else{
-            init =1;
-        }
-        
-    }
 
-    @Override
-    protected void layoutChildren() {
-        super.layoutChildren(); //To change body of generated methods, choose Tools | Templates.
-        if(init != 0){
-            System.out.println("Date cell layout children");
-            initialzation = true;
-        }
-    }
-    
-    
 
 }

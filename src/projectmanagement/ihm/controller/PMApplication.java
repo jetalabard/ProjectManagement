@@ -18,7 +18,6 @@ import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import projectmanagement.application.dataloader.Database;
 import projectmanagement.application.model.LoaderImage;
-import projectmanagement.application.model.ManagerLanguage;
 
 /**
  *
@@ -27,7 +26,6 @@ import projectmanagement.application.model.ManagerLanguage;
 public class PMApplication extends Application {
     
     private SplashScreen splash;
-    private Stage mainStage;
     public final static String SPLASH_IMAGE = LoaderImage.getImage("logo_PM_2.png");
 
     @Override
@@ -58,7 +56,7 @@ public class PMApplication extends Application {
         showSplash(
                 primaryStage,
                 task,
-                () -> showMainStage()
+                () -> new StartController().showMainStage()
         );
         new Thread(task).start();
     }
@@ -67,18 +65,7 @@ public class PMApplication extends Application {
         launch(args);
     }
     
-    private void showMainStage() {
-
-        mainStage = new Stage();
-        mainStage.setTitle(ManagerLanguage.getInstance().getLocalizedTexte("AppTitle"));
-        mainStage.getIcons().add(new Image(SPLASH_IMAGE));
-        Home home = new Home(mainStage);
-        Scene mainScene = new Scene(home);
-        mainStage.setScene(mainScene);
-        mainStage.setMaximized(true);
-        mainStage.show();
-    }
-
+   
     private void showSplash(final Stage initStage, Task<?> task, InitCompletionHandler initCompletionHandler) {
 
         splash.getProgressBar().progressProperty().bind(task.progressProperty());

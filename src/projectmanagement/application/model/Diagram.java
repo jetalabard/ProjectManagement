@@ -5,8 +5,9 @@
  */
 package projectmanagement.application.model;
 
-import javafx.scene.control.Tab;
-import projectmanagement.application.business.Project;
+import java.util.List;
+import javafx.scene.Node;
+import projectmanagement.application.business.Task;
 
 /**
  *
@@ -15,11 +16,11 @@ import projectmanagement.application.business.Project;
 public class Diagram 
 {
     
-    public void showGantt(Tab tabGantt,Project p ){
+    public void showGantt(Node tabGantt,List<Task> tasks ){
         
     }
     
-    public void showPert(Tab tabPert,Project p ){
+    public void showPert(Node tabPert,List<Task> tasks ){
         
     }
 }

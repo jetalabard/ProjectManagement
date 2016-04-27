@@ -61,13 +61,15 @@ public class Predecessor {
         return id;
     }
     
-    public void setId(Integer id){
-        this.id = id;
-    }
-
     public String getType() {
         return type;
     }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    
+    
 
     public Integer getGap() {
         return gap;

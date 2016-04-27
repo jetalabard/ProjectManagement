@@ -18,6 +18,8 @@ import java.util.logging.Logger;
 public class MyDate extends Date {
 
     public static final String DATE_FORMAT = "dd-MM-yyyy";
+    
+    public static final long DAY = (1000*60*60*24);
 
     public MyDate(Date parsed) {
         super(parsed.getTime());
@@ -28,15 +30,16 @@ public class MyDate extends Date {
         return new SimpleDateFormat(DATE_FORMAT).format(this);
     }
 
+    public MyDate(long date) {
+        super(date);
+    }
+    
+    
+
     private MyDate() {
         super();
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return this.getTime() == ((MyDate)obj).getTime();
-    }
-    
     public static String valueOf(MyDate date) {
         return new SimpleDateFormat(DATE_FORMAT).format(date);
     }
@@ -59,11 +62,28 @@ public class MyDate extends Date {
     public static String toString(MyDate date) {
         return new SimpleDateFormat(DATE_FORMAT).format(date);
     }
-
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        return hash;
+    
+    public static long diff(MyDate date1,MyDate date2){
+        return date2.getTime() - date1.getTime();
     }
+    
+    public static long days(long number){
+        return number / DAY;
+    }
+    
+    public static long diffDays(MyDate date1,MyDate date2){
+        long number = (date2.getTime() - date1.getTime() )/ DAY;
+        return number > 0 ? number : 0;
+    }
+    
+    public boolean after(MyDate date){
+        return this.after(new Date(date.getTime()));
+    }
+    
+    public boolean before(MyDate date){
+        return this.before(new Date(date.getTime()));
+    }
+    
+    
     
 }

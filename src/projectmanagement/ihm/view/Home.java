@@ -19,7 +19,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import projectmanagement.application.business.Project;
-import projectmanagement.application.dataloader.ProjectDAO;
+import projectmanagement.application.model.DAO;
 import projectmanagement.application.model.LoaderImage;
 import projectmanagement.application.model.ManagerLanguage;
 import projectmanagement.ihm.controller.MouseController;
@@ -71,7 +71,7 @@ public class Home extends Page{
     
     private FlowPane getOpenProject(Stage mainStage) {
 
-        List<Project> projects = ProjectDAO.getInstance().getAllProject();
+        List<Project> projects = DAO.getInstance().getAllProject();
         FlowPane pane = new FlowPane();
         pane.setAlignment(Pos.CENTER);
         int number = 0;
@@ -109,16 +109,20 @@ public class Home extends Page{
         t2.setFont(new Font(20));
         t2.setText(text);
         t2.setFill(Color.WHITE);
-        BorderPane.setMargin(t2, new Insets(10, 10, 10, 10));
-        BorderPane.setMargin(open, new Insets(10, 10, 10, 10));
-        BorderPane.setAlignment(open, Pos.CENTER);
-        BorderPane.setAlignment(t2, Pos.CENTER);
+        SetMarginAndAlignementBorderPane(t2, open);
         pane.setTop(open);
         pane.setCenter(t2);
         pane.addEventHandler(MouseEvent.MOUSE_CLICKED,new MouseController(pane,String.valueOf(MouseEvent.MOUSE_CLICKED),isopen,p,mainStage));
         pane = addFocus(pane);
         pane.getStyleClass().add("borderPane");
         return pane;
+    }
+
+    private void SetMarginAndAlignementBorderPane(Text t2, ImageView open) {
+        BorderPane.setMargin(t2, new Insets(10, 10, 10, 10));
+        BorderPane.setMargin(open, new Insets(10, 10, 10, 10));
+        BorderPane.setAlignment(open, Pos.CENTER);
+        BorderPane.setAlignment(t2, Pos.CENTER);
     }
 
 }

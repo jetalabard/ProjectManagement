@@ -24,6 +24,8 @@ import projectmanagement.application.business.Task;
 import projectmanagement.application.model.LoaderImage;
 import projectmanagement.ihm.controller.ChangeLangController;
 import projectmanagement.application.model.ManagerLanguage;
+import projectmanagement.application.model.ManagerShowDiagram;
+import projectmanagement.ihm.controller.Controller;
 import projectmanagement.ihm.controller.MenuController;
 import projectmanagement.ihm.controller.Tags;
 
@@ -98,7 +100,11 @@ public class MenuPM extends BorderPane {
         menuEdit = new Menu(managerLang.getLocalizedTexte("Edit"));
         MenuItem undo = createMenuItem(managerLang.getLocalizedTexte("Undo"),LoaderImage.getImage("Undo.png"),new MenuController(Tags.PROJECT,Tags.UNDO,mainStage),disableAllButton);
         MenuItem redo = createMenuItem(managerLang.getLocalizedTexte("Redo"),LoaderImage.getImage("Redo.png"),new MenuController(Tags.PROJECT,Tags.REDO,mainStage),disableAllButton);
-        menuEdit.getItems().addAll(undo, redo);
+        MenuItem delete = createMenuItem(managerLang.getLocalizedTexte("delete"),LoaderImage.getImage("Trash.png"),new MenuController(Tags.PROJECT,Tags.DELETE,mainStage),disableAllButton);
+        MenuItem deleteAll = createMenuItem(managerLang.getLocalizedTexte("deleteAll"),LoaderImage.getImage("Refresh.png"),new MenuController(Tags.APP,Tags.DELETE_ALL,mainStage),!disableAllButton);
+        MenuItem properties = createMenuItem(managerLang.getLocalizedTexte("Properties"),LoaderImage.getImage("Support.png"),new MenuController(Tags.PROJECT,Tags.CHANGE_NAME,mainStage),disableAllButton);
+
+        menuEdit.getItems().addAll(undo, redo,delete,deleteAll,properties);
     }
 
     private void createMenuView(boolean disableAllButton) {
@@ -109,9 +115,11 @@ public class MenuPM extends BorderPane {
          menuCtrlZoom_l.setSlider(slider);
         MenuItem zommp = createMenuItem(managerLang.getLocalizedTexte("ZoomP"),LoaderImage.getImage("Plus.png"),menuCtrlZoom,disableAllButton);
         MenuItem zommm = createMenuItem(managerLang.getLocalizedTexte("ZoomL"),LoaderImage.getImage("Minus.png"),menuCtrlZoom_l,disableAllButton);
+        MenuItem showGantt = createRadioMenuItemSimple(managerLang.getLocalizedTexte("showGantt"), new MenuController(Tags.APP, Tags.SHOW_GANTT, mainStage),disableAllButton,ManagerShowDiagram.getInstance().isGanttTabShow());
+        MenuItem showPert= createRadioMenuItemSimple(managerLang.getLocalizedTexte("showPert"), new MenuController(Tags.APP, Tags.SHOW_PERT, mainStage),disableAllButton,ManagerShowDiagram.getInstance().isPertTabShow());
         MenuItem preferences = createMenuItem(managerLang.getLocalizedTexte("Preference"),LoaderImage.getImage("Settings.png"),new MenuController(Tags.APP,Tags.PREFERENCE,mainStage),disableAllButton);
         Menu language = createMenuLanguage();
-        menuView.getItems().addAll(zommp, zommm, language,preferences);
+        menuView.getItems().addAll(zommp, zommm, language,preferences,showGantt,showPert);
     }
 
     private Menu createMenuLanguage() {
@@ -197,6 +205,14 @@ public class MenuPM extends BorderPane {
             rb2.setSelected(true);
         }
         return language;
+    }
+    
+    private RadioMenuItem createRadioMenuItemSimple(String localizedTexte,MenuController ctrl,boolean disable,boolean active) {
+        RadioMenuItem rb2 = new RadioMenuItem(localizedTexte);
+        rb2.setSelected(active);
+        rb2.setDisable(disable);
+        rb2.setOnAction(ctrl);
+        return rb2;
     }
 
 }

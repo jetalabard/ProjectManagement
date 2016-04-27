@@ -13,8 +13,6 @@ import projectmanagement.application.business.Project;
 import projectmanagement.application.business.Ressource;
 import projectmanagement.application.business.StateSave;
 import projectmanagement.application.business.Task;
-import projectmanagement.application.dataloader.DAOTask;
-import projectmanagement.application.dataloader.ProjectDAO;
 
 /**
  *
@@ -28,51 +26,62 @@ public class Save {
         this.currentProject = currentProject;
     }
 
-    public void execute() {
-
+    public Project execute() {
         if (!this.currentProject.getState().isSave()) {
-            ProjectDAO.getInstance().updateProject(currentProject.getId(), currentProject.getTitle(), MyDate.now());
-            if (currentProject.getTasks() != null && !currentProject.getTasks().isEmpty()) {
-                List tasks = DAOTask.getInstance().getAllTasksByIdProject(currentProject.getId());
-                for (Task t : currentProject.getTasks()) {
-                    if (tasks != null && !tasks.isEmpty() && tasks.contains(t)) {
-                        DAOTask.getInstance().updateTask(t.getId(), t.getName(), t.getIdProject(), t.getDatebegin(), t.getDateend(), t.getPriority(), t.getNote());
-                        savePredecessors(t);
-                        saveRessources(t);
-                    } else {
-                        int id = DAOTask.getInstance().insertTask(t.getName(), t.getIdProject(), t.getDatebegin(), t.getDateend(), t.getPriority(), t.getNote());
-                        t.setId(id);
-                        savePredecessors(t);
-                        saveRessources(t);
-                    }
-
-                }
+            if (DAO.getInstance().getAllProject().contains(currentProject)) 
+            {
+                saveProject();
+            }
+            else{
+                currentProject = DAO.getInstance().insertProject(currentProject.getTitle(), currentProject.getLastUse());
+                saveProject();
             }
             currentProject.setState(new StateSave());
         } 
+        return currentProject;
+    }
+
+    private void saveProject() {
+        DAO.getInstance().updateProject(currentProject.getId(), currentProject.getTitle(), MyDate.now());
+        if (currentProject.getTasks() != null && !currentProject.getTasks().isEmpty()) {
+            List tasks = DAO.getInstance().getAllTasksByIdProject(currentProject.getId());
+            for (Task t : currentProject.getTasks()) {
+                if (tasks != null && !tasks.isEmpty() && tasks.contains(t)) {
+                    DAO.getInstance().updateTask(t.getId(), t.getName(), t.getIdProject(), t.getDatebegin(), t.getDateend(), t.getPriority(), t.getNote());
+                    savePredecessors(t);
+                    saveRessources(t);
+                } else {
+                    int id = DAO.getInstance().insertTask(t.getName(), t.getIdProject(), t.getDatebegin(), t.getDateend(), t.getPriority(), t.getNote());
+                    t.setId(id);
+                    savePredecessors(t);
+                    saveRessources(t);
+                }
+                
+            }
+        }
     }
 
     private void saveRessources(Task t) {
         if (t.getRessources() != null && !t.getRessources().isEmpty()) {
-            List ressources = DAOTask.getInstance().getAllRessourceByIdTask(t.getId());
+            List ressources = DAO.getInstance().getAllRessourceByIdTask(t.getId());
             for (Ressource ress : t.getRessources()) {
                 if (ressources != null && !ressources.isEmpty() && ressources.contains(ress)) {
                     if (ress instanceof Human) {
                         Human h = (Human) ress;
-                        DAOTask.getInstance().updateRessource(h.getId(), h.getIdTask(), h.getCost(), h.getName(), h.getFirstname(), h.getRole(), null, 0);
+                        DAO.getInstance().updateRessource(h.getId(), h.getIdTask(), h.getCost(), h.getName(), h.getFirstname(), h.getRole(), null, 0);
                     } else {
                         Equipment equip = (Equipment) ress;
-                        DAOTask.getInstance().updateRessource(equip.getId(), equip.getIdTask(), equip.getCost(), equip.getName(), null, null, equip.getReference(), 1);
+                        DAO.getInstance().updateRessource(equip.getId(), equip.getIdTask(), equip.getCost(), equip.getName(), null, null, equip.getReference(), 1);
                     }
 
                 } else {
                     if (ress instanceof Human) {
                         Human h = (Human) ress;
-                        int id = DAOTask.getInstance().insertRessource(t.getId(), h.getCost(), h.getName(), h.getFirstname(), h.getRole(), null, 0);
+                        int id = DAO.getInstance().insertRessource(t.getId(), h.getCost(), h.getName(), h.getFirstname(), h.getRole(), null, 0);
                         h.setId(id);
                     } else {
                         Equipment equip = (Equipment) ress;
-                        int id = DAOTask.getInstance().insertRessource(t.getId(), equip.getCost(), equip.getName(), null, null, equip.getReference(), 1);
+                        int id = DAO.getInstance().insertRessource(t.getId(), equip.getCost(), equip.getName(), null, null, equip.getReference(), 1);
                         equip.setId(id);
                     }
                 }
@@ -82,13 +91,14 @@ public class Save {
     }
 
     private void savePredecessors(Task t) {
+        
         if (t.getPredecessor() != null && !t.getPredecessor().isEmpty()) {
-            List predecessors = DAOTask.getInstance().getAllPredecessorByIdTask(t.getId());
+            List predecessors = DAO.getInstance().getAllPredecessorByIdTask(t.getId());
             for (Predecessor pred : t.getPredecessor()) {
                 if (predecessors != null && !predecessors.isEmpty() && predecessors.contains(t)) {
-                    DAOTask.getInstance().updatePredecessor(pred.getId(), pred.getType(), pred.getGap(), pred.getConstraint(), pred.getIdTask(), t.getId());
+                    DAO.getInstance().updatePredecessor(pred.getId(), pred.getType(), pred.getGap(), pred.getConstraint(), pred.getIdTask(), t.getId());
                 } else {
-                    int id = DAOTask.getInstance().insertPredecessor(pred.getType(), pred.getGap(), pred.getConstraint(), pred.getIdTask(), t.getId());
+                    int id = DAO.getInstance().insertPredecessor(pred.getType(), pred.getGap(), pred.getConstraint(), pred.getIdTask(), t.getId());
                     pred.setId(id);
                 }
             }
