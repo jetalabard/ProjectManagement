@@ -15,8 +15,9 @@ import javafx.scene.layout.BorderPane;
 public abstract class Page extends BorderPane{
     
     public void reload(){
-        this.getChildren().clear();
-        createView();
+            Page.this.getChildren().clear();
+            createView();
+       
     }
 
     public abstract void createView();

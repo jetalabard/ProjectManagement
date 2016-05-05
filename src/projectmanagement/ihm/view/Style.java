@@ -13,14 +13,9 @@ import javafx.scene.layout.Pane;
  */
 public class Style {
 
-    public Style() {
-    }
-    
     public static void getStyle(String nameStyle,Pane layout){
         layout.getStylesheets().add(
-                layout.getClass().getResource(
-                        nameStyle
-                ).toExternalForm()
+                layout.getClass().getResource("/ressources/"+nameStyle).toExternalForm()
         );
     }
 }

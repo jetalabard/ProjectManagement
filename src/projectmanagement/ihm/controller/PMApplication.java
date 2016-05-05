@@ -7,9 +7,7 @@ package projectmanagement.ihm.controller;
 
 import javafx.animation.FadeTransition;
 import projectmanagement.ihm.view.SplashScreen;
-import projectmanagement.ihm.view.*;
 import javafx.application.Application;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
 import javafx.scene.Scene;
@@ -18,7 +16,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import projectmanagement.application.dataloader.Database;
-import projectmanagement.application.model.ManagerLanguage;
+import projectmanagement.application.model.LoaderImage;
 
 /**
  *
@@ -27,8 +25,7 @@ import projectmanagement.application.model.ManagerLanguage;
 public class PMApplication extends Application {
     
     private SplashScreen splash;
-    private Stage mainStage;
-    public final static String SPLASH_IMAGE = "/ressources/logo_PM_2.png";
+    public final static String SPLASH_IMAGE = LoaderImage.getImage("logo_PM_2.png");
 
     @Override
     public void init() throws Exception {
@@ -42,6 +39,10 @@ public class PMApplication extends Application {
        primaryStage.getIcons().add(new Image(SPLASH_IMAGE));
     }
     
+    /**
+     * methode asynchrone gérant la barre de progression et qui lance la page d'accueil
+     * @param primaryStage 
+     */
      private void asyncTask(Stage primaryStage) {
         final Task<Integer> task = new Task<Integer>() {
             @Override
@@ -58,7 +59,7 @@ public class PMApplication extends Application {
         showSplash(
                 primaryStage,
                 task,
-                () -> showMainStage()
+                () -> HomeController.showHome()
         );
         new Thread(task).start();
     }
@@ -67,18 +68,7 @@ public class PMApplication extends Application {
         launch(args);
     }
     
-    private void showMainStage() {
-
-        mainStage = new Stage();
-        mainStage.setTitle(ManagerLanguage.getInstance().getLocalizedTexte("AppTitle"));
-        mainStage.getIcons().add(new Image(SPLASH_IMAGE));
-        Home home = new Home(mainStage);
-        Scene mainScene = new Scene(home);
-        mainStage.setScene(mainScene);
-        mainStage.setMaximized(true);
-        mainStage.show();
-    }
-
+   
     private void showSplash(final Stage initStage, Task<?> task, InitCompletionHandler initCompletionHandler) {
 
         splash.getProgressBar().progressProperty().bind(task.progressProperty());
@@ -87,7 +77,7 @@ public class PMApplication extends Application {
                 splash.getProgressBar().progressProperty().unbind();
                 splash.getProgressBar().setProgress(1);
                 initStage.toFront();
-                FadeTransition fadeSplash = new FadeTransition(Duration.seconds(1.2), splash);
+                FadeTransition fadeSplash = new FadeTransition(Duration.seconds(0.8), splash);
                 fadeSplash.setFromValue(1.0);
                 fadeSplash.setToValue(0.0);
                 fadeSplash.setOnFinished(actionEvent -> initStage.hide());

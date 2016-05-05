@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PROJECT id="3" name="Test" lastuse="04-05-2016">
+  <task>
+    <id>6</id>
+    <name>name</name>
+    <date_begin>04-05-2016</date_begin>
+    <date_end>04-05-2016</date_end>
+    <priority>0</priority>
+    <ID_PROJECT>3</ID_PROJECT>
+    <note />
+    <predecessor>
+      <id>3</id>
+      <taskID>6</taskID>
+      <parentTaskID>0</parentTaskID>
+      <constraintPred />
+      <type />
+      <gap>0</gap>
+    </predecessor>
+    <ressource type="0">
+      <id>3</id>
+      <cost>0.0</cost>
+      <name>name</name>
+      <firstname>firstname</firstname>
+      <role />
+    </ressource>
+  </task>
+  <task>
+    <id>7</id>
+    <name>name</name>
+    <date_begin>04-05-2016</date_begin>
+    <date_end>04-05-2016</date_end>
+    <priority>0</priority>
+    <ID_PROJECT>3</ID_PROJECT>
+    <note>note</note>
+    <predecessor>
+      <id>4</id>
+      <taskID>7</taskID>
+      <parentTaskID>0</parentTaskID>
+      <constraintPred>constraint</constraintPred>
+      <type>type</type>
+      <gap>0</gap>
+    </predecessor>
+    <ressource type="1">
+      <id>4</id>
+      <cost>0.0</cost>
+      <reference />
+      <name>name</name>
+    </ressource>
+    <ressource type="1">
+      <id>5</id>
+      <cost>0.0</cost>
+      <reference>reference</reference>
+      <name>name</name>
+    </ressource>
+  </task>
+  <task>
+    <id>8</id>
+    <name>name</name>
+    <date_begin>04-05-2016</date_begin>
+    <date_end>04-05-2016</date_end>
+    <priority>0</priority>
+    <ID_PROJECT>3</ID_PROJECT>
+    <note />
+  </task>
+</PROJECT>

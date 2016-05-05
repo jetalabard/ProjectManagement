@@ -5,36 +5,77 @@
  */
 package projectmanagement.ihm.view;
 
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TableView;
+import javafx.geometry.Orientation;
+import javafx.scene.control.Slider;
+import javafx.scene.control.SplitPane;
 import javafx.stage.Stage;
+import projectmanagement.application.model.ManageUndoRedo;
+import projectmanagement.application.model.ManagerShowDiagram;
+import projectmanagement.ihm.controller.KeyListener;
+import projectmanagement.ihm.controller.MainWindowController;
+import projectmanagement.ihm.controller.Tags;
+import projectmanagement.ihm.controller.WindowListener;
 
 /**
  *
  * @author Jérémy
  */
-public class MainWindow extends Page {
+public final class MainWindow extends Page {
 
     private final Stage mainStage;
+
+    private MyTableView table;
+    private MyTabPane tabpane;
 
     public MainWindow(Stage mainstage) {
         super();
         this.mainStage = mainstage;
+        ManageUndoRedo.getInstance().setWindows(MainWindow.this);
         createView();
     }
 
     @Override
     public void createView() {
-        this.setTop(new MenuPM(this,mainStage));
-        this.setCenter(new TableView());
-
-        TabPane tabpane = new TabPane();
-        Tab tab = new Tab("Gantt");
-        Tab tab2 = new Tab("Pert");
-        tabpane.getTabs().add(tab);
-        tabpane.getTabs().add(tab2);
-        this.setBottom(tabpane);
+        this.mainStage.setMinHeight(600);
+        this.mainStage.setMinWidth(550);
+        table = new MyTableView(mainStage,this);
+        
+        if(ManagerShowDiagram.getInstance().canShowTabPane()){
+            tabpane = new MyTabPane(this);
+        }
+        SplitPane splitPane = createSplitPane();
+        Slider slider = new Slider(0.5, 2, 1);
+        ZoomingPane zoomingPane = new ZoomingPane(splitPane);
+        zoomingPane.zoomFactorProperty().bind(slider.valueProperty());
+        addListener(slider);
+        this.setTop(new MenuPM(this, mainStage, table, slider));
+        this.setCenter(zoomingPane);
     }
 
+    private SplitPane createSplitPane() {
+        SplitPane splitPane = new SplitPane();
+        splitPane.setOrientation(Orientation.VERTICAL);
+        if(ManagerShowDiagram.getInstance().canShowTabPane()){
+            splitPane.getItems().addAll(table, tabpane);
+        }else{
+            splitPane.getItems().add(table);
+        }
+        return splitPane;
+    }
+
+    private void addListener(Slider slider) {
+        this.mainStage.setOnCloseRequest(new WindowListener(Tags.QUIT, mainStage));
+        this.setOnKeyPressed(new KeyListener(slider, table));
+        this.setOnScroll(new MainWindowController(slider));
+    }
+
+    public void reloadTable() {
+        if (table != null) {
+            table.reload();
+        }
+    }
+    
+    public Stage getStage(){
+        return mainStage;
+    }
 }
