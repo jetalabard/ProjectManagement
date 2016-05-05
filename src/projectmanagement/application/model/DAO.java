@@ -12,6 +12,7 @@ package projectmanagement.application.model;
  */
 
 import java.util.List;
+import javafx.scene.paint.Color;
 import projectmanagement.application.business.Predecessor;
 import projectmanagement.application.business.Project;
 import projectmanagement.application.business.Ressource;
@@ -95,6 +96,32 @@ public abstract class DAO {
     public abstract  void removeProject(int id);
 
     public abstract  Project insertProject(String name, MyDate lastUse);
+    
+     public abstract  void deleteProject(int id);
+            
+    
+    public abstract Color getBACKGROUND_GANTT();
+    public abstract Color getOBJECT_GANTT();
+    public abstract Color getTEXT_GANTT();
+    public abstract Color getBACKGROUND_PERT();
+    public abstract Color getOBJECT_PERT();
+    public abstract Color getTEXT_PERT();
+    public abstract Color getOBJECT_CRITICAL_PERT();
+    public abstract Color getTEXT_CRITICAL_PERT();
+
+    public abstract void insertPreference(Color BACKGROUND_GANTT,Color OBJECT_GANTT,
+            Color TEXT_GANTT,Color BACKGROUND_PERT,
+            Color OBJECT_PERT,Color TEXT_PERT,
+            Color OBJECT_CRITICAL_PERT,Color TEXT_CRITICAL_PERT );
+    
+    public abstract void insertPreferenceByDefault();
+    
+    public abstract int countPreference();
+    
+    public abstract void updatePreference(Color BACKGROUND_GANTT,Color OBJECT_GANTT,
+            Color TEXT_GANTT,Color BACKGROUND_PERT,
+            Color OBJECT_PERT,Color TEXT_PERT,
+            Color OBJECT_CRITICAL_PERT,Color TEXT_CRITICAL_PERT );
 
 }
 

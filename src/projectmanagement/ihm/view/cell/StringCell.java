@@ -10,11 +10,11 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import projectmanagement.application.business.StateNotSave;
 import projectmanagement.application.business.Task;
 import projectmanagement.application.model.DAO;
-import projectmanagement.application.model.ManageUndoRedo;
 import projectmanagement.ihm.controller.Tags;
+import projectmanagement.ihm.controller.TaskController;
+import projectmanagement.ihm.view.MyTableView;
 
 /**
  *
@@ -22,13 +22,15 @@ import projectmanagement.ihm.controller.Tags;
  */
 public class StringCell extends TableCell<Task, String> {
 
-    private TextField textField;
-    private String column;
-    private int mode;
+    private final TextField textField;
+    private final String column;
+    private final int mode;
+    private final MyTableView table;
 
-    public StringCell(String column,int mode) {
+    public StringCell(String column,int mode,MyTableView table) {
         textField = new TextField();
         this.mode = mode;
+        this.table = table;
         this.column = column;
         textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
             if (!isNowFocused) {
@@ -46,8 +48,7 @@ public class StringCell extends TableCell<Task, String> {
         } else {
             commitEdit(textField.getText());
             if (this.mode == 0) {
-                ManageUndoRedo.getInstance().add(DAO.getInstance().getCurrentProject().getTasks());
-                DAO.getInstance().getCurrentProject().setState(new StateNotSave());
+                new TaskController(table).updateListTask(DAO.getInstance().getCurrentProject().getTasks());
             }
         }
 
@@ -93,23 +94,23 @@ public class StringCell extends TableCell<Task, String> {
     public void commitEdit(String value) {
         super.commitEdit(value);
 
-        if (this.column.equals(Tags.NAME)) {
-            for (Task t : DAO.getInstance().getCurrentProject().getTasks()) {
-                if (t.equals(this.getTableRow().getItem())) {
-                    t.setName(value);
-                }
-            }
-            ((Task) this.getTableRow().getItem()).setName(value);
-
-        } else if (this.column.equals(Tags.NOTE)) {
-            for (Task t : DAO.getInstance().getCurrentProject().getTasks()) {
-                if (t.equals(this.getTableRow().getItem())) {
-                    t.setNote(value);
-                }
-            }
-            ((Task) this.getTableRow().getItem()).setNote(value);
-        } 
-        else {
+        switch (this.column) {
+            case Tags.NAME:
+                for (Task t : DAO.getInstance().getCurrentProject().getTasks()) {
+                    if (t.equals(this.getTableRow().getItem())) {
+                        t.setName(value);
+                    }
+                }   ((Task) this.getTableRow().getItem()).setName(value);
+                break;
+            case Tags.NOTE:
+                for (Task t : DAO.getInstance().getCurrentProject().getTasks()) {
+                    if (t.equals(this.getTableRow().getItem())) {
+                        t.setNote(value);
+                    }
+            }   ((Task) this.getTableRow().getItem()).setNote(value);
+                break;
+            default:
+                break;
         }
 
     }

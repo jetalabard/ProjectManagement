@@ -9,11 +9,14 @@ import java.util.regex.Pattern;
 import javafx.geometry.Pos;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TextField;
-import projectmanagement.application.business.StateNotSave;
+import javafx.stage.Stage;
 import projectmanagement.application.business.Task;
 import projectmanagement.application.model.DAO;
-import projectmanagement.application.model.ManageUndoRedo;
+import projectmanagement.application.model.ManagerLanguage;
 import projectmanagement.ihm.controller.Tags;
+import projectmanagement.ihm.controller.TaskController;
+import projectmanagement.ihm.view.MyPopup;
+import projectmanagement.ihm.view.MyTableView;
 
 /**
  *
@@ -23,12 +26,16 @@ public class IntegerEditingCell extends TableCell<Task, Integer> {
 
     private final TextField textField = new TextField();
     private final Pattern intPattern = Pattern.compile("-?\\d+");
-    private String tags;
-    private int mode;
-
-    public IntegerEditingCell(String tags,int mode) {
+    private final String tags;
+    private final int mode;
+    private final Stage stage;
+    private final MyTableView table;
+    
+    public IntegerEditingCell(String tags,int mode,Stage mainstage,MyTableView table) {
         this.tags = tags;
         this.mode = mode;
+        this.table = table;
+        this.stage = mainstage;
         textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
             if (!isNowFocused) {
                 processEdit(0);
@@ -46,8 +53,7 @@ public class IntegerEditingCell extends TableCell<Task, Integer> {
             } else {
                 commitEdit(Integer.parseInt(text));
                 if (this.mode == 0) {
-                    ManageUndoRedo.getInstance().add(DAO.getInstance().getCurrentProject().getTasks());
-                    DAO.getInstance().getCurrentProject().setState(new StateNotSave());
+                    new TaskController(table).updateListTask(DAO.getInstance().getCurrentProject().getTasks());
                 }
             }
 
@@ -64,12 +70,13 @@ public class IntegerEditingCell extends TableCell<Task, Integer> {
             setGraphic(null);
         } else if (isEditing()) {
             setText(null);
-            if(value<0){
-                value =0;
-            }
             textField.setText(value.toString());
             setGraphic(textField);
         } else {
+             if(value<0 || value >10){
+                value =0;
+                MyPopup.showPopupMessage(ManagerLanguage.getInstance().getLocalizedTexte("TextPriority"), stage);
+            }
             setText(value.toString());
             setGraphic(null);
         }
@@ -83,15 +90,18 @@ public class IntegerEditingCell extends TableCell<Task, Integer> {
             textField.setText(value.toString());
             setGraphic(textField);
             setText(null);
-            
         }
     }
 
     @Override
     public void cancelEdit() {
         super.cancelEdit();
-        setText(getItem().toString());
-        setGraphic(null);
+        Number value = getItem();
+        if (value != null) {
+            setText(String.valueOf(value));
+            setGraphic(null);
+        }
+        
     }
 
     // This seems necessary to persist the edit on loss of focus; not sure why:
@@ -101,15 +111,12 @@ public class IntegerEditingCell extends TableCell<Task, Integer> {
         if(tags.equals(Tags.PRIORITY)){
             for (Task t : DAO.getInstance().getCurrentProject().getTasks()) {
                 if (t.equals(this.getTableRow().getItem())) {
-                    if(value>0 && value <10){
+                    if(value>0 && value <= 10){
                         t.setPriority(value);
+                        ((Task) this.getTableRow().getItem()).setPriority(value);
                     }
                 }
             }
-            ((Task) this.getTableRow().getItem()).setPriority(value);
-        }
-        else{
-            
         }
     }
 }

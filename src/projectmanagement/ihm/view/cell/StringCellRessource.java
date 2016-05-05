@@ -5,16 +5,13 @@
  */
 package projectmanagement.ihm.view.cell;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import projectmanagement.application.business.StateNotSave;
-import projectmanagement.application.model.DAO;
-import projectmanagement.application.model.ManageUndoRedo;
 import projectmanagement.application.model.RessourcesTable;
 import projectmanagement.ihm.controller.Tags;
 
@@ -22,60 +19,65 @@ import projectmanagement.ihm.controller.Tags;
  *
  * @author Jérémy
  */
-public class StringCellRessource extends TableCell<RessourcesTable, String> {
+public final class StringCellRessource extends TableCell<RessourcesTable, String> {
 
-    private TextField textField;
-    private String column;
-    private int mode;
+    private final TextField textField;
+    private final String column;
 
-    public StringCellRessource(String column, int mode) {
+    public StringCellRessource(String column) {
         textField = new TextField();
-        this.mode = mode;
         this.column = column;
-
+        
         textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
             if (!isNowFocused) {
-                processEdit(0);
+                commitEdit(textField.getText());
+                cancelEdit();
+            }
+        });
+        textField.addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent event) -> {
+            if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.TAB) {
+                commitEdit(textField.getText());
+            }
+            if (event.getCode() == KeyCode.ESCAPE) {
+                cancelEdit();
             }
         });
         textField.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
-        textField.setOnAction(event -> processEdit(1));
+        textField.setOnAction(event -> commitEdit(textField.getText()));
         setAlignment(Pos.CENTER);
-    }
-
-    private void processEdit(int mode) {
-
-        if (mode == 0) {
-            commitEdit(textField.getText());
-        } else {
-            commitEdit(textField.getText());
-            if (this.mode == 0) {
-                ManageUndoRedo.getInstance().add(DAO.getInstance().getCurrentProject().getTasks());
-                DAO.getInstance().getCurrentProject().setState(new StateNotSave());
-            }
-        }
-    }
-
-    public void disableAndChangeColor() {
-        setEditable(false);
-        setDisable(true);
-        setStyle("-fx-background-color:grey");
     }
 
     @Override
     public void updateItem(String value, boolean empty) {
         super.updateItem(value, empty);
-
+        
         if (empty) {
             setText(null);
             setGraphic(null);
+            setStyle("");
+            setEditable(true);
+            setDisable(false);
         } else if (isEditing()) {
             setText(null);
+            setStyle("");
+            setEditable(true);
+            setDisable(false);
             textField.setText(value);
             setGraphic(textField);
-        } else {
-            setText(value);
-            setGraphic(null);
+        } else 
+        {
+            if (this.getTableRow() != null &&  this.getTableRow().getItem() != null) {
+                setText(value);
+                int type = ((RessourcesTable) this.getTableRow().getItem()).getType();
+                if (type == 0 && column.equals(Tags.REFERENCE)) {
+                    disable();
+                } else if (type == 1) {
+                    if (column.equals(Tags.RESSOURCE_FIRSTNAME) || column.equals(Tags.ROLE)) {
+                        disable();
+                    }
+                }
+            }
+            
         }
     }
 
@@ -102,38 +104,40 @@ public class StringCellRessource extends TableCell<RessourcesTable, String> {
     @Override
     public void commitEdit(String value) {
         super.commitEdit(value);
-
-        if (this.column.equals(Tags.RESSOURCE_FIRSTNAME)) {
-            RessourcesTable ress = ((RessourcesTable) this.getTableRow().getItem());
-            if (ress.getType() == 1) {
-                ress.setFirstname("");
-                setText("");
-                disableAndChangeColor();
-            } else {
-                ress.setFirstname(value);
-            }
-        } else if (this.column.equals(Tags.RESSOURCE_NAME)) {
-            ((RessourcesTable) this.getTableRow().getItem()).setName(value);
-        } else if (this.column.equals(Tags.ROLE)) {
-            RessourcesTable ress = ((RessourcesTable) this.getTableRow().getItem());
-            if (ress.getType() == 1) {
-                ress.setRole("");
-                setText("");
-                disableAndChangeColor();
-            } else {
-                ress.setRole(value);
-            }
-        } else if (this.column.equals(Tags.REFERENCE)) {
-            RessourcesTable ress = ((RessourcesTable) this.getTableRow().getItem());
-            if (ress.getType() == 1) {
-                ress.setReference("");
-                setText("");
-                disableAndChangeColor();
-            } else {
-                ress.setReference(value);
-            }
-        } else {
+        RessourcesTable ress;
+        switch (this.column) {
+            case Tags.RESSOURCE_FIRSTNAME:
+                ress = ((RessourcesTable) this.getTableRow().getItem());
+                if(ress.getType() == 0){
+                    ress.setFirstname(value);
+                }
+                break;
+            case Tags.RESSOURCE_NAME:
+                ((RessourcesTable) this.getTableRow().getItem()).setName(value);
+                break;
+            case Tags.ROLE:
+                ress = ((RessourcesTable) this.getTableRow().getItem());
+                if (ress.getType() == 0) {
+                    ress.setRole(value);
+                }
+                break;
+            case Tags.REFERENCE:
+                ress = ((RessourcesTable) this.getTableRow().getItem());
+                if (ress.getType() == 1) {
+                    ress.setReference(value);
+                }
+                break;
+            default:
+                break;
         }
+        
 
     }
+
+    private void disable() {
+       setEditable(false);
+       setDisable(true);
+            setStyle("-fx-background-color: black;");
+    }
+
 }

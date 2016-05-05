@@ -12,7 +12,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import projectmanagement.application.model.Dialog;
 import projectmanagement.application.model.LoaderImage;
-import projectmanagement.ihm.controller.ClickController;
+import projectmanagement.ihm.controller.DialogConfirmationSaveController;
 import projectmanagement.ihm.controller.Tags;
 import projectmanagement.ihm.view.Style;
 
@@ -50,17 +50,13 @@ public class DialogConfirmationSave extends Dialog {
         Button bClose = new Button(getManagerLang().getLocalizedTexte("Cancel"));
         if (type == 0) 
         {
-            bYes.setOnAction(new ClickController(Tags.CONFIRMATION_YES_SAVE, getStage(), getStageParent(), null));
-            bNo.setOnAction(new ClickController(Tags.CONFIRMATION_NO_SAVE, getStage(), getStageParent(), null));
+            bYes.setOnAction(new DialogConfirmationSaveController(Tags.CONFIRMATION_YES_SAVE, getStage(), getStageParent(), null));
+            bNo.setOnAction(new DialogConfirmationSaveController(Tags.CONFIRMATION_NO_SAVE, getStage(), getStageParent(), null));
         } else {
-            ClickController click = new ClickController(Tags.CONFIRMATION_YES_SAVE_NOT_QUIT, getStage(), getStageParent(), null);
-            click.setTags(tags);
-            ClickController click2 = new ClickController(Tags.CONFIRMATION_NO_SAVE_NOT_QUIT, getStage(), getStageParent(), null);
-            click2.setTags(tags);
-            bYes.setOnAction(click);
-            bNo.setOnAction(click2);
+            bYes.setOnAction(new DialogConfirmationSaveController(Tags.CONFIRMATION_YES_SAVE_NOT_QUIT, getStage(), getStageParent(), tags));
+            bNo.setOnAction(new DialogConfirmationSaveController(Tags.CONFIRMATION_NO_SAVE_NOT_QUIT, getStage(), getStageParent(), tags));
         }
-         bClose.setOnAction(new ClickController(Tags.CLOSE_DIALOG, getStage()));
+         bClose.setOnAction(new DialogConfirmationSaveController(Tags.CLOSE_DIALOG, getStage(),null,null));
 
         box1.getChildren().addAll(bYes, bNo, bClose);
         this.getChildren().addAll(header, box1);

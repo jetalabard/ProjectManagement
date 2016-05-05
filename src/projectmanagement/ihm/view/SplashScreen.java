@@ -14,6 +14,8 @@ import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import projectmanagement.application.model.LoaderImage;
 
@@ -38,10 +40,15 @@ public class SplashScreen extends BorderPane {
     private void createView() {
         setPrefHeight(200);
         setPrefWidth(300);
-
-        setBorder(new Border(new BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, null, null)));
-
-        setStyle("-fx-background-color: rgba(0, 0, 0, 0);");
+        
+        
+        setBorder(new Border(new BorderStroke(Color.CORNFLOWERBLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        setStyle("-fx-background-color: rgba(10, 0, 0, 0);"
+                + "-fx-background-radius: 5.0;\n"
+                + "    -fx-background-insets: 0.0 5.0 0.0 5.0;\n"
+                + "    -fx-padding: 10;\n"
+                + "    -fx-hgap: 10;\n"
+                + "    -fx-vgap: 10;");
         ImageView splash = new ImageView(new Image(SPLASH_IMAGE));
         Style.getStyle("splash.css", this);
         splash.setFitHeight(200);

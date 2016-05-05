@@ -7,7 +7,9 @@ package projectmanagement.application.model;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,9 +36,15 @@ public class MyDate extends Date {
         super(date);
     }
     
+    public Date convertToDate(){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(this);
+        return new GregorianCalendar(cal.get(Calendar.YEAR), Calendar.MONTH, Calendar.DAY_OF_MONTH).getTime();
+    }
+    
     
 
-    private MyDate() {
+    public MyDate() {
         super();
     }
 
@@ -73,6 +81,7 @@ public class MyDate extends Date {
     
     public static long diffDays(MyDate date1,MyDate date2){
         long number = (date2.getTime() - date1.getTime() )/ DAY;
+        
         return number > 0 ? number : 0;
     }
     
@@ -81,7 +90,44 @@ public class MyDate extends Date {
     }
     
     public boolean before(MyDate date){
-        return this.before(new Date(date.getTime()));
+        Date my =  new Date(this.getTime());
+        return my.before(new Date(date.getTime()));
+    }
+     public static int numberDayOfMonth(MyDate date){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int year =cal.get(Calendar.YEAR);
+        int month =cal.get(Calendar.MONTH);
+        
+        Calendar mycal = new GregorianCalendar(year,month,1);
+        return mycal.getActualMaximum(Calendar.DAY_OF_MONTH);
+    }
+    
+    public static MyDate addMonth(MyDate temp){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(temp);
+        int year =cal.get(Calendar.YEAR);
+        int month =cal.get(Calendar.MONTH)+1;
+        int day=cal.get(Calendar.DAY_OF_MONTH);
+        if(month==12){
+            year =cal.get(Calendar.YEAR)+1;
+            month=0;
+        }
+        Calendar calendar = new GregorianCalendar(year,month,1);
+        return new MyDate(calendar.getTime());
+    }
+    
+    @Override
+    public int getMonth(){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(this);
+        return cal.get(Calendar.MONTH);
+    }
+    public int day(){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(this);
+        int day=cal.get(Calendar.DAY_OF_MONTH);
+        return day;
     }
     
     

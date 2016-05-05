@@ -15,8 +15,8 @@ public class ChangeLangController implements ChangeListener<Toggle>{
      *
      */
     private ManagerLanguage managerL = null;
-    private ToggleGroup group;
-    private Page layout;
+    private final ToggleGroup group;
+    private final Page layout;
 
     public ChangeLangController(ToggleGroup group, Page layout) {
         this.group = group;
@@ -48,6 +48,12 @@ public class ChangeLangController implements ChangeListener<Toggle>{
             case "es":
                 managerL.changerLangue("es", "ES");
                 break;
+            case "it":
+                managerL.changerLangue("it", "IT");
+                break;
+            case "de":
+                managerL.changerLangue("de", "DE");
+                break;
             default:
                 managerL.changerLangue("en", "US");
                 break;
@@ -58,11 +64,11 @@ public class ChangeLangController implements ChangeListener<Toggle>{
     @Override
     public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
         RadioMenuItem rb = null;
-                if (group.getSelectedToggle() != null) {
-                    rb = (RadioMenuItem) group.getSelectedToggle();
-                    MenuPM.lang = rb.getUserData().toString();
-                    changerLangue();
-                }
+        if (group.getSelectedToggle() != null) {
+            rb = (RadioMenuItem) group.getSelectedToggle();
+            MenuPM.lang = rb.getUserData().toString();
+            changerLangue();
+        }
     }
 
 }

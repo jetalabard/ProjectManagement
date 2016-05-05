@@ -35,7 +35,6 @@ public class ProjectTest {
      */
     @Test
     public void testId() {
-        System.out.println("testId");
         Project proj = DAO.getInstance().insertProject("name", MyDate.now());
         Project other = DAO.getInstance().getProject(proj.getId());
         

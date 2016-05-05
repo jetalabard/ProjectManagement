@@ -84,5 +84,17 @@ public class Tags {
     public static final String CHANGE_NAME = "CHANGE_NAME";
     public static final String SHOW_PERT = "SHOW_PERT";
     public static final String SHOW_GANTT = "SHOW_GANTT";
+    public static final String CONFIRMATION_YES_DELETE = "CONFIRMATION_YES_DELETE";
+    public static final String CONFIRMATION_YES_INIT_DATABASE = "CONFIRMATION_YES_INIT_DATABASE";
+    public static final String RETURN_HOME = "RETURN_HOME";
+    public static final String BACKGROUND_GANTT = "BACKGROUND_GANTT";
+    public static final String OBJECT_GANTT = "OBJECT_GANTT";
+    public static final String TEXT_GANTT = "TEXT_GANTT";
+    public static final String BACKGROUND_PERT = "BACKGROUND_PERT";
+    public static final String OBJECT_PERT = "OBJECT_PERT";
+    public static final String TEXT_PERT = "TEXT_PERT";
+    public static final String OBJECT_CRITICAL_PERT = "OBJECT_CRITICAL_PERT";
+    public static final String TEXT_CRITICAL_PERT = "TEXT_CRITICAL_PERT";
+    public static final String APPLY_PREFERENCE = "APPLY_PREFERENCE";
 
 }

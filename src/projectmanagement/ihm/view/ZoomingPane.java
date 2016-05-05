@@ -7,7 +7,6 @@ package projectmanagement.ihm.view;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -20,7 +19,7 @@ import javafx.scene.transform.Scale;
  */
  public class ZoomingPane extends Pane {
         Node content;
-        private DoubleProperty zoomFactor = new SimpleDoubleProperty(1);
+        private final DoubleProperty zoomFactor = new SimpleDoubleProperty(1);
 
         public ZoomingPane(Node content) {
             this.content = content;
@@ -28,15 +27,14 @@ import javafx.scene.transform.Scale;
             Scale scale = new Scale(1, 1);
             content.getTransforms().add(scale);
 
-            zoomFactor.addListener(new ChangeListener<Number>() {
-                public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                    scale.setX(newValue.doubleValue());
-                    scale.setY(newValue.doubleValue());
-                    requestLayout();
-                }
+            zoomFactor.addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
+                scale.setX(newValue.doubleValue());
+                scale.setY(newValue.doubleValue());
+                requestLayout();
             });
         }
 
+        @Override
         protected void layoutChildren() {
             Pos pos = Pos.TOP_LEFT;
             double width = getWidth();

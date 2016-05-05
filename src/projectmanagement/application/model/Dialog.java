@@ -5,10 +5,13 @@
  */
 package projectmanagement.application.model;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
@@ -16,10 +19,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import projectmanagement.application.business.Project;
-import projectmanagement.ihm.controller.ClickController;
-import projectmanagement.ihm.controller.Tags;
-import projectmanagement.ihm.view.dialog.DialogUpdateTask;
+import projectmanagement.ihm.controller.Controller;
 
 /**
  *
@@ -39,7 +39,11 @@ public abstract class Dialog extends VBox {
             createDialog();
         }
     }
-
+    
+    public ManagerLanguage getManagerLang() {
+        return managerLang;
+    }
+    
     public abstract void createDialog();
 
     public Stage getStage() {
@@ -50,10 +54,14 @@ public abstract class Dialog extends VBox {
         return stageParent;
     }
 
-    public ManagerLanguage getManagerLang() {
-        return managerLang;
-    }
-
+    
+    /**
+     * retourne une ligne composé d'un label et d'un textfield
+     * Le textfield doit être initialisé au préalable
+     * @param text
+     * @param textField
+     * @return 
+     */
     public HBox createLignDialog(String text, Node textField) {
         HBox box1 = new HBox();
         Label lab = new Label(text);
@@ -63,52 +71,49 @@ public abstract class Dialog extends VBox {
         box1.getChildren().addAll(lab, textField);
         return box1;
     }
-
+    
+    /**
+     * créé une ligne avec un label et une combobox remplit par le nom des projets
+     * la combo box doit être initilisé au préalable
+     * @param text
+     * @param comboBox
+     * @return 
+     */
     public HBox createLignDialogComboBox(String text, ComboBox comboBox) {
         HBox box1 = new HBox();
         Label lab = new Label(text);
         box1.setAlignment(Pos.CENTER);
         box1.setPadding(new Insets(15, 12, 15, 12));
         box1.setSpacing(10);
-        for (Project p : DAO.getInstance().getAllProject()) {
+        DAO.getInstance().getAllProject().stream().forEach((p) -> {
             comboBox.getItems().add(p);
-        }
+        });
+        comboBox.setValue(DAO.getInstance().getAllProject().get(0));
         box1.getChildren().addAll(lab, comboBox);
         return box1;
     }
-
-    public HBox createLignDialogButtonValidation(String localizedTexte, String localizedTexte2, Stage stage, Stage stageParent, Node name,String tag) {
-        HBox box1 = new HBox();
+    
+     public HBox createHeaderDialogChooseColor(String localizedTexte, ColorPicker colorPicker) {
+         HBox box1 = new HBox();
+        Label lab = new Label(localizedTexte);
+        box1.setAlignment(Pos.CENTER);
         box1.setPadding(new Insets(15, 12, 15, 12));
         box1.setSpacing(10);
-        box1.setAlignment(Pos.CENTER);
-
-        Button bCreate = new Button(localizedTexte);
-        Button bClose = new Button(localizedTexte2);
-        bCreate.setOnAction(new ClickController(tag, stage, stageParent, name));
-        bClose.setOnAction(new ClickController(Tags.CLOSE_DIALOG, stage));
-        box1.getChildren().addAll(bCreate, bClose);
+        box1.getChildren().addAll(lab, colorPicker);
         return box1;
     }
+    
 
-    public HBox createLignDialogButtonValidationUpdateTask(String localizedTexte, String localizedTexte2,
-            Stage stage, DialogUpdateTask dialogParent) {
+    public HBox createLignDialogButtonValidation(String localizedTexte, String localizedTexte2
+            ,Controller ctrlOK,Controller ctrlClose) {
         HBox box1 = new HBox();
         box1.setPadding(new Insets(15, 12, 15, 12));
         box1.setSpacing(10);
         box1.setAlignment(Pos.CENTER);
-
         Button bCreate = new Button(localizedTexte);
         Button bClose = new Button(localizedTexte2);
-
-        ClickController apply = new ClickController(Tags.APPLY_TASK, stage);
-        apply.setTask(dialogParent.getTask(), dialogParent.getIndexTaskUpdate(),dialogParent.getListeRessource(), dialogParent.getListePredecessor(),dialogParent.getTable());
-        bCreate.setOnAction(apply);
-        
-        ClickController click = new ClickController(Tags.PREVIOUS_TASK, stage);
-        click.setTask(dialogParent.getInitialtask(), dialogParent.getIndexTaskUpdate(),null,null,dialogParent.getTable());
-        bClose.setOnAction(click);
-        
+        bCreate.setOnAction((EventHandler<ActionEvent>) ctrlOK);
+        bClose.setOnAction((EventHandler<ActionEvent>) ctrlClose);
         box1.getChildren().addAll(bCreate, bClose);
         return box1;
     }

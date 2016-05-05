@@ -93,12 +93,13 @@ public class Save {
     private void savePredecessors(Task t) {
         
         if (t.getPredecessor() != null && !t.getPredecessor().isEmpty()) {
-            List predecessors = DAO.getInstance().getAllPredecessorByIdTask(t.getId());
+            //List predecessors = DAO.getInstance().getAllPredecessorByIdTask(t.getId());
             for (Predecessor pred : t.getPredecessor()) {
-                if (predecessors != null && !predecessors.isEmpty() && predecessors.contains(t)) {
-                    DAO.getInstance().updatePredecessor(pred.getId(), pred.getType(), pred.getGap(), pred.getConstraint(), pred.getIdTask(), t.getId());
+                //if (predecessors != null && !predecessors.isEmpty() && predecessors.contains(t)) {
+                if(pred.getId()!=null){
+                    DAO.getInstance().updatePredecessor(pred.getId(), pred.getType(), pred.getGap(), pred.getConstraint(), pred.getIdTask(), pred.getIdTaskParent());
                 } else {
-                    int id = DAO.getInstance().insertPredecessor(pred.getType(), pred.getGap(), pred.getConstraint(), pred.getIdTask(), t.getId());
+                    int id = DAO.getInstance().insertPredecessor(pred.getType(), pred.getGap(), pred.getConstraint(), pred.getIdTask(), pred.getIdTaskParent());
                     pred.setId(id);
                 }
             }

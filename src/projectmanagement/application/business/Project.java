@@ -24,6 +24,8 @@ public class Project {
     private MyDate lastUse = null;
     
     private State state = null;
+    private Task start;
+    private Task end;
 
     @Override
     public boolean equals(Object obj) {
@@ -66,7 +68,22 @@ public class Project {
         this.title = title;
         this.state = new StateNotSave();
     }
-    
+     public int durationProject(){
+        if(tasks.isEmpty()){
+            return 0;
+        }
+        start=tasks.get(0);
+        end=tasks.get(0);
+        for(int i=1;i<tasks.size();i++){
+            if(start.getDatebegin().after(tasks.get(i).getDatebegin())){
+                start=tasks.get(i);
+            }
+            if(end.getDateend().before(tasks.get(i).getDateend())){
+                end=tasks.get(i);
+            }
+        }
+        return (int)MyDate.diffDays(start.getDatebegin(), end.getDateend());
+    }
     
 
     public Integer getId() {
@@ -86,8 +103,7 @@ public class Project {
         return lastUse;
     }
 
-    @Override
-    public String toString() {
+    public String toStringAll() {
         StringBuilder sb =  new StringBuilder(title);
         sb.append(" ");
         sb.append(id+" "+ lastUse.toString() +"\n");
@@ -96,6 +112,38 @@ public class Project {
         }
         return sb.toString();
     }
+
+    @Override
+    public String toString() {
+        return title;
+    }
+    public Task getEnd() {
+        if(tasks.isEmpty()){
+            return null;
+        }
+        end=tasks.get(0);
+        for(int i=1;i<tasks.size();i++){
+            if(end.getDateend().before(tasks.get(i).getDateend())){
+                end=tasks.get(i);
+            }
+        }
+        return end;
+    }
+
+    public Task getStart() {
+        if(tasks.isEmpty()){
+            return null;
+        }
+        start=tasks.get(0);
+        for(int i=1;i<tasks.size();i++){
+            if(start.getDatebegin().after(tasks.get(i).getDatebegin())){
+                start=tasks.get(i);
+            }
+        }
+        return start;
+    }
+
+    
 
     public State getState() {
         return state;

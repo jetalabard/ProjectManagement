@@ -180,15 +180,6 @@ public class NumberSpinner extends HBox {
         return numberField.getNumber();
     }
 
-    // debugging layout bounds
-    public void dumpSizes() {
-        System.out.println("numberField (layout)=" + numberField.getLayoutBounds());
-        System.out.println("buttonInc (layout)=" + incrementButton.getLayoutBounds());
-        System.out.println("buttonDec (layout)=" + decrementButton.getLayoutBounds());
-        System.out.println("binding=" + buttonHeight.toString());
-        System.out.println("spacing=" + spacing.toString());
-    }
-
     public TextField getTextField() {
         return this.numberField;
     }

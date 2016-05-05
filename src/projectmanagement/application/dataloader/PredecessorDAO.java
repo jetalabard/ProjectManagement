@@ -35,7 +35,7 @@ public class PredecessorDAO
             ResultSet result = stmt.executeQuery("SELECT * from PREDECESSOR where " + Tags.ID_TASK + "=" + idTask + ";");
             while (result.next()) {
                 list.add(new Predecessor(result.getInt(Tags.ID), result.getString(Tags.TYPE),
-                        Integer.valueOf(result.getString(Tags.GAP)), result.getString(Tags.CONSTRAINT), result.getInt(Tags.ID_TASK), idTask));
+                        Integer.valueOf(result.getString(Tags.GAP)), result.getString(Tags.CONSTRAINT), result.getInt(Tags.ID_TASK),  result.getInt(Tags.ID_TASK_PARENT)));
             }
             result.close();
             stmt.close();

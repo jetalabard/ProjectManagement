@@ -7,7 +7,6 @@ package projectmanagement.application.model;
 
 import javafx.util.StringConverter;
 import projectmanagement.application.business.Task;
-import projectmanagement.application.dataloader.TaskDAO;
 
 /**
  *

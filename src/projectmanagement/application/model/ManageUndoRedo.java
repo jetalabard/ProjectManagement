@@ -62,7 +62,7 @@ public class ManageUndoRedo
     private void reloadList(List<Task> list){
         DAO.getInstance().getCurrentProject().setTasks(list);
         if(window != null){
-            window.reloadTable();
+            window.reload();
         }
         
     }

@@ -13,11 +13,10 @@ import java.util.regex.Pattern;
 import javafx.geometry.Pos;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TextField;
-import projectmanagement.application.business.StateNotSave;
 import projectmanagement.application.model.DAO;
-import projectmanagement.application.model.ManageUndoRedo;
 import projectmanagement.application.model.RessourcesTable;
 import projectmanagement.ihm.controller.Tags;
+import projectmanagement.ihm.controller.TaskController;
 
 /**
  *
@@ -27,34 +26,25 @@ public class IntegerEditingCellRessource extends TableCell<RessourcesTable, Floa
 
     private final TextField textField = new TextField();
     private final Pattern intPattern = Pattern.compile("-?\\d+");
-    private String tags;
-    private int mode;
+    private final String tags;
+    private final int mode;
 
     public IntegerEditingCellRessource(String tags,int mode) {
         this.tags = tags;
         this.mode = mode;
         textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
             if (!isNowFocused) {
-                processEdit(0);
+                processEdit();
             }
         });
-        textField.setOnAction(event -> processEdit(1));
+        textField.setOnAction(event -> processEdit());
         setAlignment(Pos.CENTER);
     }
 
-    private void processEdit(int mode) {
+    private void processEdit() {
         String text = textField.getText();
         if (intPattern.matcher(text).matches()) {
-            if (mode == 0) {
                 commitEdit(Float.parseFloat(text));
-            } else {
-                commitEdit(Float.parseFloat(text));
-                if (this.mode == 0) {
-                    ManageUndoRedo.getInstance().add(DAO.getInstance().getCurrentProject().getTasks());
-                    DAO.getInstance().getCurrentProject().setState(new StateNotSave());
-                }
-            }
-
         } else {
             cancelEdit();
         }
@@ -110,8 +100,5 @@ public class IntegerEditingCellRessource extends TableCell<RessourcesTable, Floa
             //pas de sauvegarde direct
             ((RessourcesTable) this.getTableRow().getItem()).setCost(value);
         } 
-        else{
-            
-        }
     }
 }

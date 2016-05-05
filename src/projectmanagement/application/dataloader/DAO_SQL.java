@@ -11,13 +11,13 @@ package projectmanagement.application.dataloader;
  * and open the template in the editor.
  */
 import java.util.List;
+import javafx.scene.paint.Color;
 import projectmanagement.application.business.Predecessor;
 import projectmanagement.application.business.Project;
 import projectmanagement.application.business.Ressource;
 import projectmanagement.application.business.Task;
 import projectmanagement.application.model.DAO;
 import projectmanagement.application.model.MyDate;
-import projectmanagement.ihm.controller.Tags;
 
 /**
  *
@@ -29,6 +29,7 @@ public class DAO_SQL extends DAO{
     private final TaskDAO taskDAO;
     private final RessourceDAO ressourceDAO;
     private final PredecessorDAO predecessorDAO;
+    private final PreferenceDAO preferenceDAO;
 
     public DAO_SQL() {
         super();
@@ -36,6 +37,7 @@ public class DAO_SQL extends DAO{
         this.taskDAO = new TaskDAO();
         this.ressourceDAO = new RessourceDAO();
         this.predecessorDAO = new PredecessorDAO();
+        this.preferenceDAO = new PreferenceDAO();
     }
 
     
@@ -49,13 +51,14 @@ public class DAO_SQL extends DAO{
         return tasks;
     }
     
+    
     @Override
       public void removeProject(int id) {
-        Database.getInstance().delete("DELETE from PROJECT where "+Tags.ID+"=" + id + ";");
         List<Task> tasks =  getAllTasksByIdProject(id);
         for(Task t:tasks){
             deleteTask(t.getId());
         }
+        deleteProject(id);
         
     }
 
@@ -67,8 +70,10 @@ public class DAO_SQL extends DAO{
     @Override
     public Task getTask(int id) {
         Task t = taskDAO.getTask(id);
-        t.setPredecessor(getAllPredecessorByIdTask(id));
-        t.setRessources(getAllRessourceByIdTask(id));
+        if (t != null) {
+            t.setPredecessor(getAllPredecessorByIdTask(id));
+            t.setRessources(getAllRessourceByIdTask(id));
+        }
         return t;
     }
 
@@ -181,6 +186,80 @@ public class DAO_SQL extends DAO{
         predecessorDAO.deleteAll();
         taskDAO.deleteAll();
         projectDAO.deleteAll();
+    }
+
+
+    @Override
+    public void insertPreference(Color BACKGROUND_GANTT, Color OBJECT_GANTT, Color TEXT_GANTT, 
+            Color BACKGROUND_PERT, Color OBJECT_PERT, Color TEXT_PERT, 
+            Color OBJECT_CRITICAL_PERT, Color TEXT_CRITICAL_PERT) {
+        preferenceDAO.insertPreference(BACKGROUND_GANTT,OBJECT_GANTT,TEXT_GANTT,
+                BACKGROUND_PERT,OBJECT_PERT,TEXT_PERT,OBJECT_CRITICAL_PERT,
+               TEXT_CRITICAL_PERT);
+    }
+
+    @Override
+    public void updatePreference( Color BACKGROUND_GANTT, Color OBJECT_GANTT, Color TEXT_GANTT, Color BACKGROUND_PERT, Color OBJECT_PERT, Color TEXT_PERT, Color OBJECT_CRITICAL_PERT, Color TEXT_CRITICAL_PERT) {
+        preferenceDAO.updatePreference(1,BACKGROUND_GANTT,OBJECT_GANTT,TEXT_GANTT,
+                BACKGROUND_PERT,OBJECT_PERT,TEXT_PERT,OBJECT_CRITICAL_PERT,
+               TEXT_CRITICAL_PERT);
+    }
+
+    @Override
+    public Color getBACKGROUND_GANTT() {
+        return preferenceDAO.getBACKGROUND_GANTT(1);
+    }
+
+    @Override
+    public Color getOBJECT_GANTT() {
+        return preferenceDAO.getOBJECT_GANTT(1);
+    }
+
+    @Override
+    public Color getTEXT_GANTT() {
+        return preferenceDAO.getTEXT_GANTT(1);
+    }
+
+    @Override
+    public Color getBACKGROUND_PERT() {
+        return preferenceDAO.getBACKGROUND_PERT(1);
+    }
+
+    @Override
+    public Color getOBJECT_PERT() {
+        return preferenceDAO.getOBJECT_PERT(1);
+    }
+
+    @Override
+    public Color getTEXT_PERT() {
+        return preferenceDAO.getTEXT_PERT(1);
+    }
+
+    @Override
+    public Color getOBJECT_CRITICAL_PERT() {
+        return preferenceDAO.getOBJECT_CRITICAL_PERT(1);
+    }
+
+    @Override
+    public Color getTEXT_CRITICAL_PERT() {
+        return preferenceDAO.getTEXT_CRITICAL_PERT(1);
+    }
+
+    @Override
+    public void insertPreferenceByDefault() {
+        preferenceDAO.insertPreference(Color.WHITE,
+                Color.CORNFLOWERBLUE, Color.BLACK, Color.WHITE, Color.CORNFLOWERBLUE, 
+                Color.BLACK, Color.BROWN, Color.WHITE);
+    }
+
+    @Override
+    public int countPreference() {
+        return preferenceDAO.countPreference();
+    }
+
+    @Override
+    public void deleteProject(int id) {
+        projectDAO.deleteProject(id);
     }
 
 }

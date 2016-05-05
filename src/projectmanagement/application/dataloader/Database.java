@@ -13,13 +13,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import projectmanagement.application.model.DAO;
 import projectmanagement.ihm.controller.Tags;
 
 /**
  *
  * @author Jérémy
  */
-public class Database {
+public final class Database {
 
     private static Database instance;
     private Connection c = null;
@@ -79,6 +80,19 @@ public class Database {
                 + " " + Tags.CONSTRAINT + " TEXT)";
         stmt.executeUpdate(sql);
 
+        sql = "CREATE TABLE IF NOT EXISTS PREFERENCE"
+                + "(" + Tags.ID + " INTEGER PRIMARY KEY NOT NULL,"    
+                + " " + Tags.BACKGROUND_GANTT + " TEXT NOT NULL,"
+                + " " + Tags.OBJECT_GANTT + " TEXT NOT NULL,"
+                + " " + Tags.TEXT_GANTT + " TEXT NOT NULL,"
+                + " " + Tags.BACKGROUND_PERT + " TEXT NOT NULL,"
+                + " " + Tags.OBJECT_PERT + " TEXT NOT NULL,"
+                + " " + Tags.TEXT_PERT + " TEXT NOT NULL,"
+                + " " + Tags.OBJECT_CRITICAL_PERT + " TEXT NOT NULL,"
+                + " " + Tags.TEXT_CRITICAL_PERT + " TEXT NOT NULL)";
+        stmt.executeUpdate(sql);
+        
+        
         stmt.close();
     }
 
@@ -98,7 +112,7 @@ public class Database {
     }
 
     public int insert(String requete) {
-        PreparedStatement stmt = null;
+        PreparedStatement stmt;
         long returnValue = -1;
         try {
             stmt = getConnection().prepareStatement(requete,

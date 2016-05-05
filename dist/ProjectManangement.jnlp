@@ -11,7 +11,7 @@
   </resources>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="ProjectManangement.jar" size="424970" download="eager" />
+    <jar href="ProjectManangement.jar" size="450346" download="eager" />
     <jar href="lib/jdom-2.0.6.jar" size="304924" download="eager" />
     <jar href="lib/junit-4.10.jar" size="253160" download="eager" />
     <jar href="lib/sqlite-jdbc-3.8.11.2.jar" size="5575351" download="eager" />

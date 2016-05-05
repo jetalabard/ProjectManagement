@@ -5,7 +5,12 @@
  */
 package projectmanagement.application.model;
 
-import javafx.scene.control.TabPane;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.WritableImage;
+import javax.imageio.ImageIO;
 import projectmanagement.ihm.view.MyTabPane;
 
 /**
@@ -21,6 +26,11 @@ public class ManagerShowDiagram {
 
     private MyTabPane tabDiagram;
 
+    
+    public boolean isTabPertShow(){
+        return tabDiagram.getTabPert().isSelected();
+    }
+
     private ManagerShowDiagram() {
         this.pertTabShow = true;
         this.ganttTabShow = true;
@@ -32,7 +42,6 @@ public class ManagerShowDiagram {
             this.tabDiagram.closeGantt();
         }
     }
-    
     
     public boolean canShowTabPane(){
         return pertTabShow || ganttTabShow;
@@ -48,13 +57,13 @@ public class ManagerShowDiagram {
     public void showTabGantt() {
         ganttTabShow = true;
         this.tabDiagram.createTabGantt();
-        this.tabDiagram.reload();
+        this.tabDiagram.init();
     }
 
     public void showTabPert() {
         pertTabShow = true;
         this.tabDiagram.createTabPert();
-        this.tabDiagram.reload();
+        this.tabDiagram.init();
     }
 
     public void setGanttTabShow(boolean ganttTabShow) {
@@ -66,7 +75,7 @@ public class ManagerShowDiagram {
     }
 
 
-    public TabPane getTabDiagram() {
+    public MyTabPane getTabDiagram() {
         return tabDiagram;
     }
 
@@ -87,6 +96,23 @@ public class ManagerShowDiagram {
 
     public boolean isPertTabShow() {
         return pertTabShow;
+    }
+    
+    public void export(File file) throws IOException {
+        BufferedImage snapShot;
+        WritableImage tempImage ;
+        if (isTabPertShow()) {
+           tempImage = new WritableImage((int)tabDiagram.getAnchorPert().getWidth(),
+                (int)tabDiagram.getAnchorPert().getHeight());
+           tabDiagram.getAnchorPert().snapshot(null, tempImage);
+        }
+        else{
+            tempImage = new WritableImage((int)tabDiagram.getAnchorGantt().getWidth(),
+                (int)tabDiagram.getAnchorGantt().getHeight());
+            tabDiagram.getAnchorGantt().snapshot(null, tempImage);
+        }
+        snapShot = SwingFXUtils.fromFXImage(tempImage, null);
+        ImageIO.write(snapShot, "png", file);
     }
 
 }

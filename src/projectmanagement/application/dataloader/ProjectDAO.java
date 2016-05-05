@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import projectmanagement.application.business.Project;
-import projectmanagement.application.business.StateSave;
-import projectmanagement.application.model.DAO;
 import projectmanagement.application.model.MyDate;
 import projectmanagement.ihm.controller.Tags;
 
@@ -73,8 +71,12 @@ public class ProjectDAO  {
         return new Project(id,name, lastUse);
     }
 
-    void deleteAll() {
+    public void deleteAll() {
         Database.getInstance().delete("DELETE from Project;");
+    }
+    
+     void deleteProject(int id) {
+        Database.getInstance().delete("DELETE from Project where "+Tags.ID+"="+id+";");
     }
 
   

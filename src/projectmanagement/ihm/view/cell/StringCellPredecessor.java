@@ -11,20 +11,20 @@ import javafx.scene.control.TextField;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import projectmanagement.application.business.Predecessor;
-import projectmanagement.application.business.StateNotSave;
 import projectmanagement.application.model.DAO;
-import projectmanagement.application.model.ManageUndoRedo;
 import projectmanagement.ihm.controller.Tags;
+import projectmanagement.ihm.controller.TaskController;
 
 /**
  *
  * @author Jérémy
  */
-public class StringCellPredecessor extends TableCell<Predecessor, String> {
+public final class StringCellPredecessor extends TableCell<Predecessor, String> {
 
-    private TextField textField;
-    private String column;
-    private int mode;
+    private final TextField textField;
+    private final String column;
+    private final int mode;
+    
 
     public StringCellPredecessor(String column,int mode) {
         textField = new TextField();
@@ -32,25 +32,12 @@ public class StringCellPredecessor extends TableCell<Predecessor, String> {
         this.column = column;
         textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
             if (!isNowFocused) {
-                processEdit(0);
+                commitEdit(textField.getText());
             }
         });
         textField.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
-        textField.setOnAction(event -> processEdit(1));
+        textField.setOnAction(event -> commitEdit(textField.getText()));
         setAlignment(Pos.CENTER);
-    }
-
-    private void processEdit(int mode) {
-        if (mode == 0) {
-            commitEdit(textField.getText());
-        } else {
-            commitEdit(textField.getText());
-            if (this.mode == 0) {
-                ManageUndoRedo.getInstance().add(DAO.getInstance().getCurrentProject().getTasks());
-                DAO.getInstance().getCurrentProject().setState(new StateNotSave());
-            }
-        }
-
     }
 
     @Override
@@ -93,13 +80,15 @@ public class StringCellPredecessor extends TableCell<Predecessor, String> {
     public void commitEdit(String value) {
         super.commitEdit(value);
 
-        if (this.column.equals(Tags.TYPE)) {
-            ((Predecessor) this.getTableRow().getItem()).setType(value);
-        }
-        else if (this.column.equals(Tags.CONSTRAINT)) {
-            ((Predecessor) this.getTableRow().getItem()).setConstraint(value);
-        }
-        else {
+        switch (this.column) {
+            case Tags.TYPE:
+                ((Predecessor) this.getTableRow().getItem()).setType(value);
+                break;
+            case Tags.CONSTRAINT:
+                ((Predecessor) this.getTableRow().getItem()).setConstraint(value);
+                break;
+            default:
+                break;
         }
 
     }

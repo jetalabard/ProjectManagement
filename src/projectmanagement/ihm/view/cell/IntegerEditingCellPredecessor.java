@@ -11,10 +11,10 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TextField;
 import projectmanagement.application.business.Predecessor;
 import projectmanagement.application.business.StateNotSave;
-import projectmanagement.application.business.Task;
 import projectmanagement.application.model.DAO;
 import projectmanagement.application.model.ManageUndoRedo;
 import projectmanagement.ihm.controller.Tags;
+import projectmanagement.ihm.controller.TaskController;
 
 /**
  *
@@ -24,33 +24,25 @@ public class IntegerEditingCellPredecessor extends TableCell<Predecessor, Intege
 
     private final TextField textField = new TextField();
     private final Pattern intPattern = Pattern.compile("-?\\d+");
-    private String tags;
-    private int mode;
+    private final String tags;
+    private final int mode;
 
     public IntegerEditingCellPredecessor(String tags,int mode) {
         this.tags = tags;
         this.mode = mode;
         textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
             if (!isNowFocused) {
-                processEdit(0);
+                processEdit();
             }
         });
-        textField.setOnAction(event -> processEdit(1));
+        textField.setOnAction(event -> processEdit());
         setAlignment(Pos.CENTER);
     }
 
-    private void processEdit(int mode) {
+    private void processEdit() {
         String text = textField.getText();
         if (intPattern.matcher(text).matches()) {
-            if (mode == 0) {
                 commitEdit(Integer.parseInt(text));
-            } else {
-                commitEdit(Integer.parseInt(text));
-                if (this.mode == 0) {
-                    ManageUndoRedo.getInstance().add(DAO.getInstance().getCurrentProject().getTasks());
-                    DAO.getInstance().getCurrentProject().setState(new StateNotSave());
-                }
-            }
 
         } else {
             cancelEdit();
@@ -102,9 +94,6 @@ public class IntegerEditingCellPredecessor extends TableCell<Predecessor, Intege
         super.commitEdit(value);
         if(tags.equals(Tags.GAP)){
             ((Predecessor) this.getTableRow().getItem()).setGap(value);
-        }
-        else{
-            
         }
     }
 }

@@ -8,12 +8,11 @@ package projectmanagement.ihm.controller;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Slider;
-import javafx.scene.control.TableView;
 import javafx.stage.Stage;
-import projectmanagement.application.business.Task;
 import projectmanagement.application.model.DAO;
 import projectmanagement.application.model.ManageUndoRedo;
 import projectmanagement.application.model.ManagerShowDiagram;
+import projectmanagement.ihm.view.MyTableView;
 
 /**
  *
@@ -23,7 +22,7 @@ public class MenuController extends Controller  implements EventHandler<ActionEv
     private final String what;
     private final String where;
     private final Stage stage;
-    private TableView<Task> table;
+    private MyTableView table;
     private Slider slider;
 
     public MenuController(String what, String where,Stage mainStage) {
@@ -31,7 +30,6 @@ public class MenuController extends Controller  implements EventHandler<ActionEv
         this.where = where;
         this.stage = mainStage;
     }
-    
     
     @Override
     public void handle(ActionEvent event) {
@@ -65,15 +63,17 @@ public class MenuController extends Controller  implements EventHandler<ActionEv
                 CreateDialogSaveProjectAs(stage);
                 break;
              case Tags.ADD_TASK:
-                addTask(table);
+                new TaskController(table).addTask();
                 break;
             case Tags.OPEN_EXTERIOR:
                 CreateDialogSaveProject(stage);
                 break;
             case Tags.EXPORT_IMAGE:
+                CreateFileChooserToExportDiagramToImage(stage);
                 break;
             case Tags.DELETE:
                 deleteProjectAndRunHomePage(stage);
+                break;
             case Tags.CHANGE_NAME:
                 CreateDialogChangeName(stage);
                 break;
@@ -138,12 +138,15 @@ public class MenuController extends Controller  implements EventHandler<ActionEv
                     ManagerShowDiagram.getInstance().showTabPert();
                 }
                 break;
+             case Tags.RETURN_HOME:
+                returnHome(stage);
+                break;
             default:
                 break;
         }
     }
 
-    public void setTableView(TableView<Task> table) {
+    public void setTableView(MyTableView table) {
         this.table = table;
     }
 

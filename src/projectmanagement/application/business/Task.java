@@ -32,6 +32,7 @@ public class Task {
 
     private List<Predecessor> predecessor = null;
     private List<Ressource> ressources = null;
+    private MyDate lastdate;
 
     public Task() {
         priority =0;
@@ -50,6 +51,7 @@ public class Task {
         this.name = name;
         this.datebegin = datebegin;
         this.dateend = dateend;
+        this.lastdate=dateend;
         this.priority = priority;
         this.note = note;
         predecessor = new ArrayList<>();
@@ -61,6 +63,7 @@ public class Task {
         this.name = name;
         this.datebegin = datebegin;
         this.dateend = dateend;
+        this.lastdate=dateend;
         this.priority = priority;
         this.note = note;
         predecessor = new ArrayList<>();
@@ -75,12 +78,25 @@ public class Task {
         this.id = id;
         this.datebegin = datebegin;
         this.dateend = dateend;
+        this.lastdate=dateend;
         this.priority = priority;
         this.note = note;
         this.predecessor = predecessors;
         this.ressources = ressources;
         this.idProject = idProject;
     }
+     public MyDate getLastdate() {
+        return lastdate;
+    }
+     
+      public int getDuring(){
+        return (int)MyDate.diffDays(datebegin, dateend);
+    }
+
+    public void setLastdate(MyDate lastdate) {
+        this.lastdate = lastdate;
+    }
+    
 
     @Override
     public String toString() {
@@ -99,8 +115,6 @@ public class Task {
         return sb.toString();
         
     }
-    
-    
 
     public int getIdProject() {
         return idProject;
@@ -172,7 +186,8 @@ public class Task {
     public boolean equals(Object other) {
         if (other == null) {
             return false;
-        } else {
+        } 
+        else if(other instanceof Task){
             Task t = (Task) other;
             boolean returnValue = false;
             if (this.idProject.equals(t.getIdProject())) {
@@ -181,6 +196,9 @@ public class Task {
                 }
             }
             return returnValue;
+        }
+        else{
+            return false;
         }
     }
 

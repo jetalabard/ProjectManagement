@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import projectmanagement.application.business.Project;
 import projectmanagement.application.model.Dialog;
 import projectmanagement.application.model.LoaderImage;
+import projectmanagement.ihm.controller.DialogOpenProjectController;
 import projectmanagement.ihm.controller.Tags;
 import projectmanagement.ihm.view.Style;
 
@@ -19,7 +20,7 @@ import projectmanagement.ihm.view.Style;
  * @author Jérémy
  */
 public class DialogOpenProject extends Dialog{
-    private ComboBox comboBox;
+    private ComboBox<Project> comboBox;
 
     public DialogOpenProject(Stage dialog, Stage stageParent) {
         super(dialog, stageParent,0);
@@ -29,10 +30,13 @@ public class DialogOpenProject extends Dialog{
     public void createDialog() {
         Style.getStyle("dialog.css", this);
         HBox header = createHeaderDialog(LoaderImage.getImage("Folder Filled-50.png"), getManagerLang().getLocalizedTexte("TextDialogOpenProject"));
-        comboBox = new ComboBox<Project>();
+        comboBox = new ComboBox<>();
         HBox box1 = createLignDialogComboBox(getManagerLang().getLocalizedTexte("ProjectName"), comboBox);
-        HBox box2 = createLignDialogButtonValidation(getManagerLang().getLocalizedTexte("Open"),
-                getManagerLang().getLocalizedTexte("Close"), getStage(),getStageParent(), comboBox,Tags.OPEN_PROJECT);
+        HBox box2 = createLignDialogButtonValidation(
+                getManagerLang().getLocalizedTexte("Open"),
+                getManagerLang().getLocalizedTexte("Close"), 
+                new DialogOpenProjectController(Tags.OPEN_PROJECT, getStage(), comboBox, getStageParent()),
+                new DialogOpenProjectController(Tags.CLOSE_DIALOG, getStage(), null,null));
         this.getChildren().addAll(header,box1,box2);
     }
 

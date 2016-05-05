@@ -5,6 +5,7 @@
  */
 package projectmanagement.ihm.view;
 
+import projectmanagement.ihm.controller.ChangeLangController;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
@@ -22,10 +23,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import projectmanagement.application.business.Task;
 import projectmanagement.application.model.LoaderImage;
-import projectmanagement.ihm.controller.ChangeLangController;
 import projectmanagement.application.model.ManagerLanguage;
 import projectmanagement.application.model.ManagerShowDiagram;
-import projectmanagement.ihm.controller.Controller;
 import projectmanagement.ihm.controller.MenuController;
 import projectmanagement.ihm.controller.Tags;
 
@@ -84,9 +83,10 @@ public class MenuPM extends BorderPane {
         MenuItem save = createMenuItem(managerLang.getLocalizedTexte("SaveProject"),LoaderImage.getImage("Save.png"),new MenuController(Tags.PROJECT,Tags.SAVE,mainStage),disableAllButton);
         MenuItem saveAs = createMenuItem(managerLang.getLocalizedTexte("SaveAs"),LoaderImage.getImage("Save as.png"),new MenuController(Tags.PROJECT,Tags.SAVEAS,mainStage),disableAllButton);
         MenuItem exportImage = createMenuItem(managerLang.getLocalizedTexte("ExportImage"),LoaderImage.getImage("Share.png"),new MenuController(Tags.PROJECT,Tags.EXPORT_IMAGE,mainStage),disableAllButton);
+        MenuItem home = createMenuItem(managerLang.getLocalizedTexte("Home"),LoaderImage.getImage("Undo.png"),new MenuController(Tags.APP,Tags.RETURN_HOME,mainStage),disableAllButton);
         MenuItem exit = createMenuItem(managerLang.getLocalizedTexte("Exit"),LoaderImage.getImage("Exit.png"),new MenuController(Tags.APP,Tags.QUIT,mainStage),false);
         
-        menuFile.getItems().addAll(newp, openp,openExterior, save, saveAs,exportImage, exit);
+        menuFile.getItems().addAll(newp, openp,openExterior, save, saveAs,exportImage, home,exit);
     }
 
     private MenuItem createMenuItem(String text,String image,MenuController event,boolean disable) {
@@ -98,8 +98,8 @@ public class MenuPM extends BorderPane {
 
     private void createMenuEdit(boolean disableAllButton) {
         menuEdit = new Menu(managerLang.getLocalizedTexte("Edit"));
-        MenuItem undo = createMenuItem(managerLang.getLocalizedTexte("Undo"),LoaderImage.getImage("Undo.png"),new MenuController(Tags.PROJECT,Tags.UNDO,mainStage),disableAllButton);
-        MenuItem redo = createMenuItem(managerLang.getLocalizedTexte("Redo"),LoaderImage.getImage("Redo.png"),new MenuController(Tags.PROJECT,Tags.REDO,mainStage),disableAllButton);
+        MenuItem undo = createMenuItem(managerLang.getLocalizedTexte("Undo"),LoaderImage.getImage("Undo.png"),new MenuController(Tags.APP,Tags.UNDO,mainStage),disableAllButton);
+        MenuItem redo = createMenuItem(managerLang.getLocalizedTexte("Redo"),LoaderImage.getImage("Redo.png"),new MenuController(Tags.APP,Tags.REDO,mainStage),disableAllButton);
         MenuItem delete = createMenuItem(managerLang.getLocalizedTexte("delete"),LoaderImage.getImage("Trash.png"),new MenuController(Tags.PROJECT,Tags.DELETE,mainStage),disableAllButton);
         MenuItem deleteAll = createMenuItem(managerLang.getLocalizedTexte("deleteAll"),LoaderImage.getImage("Refresh.png"),new MenuController(Tags.APP,Tags.DELETE_ALL,mainStage),!disableAllButton);
         MenuItem properties = createMenuItem(managerLang.getLocalizedTexte("Properties"),LoaderImage.getImage("Support.png"),new MenuController(Tags.PROJECT,Tags.CHANGE_NAME,mainStage),disableAllButton);
@@ -169,11 +169,11 @@ public class MenuPM extends BorderPane {
         Button OpenProject =createToolBarButton(LoaderImage.getImage("Open Folder Filled-20.png") ,new MenuController(Tags.PROJECT,Tags.OPEN,mainStage),false);
         Button SaveProject =createToolBarButton(LoaderImage.getImage("Save-20.png") ,new MenuController(Tags.PROJECT,Tags.SAVE,mainStage),disableAllButton);
         
-        Button undo =createToolBarButton(LoaderImage.getImage("undo-20.png") ,new MenuController(Tags.PROJECT,Tags.UNDO,mainStage),disableAllButton);
-        Button redo =createToolBarButton(LoaderImage.getImage("redo-20.png") ,new MenuController(Tags.PROJECT,Tags.REDO,mainStage),disableAllButton);
+        Button undo =createToolBarButton(LoaderImage.getImage("undo-20.png") ,new MenuController(Tags.APP,Tags.UNDO,mainStage),disableAllButton);
+        Button redo =createToolBarButton(LoaderImage.getImage("redo-20.png") ,new MenuController(Tags.APP,Tags.REDO,mainStage),disableAllButton);
         
         MenuController ctrl = new MenuController(Tags.PROJECT,Tags.ADD_TASK,mainStage);
-        ctrl.setTableView(table);
+        ctrl.setTableView((MyTableView)table);
         Button addTask =createToolBarButton(LoaderImage.getImage("Edit Row-20.png") ,ctrl,disableAllButton);
          if(disableAllButton == false)
          {

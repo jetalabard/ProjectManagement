@@ -53,7 +53,6 @@ public class IDAOTest {
      */
     @Test
     public void testGetAllTasks() {
-        System.out.println("getAllTasks");
         int id = DAO.getInstance().insertTask("name", 0, MyDate.now(), MyDate.now(), 0, "note");
         int id2 = DAO.getInstance().insertTask("name", 0, MyDate.now(), MyDate.now(), 0, "note");
         List<Task> list = DAO.getInstance().getAllTasks();

@@ -6,15 +6,14 @@
 package projectmanagement.application.model;
 
 import javafx.util.StringConverter;
-import projectmanagement.application.business.Task;
 
 /**
  *
  * @author Jérémy
  */
 public class RessourceConverter extends StringConverter<Integer> {
-    
 
+    
     @Override
     public String toString(Integer integer) {
         if (integer == 1) {
@@ -25,8 +24,7 @@ public class RessourceConverter extends StringConverter<Integer> {
     }
 
     @Override
-    public Integer fromString(String string) 
-    {
+    public Integer fromString(String string) {
         if (string.equals(ManagerLanguage.getInstance().getLocalizedTexte("Human"))) {
             return 0;
         } else {

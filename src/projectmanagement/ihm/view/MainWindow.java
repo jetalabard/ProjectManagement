@@ -5,16 +5,14 @@
  */
 package projectmanagement.ihm.view;
 
-import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Slider;
 import javafx.scene.control.SplitPane;
-import javafx.scene.input.ScrollEvent;
 import javafx.stage.Stage;
-import projectmanagement.application.model.DAO;
 import projectmanagement.application.model.ManageUndoRedo;
 import projectmanagement.application.model.ManagerShowDiagram;
 import projectmanagement.ihm.controller.KeyListener;
+import projectmanagement.ihm.controller.MainWindowController;
 import projectmanagement.ihm.controller.Tags;
 import projectmanagement.ihm.controller.WindowListener;
 
@@ -22,7 +20,7 @@ import projectmanagement.ihm.controller.WindowListener;
  *
  * @author Jérémy
  */
-public class MainWindow extends Page {
+public final class MainWindow extends Page {
 
     private final Stage mainStage;
 
@@ -32,25 +30,26 @@ public class MainWindow extends Page {
     public MainWindow(Stage mainstage) {
         super();
         this.mainStage = mainstage;
-        ManageUndoRedo.getInstance().setWindows(this);
+        ManageUndoRedo.getInstance().setWindows(MainWindow.this);
         createView();
     }
 
     @Override
     public void createView() {
+        this.mainStage.setMinHeight(600);
+        this.mainStage.setMinWidth(550);
         table = new MyTableView(mainStage,this);
+        
         if(ManagerShowDiagram.getInstance().canShowTabPane()){
-            tabpane = new MyTabPane(DAO.getInstance().getCurrentProject().getTasks(),this);
+            tabpane = new MyTabPane(this);
         }
         SplitPane splitPane = createSplitPane();
-
         Slider slider = new Slider(0.5, 2, 1);
         ZoomingPane zoomingPane = new ZoomingPane(splitPane);
         zoomingPane.zoomFactorProperty().bind(slider.valueProperty());
         addListener(slider);
         this.setTop(new MenuPM(this, mainStage, table, slider));
         this.setCenter(zoomingPane);
-        
     }
 
     private SplitPane createSplitPane() {
@@ -67,29 +66,16 @@ public class MainWindow extends Page {
     private void addListener(Slider slider) {
         this.mainStage.setOnCloseRequest(new WindowListener(Tags.QUIT, mainStage));
         this.setOnKeyPressed(new KeyListener(slider, table));
-        addListenerZoomWithMouseScroll(slider);
-    }
-
-    private void addListenerZoomWithMouseScroll(Slider slider) {
-        this.setOnScroll(
-                new EventHandler<ScrollEvent>() {
-                    @Override
-                    public void handle(ScrollEvent event) {
-                        double deltaY = event.getDeltaY();
-                        if (deltaY < 0) {
-                            slider.adjustValue(slider.getValue() - 0.25);
-                        } else {
-                            slider.adjustValue(slider.getValue() + 0.25);
-
-                        }
-                    }
-                });
+        this.setOnScroll(new MainWindowController(slider));
     }
 
     public void reloadTable() {
         if (table != null) {
-            table.getItems().clear();
-            reload();
+            table.reload();
         }
+    }
+    
+    public Stage getStage(){
+        return mainStage;
     }
 }

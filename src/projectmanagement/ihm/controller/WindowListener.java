@@ -8,6 +8,7 @@ package projectmanagement.ihm.controller;
 import javafx.event.EventHandler;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import projectmanagement.application.model.DAO;
 
 /**
  *
@@ -25,7 +26,8 @@ public class WindowListener extends Controller implements EventHandler<WindowEve
     @Override
     public void handle(WindowEvent event) {
         event.consume();
-        if (this.tags.equals(Tags.QUIT)) {
+        if (this.tags.equals(Tags.QUIT)) 
+        {
             CreateDialogConfirmationSave(stage);
         }
     }

@@ -7,7 +7,6 @@ package projectmanagement.ihm.controller;
 
 import javafx.animation.FadeTransition;
 import projectmanagement.ihm.view.SplashScreen;
-import projectmanagement.ihm.view.*;
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
@@ -40,6 +39,10 @@ public class PMApplication extends Application {
        primaryStage.getIcons().add(new Image(SPLASH_IMAGE));
     }
     
+    /**
+     * methode asynchrone gérant la barre de progression et qui lance la page d'accueil
+     * @param primaryStage 
+     */
      private void asyncTask(Stage primaryStage) {
         final Task<Integer> task = new Task<Integer>() {
             @Override
@@ -56,7 +59,7 @@ public class PMApplication extends Application {
         showSplash(
                 primaryStage,
                 task,
-                () -> new StartController().showMainStage()
+                () -> HomeController.showHome()
         );
         new Thread(task).start();
     }
@@ -74,7 +77,7 @@ public class PMApplication extends Application {
                 splash.getProgressBar().progressProperty().unbind();
                 splash.getProgressBar().setProgress(1);
                 initStage.toFront();
-                FadeTransition fadeSplash = new FadeTransition(Duration.seconds(1.2), splash);
+                FadeTransition fadeSplash = new FadeTransition(Duration.seconds(0.8), splash);
                 fadeSplash.setFromValue(1.0);
                 fadeSplash.setToValue(0.0);
                 fadeSplash.setOnFinished(actionEvent -> initStage.hide());
